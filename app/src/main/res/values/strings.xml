@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Login</string>
+    <!-- Strings used for fragments for navigation -->
+
+    <string name="loginTitleText">세통</string>
+    <string name="loginText">로그인</string>
+    <string name="idText">아이디</string>
+    <string name="passwordText">비밀번호</string>
 </resources>
