@@ -2,8 +2,16 @@
     <string name="app_name">Login</string>
     <!-- Strings used for fragments for navigation -->
 
+    <!-- activity_login.xml -->
     <string name="loginTitleText">세통</string>
     <string name="loginText">로그인</string>
     <string name="idText">아이디</string>
     <string name="passwordText">비밀번호</string>
+
+    <!-- fragment_question_post.xml -->
+    <string name="writeQuestionText">질문 작성</string>
+    <string name="titleText">제목을 입력하세요</string>
+    <string name="contentText">내용을 입력하세요</string>
+    <string name="submitButtonText">등록하기</string>
+
 </resources>
