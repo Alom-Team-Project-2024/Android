@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/rounded_edittext">
+
+
+    <android.widget.Button
+        android:id="@+id/exit_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext_background_stroke"
+        android:text="@string/bottom_dialog_exit"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/report_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.75"
+
+        android:layout_marginTop="30dp"
+        />
+
+    <android.widget.Button
+        android:id="@+id/report_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext_background_stroke"
+        android:text="@string/bottom_dialog_report"
+
+        app:layout_constraintTop_toBottomOf="@id/exit_button"
+        app:layout_constraintBottom_toTopOf="@id/rating_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.75"
+
+        android:layout_marginTop="20dp"
+        />
+
+    <android.widget.Button
+        android:id="@+id/rating_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext_background_stroke"
+        android:text="@string/bottom_dialog_rating"
+
+        app:layout_constraintTop_toBottomOf="@id/report_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.75"
+
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

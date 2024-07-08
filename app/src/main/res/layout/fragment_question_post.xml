@@ -67,7 +67,7 @@
     <android.widget.Button
         android:id="@+id/submitButton"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
         app:layout_constraintWidth_percent="0.4"
         android:background="@drawable/rounded_edittext_background"
 
