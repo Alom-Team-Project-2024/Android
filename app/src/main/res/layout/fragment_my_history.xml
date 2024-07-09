@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MyHistory">
-    
+
     <!-- 뒤로가기 버튼 -->
     <ImageButton
         android:id="@+id/back_button"
@@ -65,7 +65,7 @@
         />
 
 
-    
+
     <!-- top ImageView -->
     <ImageView
         android:id="@+id/top_view"
@@ -78,6 +78,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
+
 
     <!-- main ImageView -->
     <ImageView
