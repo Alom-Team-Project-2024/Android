@@ -3,6 +3,7 @@ package com.example.login
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -25,6 +26,18 @@ class LoginActivity : AppCompatActivity() {
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.joinQuestionTextView.setOnClickListener{
+            // JoinActivity로 전환
+            val intent = Intent(this, JoinActivity::class.java)
+            startActivity(intent)
+        }
+
+
+        /**
+         * 아래 코드는 하단 네비게이션 테스트를 위한 코드입니다.
+         * LoginActivity와는 무관한 코드입니다.
+         */
 
         val radialMenuView = findViewById<View>(R.id.radialMenu)
         radialMenuBinding = RadialMenuBinding.bind(radialMenuView)

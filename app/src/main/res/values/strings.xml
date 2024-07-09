@@ -2,11 +2,27 @@
     <string name="app_name">Login</string>
     <!-- Strings used for fragments for navigation -->
 
+    <!-- activity_init.xml -->
+    <string name="initTitleText">환영합니다!</string>
+    <string name="initSubTitleText">세통과 함께 공부해요.</string>
+    <string name="initButtonText">시작하기</string>
+
+    <!-- activity_join.xml -->
+    <string name="joinTitle">회원가입</string>
+    <string name="joinNickname">닉네임</string>
+    <string name="joinDuplicate">중복확인</string>
+    <string name="joinId">아이디</string>
+    <string name="joinPassword">비밀번호</string>
+    <string name="joinName">이름</string>
+    <string name="joinStudentNumber">학번</string>
+    <string name="joinGrade">학년</string>
+
     <!-- activity_login.xml -->
     <string name="loginTitleText">세통</string>
     <string name="loginText">로그인</string>
     <string name="idText">아이디</string>
     <string name="passwordText">비밀번호</string>
+    <string name="joinQuestionText">회원가입 하시겠습니까?</string>
 
     <!-- fragment_question_post.xml -->
     <string name="writeQuestionText">질문 작성</string>
