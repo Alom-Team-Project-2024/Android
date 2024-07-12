@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Login</string>
+    <!-- Strings used for fragments for navigation -->
+
+    <!-- activity_init.xml -->
+    <string name="initTitleText">환영합니다!</string>
+    <string name="initSubTitleText">세통과 함께 공부해요.</string>
+    <string name="initButtonText">시작하기</string>
+
+    <!-- activity_join.xml -->
+    <string name="joinTitle">회원가입</string>
+    <string name="joinNickname">닉네임</string>
+    <string name="joinDuplicate">중복확인</string>
+    <string name="joinId">아이디</string>
+    <string name="joinPassword">비밀번호</string>
+    <string name="joinName">이름</string>
+    <string name="joinStudentNumber">학번</string>
+    <string name="joinGrade">학년</string>
+
+    <!-- activity_login.xml -->
+    <string name="loginTitleText">세통</string>
+    <string name="loginText">로그인</string>
+    <string name="idText">아이디</string>
+    <string name="passwordText">비밀번호</string>
+    <string name="joinQuestionText">회원가입 하시겠습니까?</string>
+
+    <!-- fragment_question_post.xml -->
+    <string name="writeQuestionText">질문 작성</string>
+    <string name="titleText">제목을 입력하세요</string>
+    <string name="contentText">내용을 입력하세요</string>
+    <string name="submitButtonText">등록하기</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- fragment_my_history.xml -->
+    <string name="myHistoryTitleText">인공지능과 빅데이터</string>
+    <string name="myHistorySubTitleText">세종이님이 답변하셨습니다.</string>
+    <string name="questionerName">이수민</string>
+    <string name="questionText">인지빅 8주차 과제 1–2번 풀어봤는데 오류가 떠요 ㅜㅜㅜ</string>
+    <string name="responseName">세종이</string>
+    <string name="responseText">인지빅 8주차 과제 1–2번 풀어봤는데 오류가… 에 대한 답변</string>
+
+    <!-- fragment_my_history_bottom_sheet.xml-->
+    <string name="bottom_dialog_exit">채팅 나가기</string>
+    <string name="bottom_dialog_report">신고하기</string>
+    <string name="bottom_dialog_rating">멘토 평가하기</string>
+
+
+</resources>
