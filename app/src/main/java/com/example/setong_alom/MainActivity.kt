@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         return if(v is LinearLayout || v is ConstraintLayout){
-                            isTouched=true
+                            isTouched = true
                             true
                         }
                         else{
@@ -137,16 +137,16 @@ class MainActivity : AppCompatActivity() {
 
                             else -> {
                                 Log.d("???", "just touch")
+
+                                if(v is LinearLayout) {
+                                    toggleClick(v)
+                                }
                             }
                         }
                         return false
                     }
                     else -> {
                         return false
-
-                        if(v is LinearLayout) {
-                            toggleClick(v)
-                        }
                     }
                 }
                 return false
