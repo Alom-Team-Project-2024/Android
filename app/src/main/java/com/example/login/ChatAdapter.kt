@@ -3,18 +3,18 @@ package com.example.login
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.login.databinding.MychattingSampleBinding
-import com.example.login.databinding.YourchattingSampleBinding
+import com.example.login.databinding.MychatSampleBinding
+import com.example.login.databinding.YourchatSampleBinding
 
-class ChattingAdapter(val chattingList: ArrayList<ChattingData>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ChatAdapter(val chattingList: ArrayList<ChatData>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if(viewType==0) {
-            val binding = YourchattingSampleBinding.inflate(LayoutInflater.from(parent.context),parent, false)
-            YourChattingViewHolder(binding)
+            val binding = YourchatSampleBinding.inflate(LayoutInflater.from(parent.context),parent, false)
+            YourChatViewHolder(binding)
         }
         else {
-            val binding = MychattingSampleBinding.inflate(LayoutInflater.from(parent.context),parent, false)
-            MyChattingViewHolder(binding)
+            val binding = MychatSampleBinding.inflate(LayoutInflater.from(parent.context),parent, false)
+            MyChatViewHolder(binding)
         }
     }
 
@@ -23,10 +23,10 @@ class ChattingAdapter(val chattingList: ArrayList<ChattingData>): RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is YourChattingViewHolder) {
+        if (holder is YourChatViewHolder) {
             holder.chat.text = chattingList[position].chat
         }
-        else if (holder is MyChattingViewHolder) {
+        else if (holder is MyChatViewHolder) {
             holder.chat.text = chattingList[position].chat
         }
     }

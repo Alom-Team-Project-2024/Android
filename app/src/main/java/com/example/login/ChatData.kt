@@ -1,6 +1,6 @@
 package com.example.login
 
-data class ChattingData(
+data class ChatData(
     val chat:String,
     val viewType: Int
 )

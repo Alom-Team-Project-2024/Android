@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChattingListActivity">
+    tools:context=".ChatListActivity">
 
     <ImageView
         android:id="@+id/background"
@@ -19,42 +19,45 @@
         app:srcCompat="@drawable/gradient_background" />
 
     <ImageView
-        android:id="@+id/search"
+        android:id="@+id/search_box"
         android:layout_width="0dp"
         android:layout_height="30dp"
         android:layout_marginStart="13dp"
-        android:layout_marginTop="23dp"
+        android:layout_marginTop="25dp"
         android:layout_marginEnd="13dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chatting_page"
         app:srcCompat="@drawable/round_rectangle" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvchattinglist"
+        android:id="@+id/rcv_chattinglist"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="13dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="13dp"
-        app:layout_constraintBottom_toBottomOf="@+id/background"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_btn"
         app:layout_constraintEnd_toEndOf="@+id/background"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/background"
-        app:layout_constraintTop_toBottomOf="@+id/search" />
+        app:layout_constraintTop_toBottomOf="@+id/search_box" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/search_icon"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/search"
-        app:layout_constraintStart_toStartOf="@+id/search"
-        app:layout_constraintTop_toTopOf="@+id/search"
+        app:layout_constraintBottom_toBottomOf="@+id/search_box"
+        app:layout_constraintStart_toStartOf="@+id/search_box"
+        app:layout_constraintTop_toTopOf="@+id/search_box"
         app:layout_constraintVertical_bias="0.533"
         app:srcCompat="@drawable/search_icon" />
 
     <EditText
+        android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="7dp"
@@ -62,12 +65,35 @@
         android:layout_marginBottom="9dp"
         android:background="@android:color/transparent"
         android:hint="검색하기"
-        android:textColorHint="@color/black"
-        android:textSize="10dp"
-        android:maxLines="1"
         android:imeOptions="actionDone"
-        app:layout_constraintBottom_toBottomOf="@+id/search"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="@+id/search"
+        android:maxLines="1"
+        android:textColorHint="#9D9D9D"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/search_box"
+        app:layout_constraintStart_toEndOf="@+id/search_icon"
+        app:layout_constraintTop_toTopOf="@+id/search_box"
         app:layout_constraintVertical_bias="0.333" />
+
+    <TextView
+        android:id="@+id/chatting_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:text="채팅"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/nav_btn"
+        android:layout_width="24dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/btm_nav" />
 </androidx.constraintlayout.widget.ConstraintLayout>
