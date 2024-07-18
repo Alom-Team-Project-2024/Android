@@ -1,9 +1,9 @@
-package com.example.login
+package com.example.setong_alom
 
 import androidx.recyclerview.widget.RecyclerView
-import com.example.login.databinding.ChattingListBinding
+import com.example.setong_alom.databinding.ChatListBinding
 
-class ChatListViewHolder(binding: ChattingListBinding):RecyclerView.ViewHolder(binding.root) {
+class ChatListViewHolder(binding: ChatListBinding):RecyclerView.ViewHolder(binding.root) {
     val profileImageView = binding.profile
     val username = binding.userName
     val content = binding.content

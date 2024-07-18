@@ -1,10 +1,10 @@
-package com.example.login
+package com.example.setong_alom
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.login.databinding.MychatSampleBinding
-import com.example.login.databinding.YourchatSampleBinding
+import com.example.setong_alom.databinding.MychatSampleBinding
+import com.example.setong_alom.databinding.YourchatSampleBinding
 
 class ChatAdapter(val chattingList: ArrayList<ChatData>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

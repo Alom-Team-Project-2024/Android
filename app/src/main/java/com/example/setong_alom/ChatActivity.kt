@@ -1,4 +1,4 @@
-package com.example.login
+package com.example.setong_alom
 
 import CustomDialog
 import android.content.Intent
@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.login.databinding.ActivityChatBinding
+import com.example.setong_alom.databinding.ActivityChatBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class ChatActivity : AppCompatActivity() {

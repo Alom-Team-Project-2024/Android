@@ -1,4 +1,4 @@
-package com.example.login
+package com.example.setong_alom
 
 data class ChatData(
     val chat:String,

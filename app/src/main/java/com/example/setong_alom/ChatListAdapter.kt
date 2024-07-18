@@ -1,9 +1,9 @@
-package com.example.login
+package com.example.setong_alom
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.login.databinding.ChattingListBinding
+import com.example.setong_alom.databinding.ChatListBinding
 
 class ChatListAdapter(private val chattingList: ArrayList<ChatList>) : RecyclerView.Adapter<ChatListAdapter.ChattingListViewHolder>() {
 
@@ -20,7 +20,7 @@ class ChatListAdapter(private val chattingList: ArrayList<ChatList>) : RecyclerV
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingListViewHolder {
-        val binding = ChattingListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ChatListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ChattingListViewHolder(binding)
     }
 
@@ -33,7 +33,7 @@ class ChatListAdapter(private val chattingList: ArrayList<ChatList>) : RecyclerV
         holder.bind(currentItem)
     }
 
-    inner class ChattingListViewHolder(private val binding: ChattingListBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ChattingListViewHolder(private val binding: ChatListBinding) : RecyclerView.ViewHolder(binding.root) {
         val profileImageView = binding.profile
         val username = binding.userName
         val content = binding.content

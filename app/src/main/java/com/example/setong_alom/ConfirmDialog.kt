@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
-import com.example.login.databinding.ConfirmDialogBinding
+import com.example.setong_alom.databinding.ConfirmDialogBinding
 
 class CustomDialog(context: Context): Dialog(context) {
     private lateinit var itemClickListener: ItemClickListener

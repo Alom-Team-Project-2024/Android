@@ -1,4 +1,4 @@
-package com.example.login
+package com.example.setong_alom
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
