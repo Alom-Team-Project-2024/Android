@@ -1,20 +1,26 @@
 package com.example.setong_alom
 
 import android.animation.ValueAnimator
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnticipateOvershootInterpolator
+import android.widget.Adapter
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.constraintlayout.helper.widget.Carousel
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import java.time.OffsetDateTime
 
 class MainActivity : AppCompatActivity() {
-
+    //하단 네비게이션
     private lateinit var imageButtonCenter: ImageButton
 
     private lateinit var constraintLayoutMenu: ConstraintLayout
@@ -34,17 +40,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.nav)
 
         //메뉴 제목 리스트에 추가
-        menuTitleList.add("home")
-        menuTitleList.add("home")
-        menuTitleList.add("home")
-        menuTitleList.add("home")
-        menuTitleList.add("home")
-        menuTitleList.add("home")
+        menuTitleList.add("홈")
+        menuTitleList.add("구인")
+        menuTitleList.add("질문")
+        menuTitleList.add("my")
+        menuTitleList.add("채팅")
+        menuTitleList.add("알림")
 
 
         findView()
         setListener()
     }
+
 
     private fun findView(){
         imageButtonCenter = findViewById(R.id.imageButtonCenter)
@@ -158,7 +165,13 @@ class MainActivity : AppCompatActivity() {
     private fun toggleClick(currentView: LinearLayout){
         for(i in 0 until viewList.size){
             if(currentView.id == viewList[i].id){
-                Toast.makeText(this,"click menu ${menuTitleList[i]}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "click menu ${menuTitleList[i]}", Toast.LENGTH_SHORT).show()
+
+                // 특정 메뉴를 클릭했을 때 QuestionBoardActivity로 이동
+                if (menuTitleList[i] == "질문") {
+                    val intent = Intent(this, QuestionBoardActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
     }
