@@ -1,25 +1,23 @@
 package com.example.setong_alom
 
+import QuestionPostService
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
 import com.google.gson.JsonObject
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+
 class QuestionPostFragment : Fragment() {
 
     private var param1: String? = null
@@ -29,8 +27,7 @@ class QuestionPostFragment : Fragment() {
     private lateinit var contentEditText: EditText
     private lateinit var submitButton: ImageButton
 
-    private val client = OkHttpClient()
-    private val gson = Gson()
+    private val service = RetrofitClient.instance.create(QuestionPostService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +36,7 @@ class QuestionPostFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,63 +57,39 @@ class QuestionPostFragment : Fragment() {
     }
 
     private fun sendPostRequest() {
-        val userId = "22222222"
+        val token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjIyMDExMzE1Iiwicm9sZSI6IlVTRVIiLCJuaWNrbmFtZSI6InVzZXIyIiwiaWF0IjoxNzIyNjYyODE2LCJleHAiOjE3MjI2NjQwMTZ9.DB5BO63wGeXtXes2k3tehRM47x6yArr7eRvLVfFJGt8" // Bearer 인증을 위한 토큰
         val subject = titleEditText.text.toString()
-        val content = contentEditText.text.toString()
-        val image = "URL" // 실제 이미지 URL로
+        val text = contentEditText.text.toString()
 
-        //json 객체 생성, 데이터 추가
-        val jsonObject = JsonObject().apply {
-            addProperty("userId", userId)
-            addProperty("subject", subject)
-            addProperty("content", content)
-            addProperty("image", image)
+        // 제목과 내용을 확인하고 비어 있지 않도록 체크
+        if (subject.isBlank() || text.isBlank()) {
+            Toast.makeText(context, "Please fill in both fields", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        //requestBody 생성
-        val requestBody = gson.toJson(jsonObject)
-            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val jsonObject = JsonObject().apply {
+            addProperty("subject", subject)
+            addProperty("text", text)
+        }
 
-        //request 객체 생성, 서버 URL 설정
-        val request = Request.Builder()
-            .url("https://your-server-url.com/api/posts") // 실제 서버 URL
-            .post(requestBody)
-            .build()
-
-        //비동기적으로 요청을 서버에 보냄
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("POST_REQUEST", "Failed to send request", e)
-                activity?.runOnUiThread {
-                    Toast.makeText(context, "Request failed", Toast.LENGTH_SHORT).show()
+        service.postQuestion(token, jsonObject).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "Post submitted successfully", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("POST_REQUEST", "Error: ${response.code()}")
+                    Toast.makeText(context, "Request failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    activity?.runOnUiThread {
-                        Toast.makeText(context, "Post submitted successfully", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                } else {
-                    Log.e("POST_REQUEST", "Error: ${response.code}")
-                    activity?.runOnUiThread {
-                        Toast.makeText(context, "Request failed", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("POST_REQUEST", "Failed to send request", t)
+                Toast.makeText(context, "Request failed: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment QuestionPost.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             QuestionPostFragment().apply {
