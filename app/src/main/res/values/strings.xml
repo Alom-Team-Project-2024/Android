@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Alom_Team_Project</string>
+    <string name="login"> 로그인 방식은 학사정보시스템과 동일합니다.</string>
 </resources>
+
