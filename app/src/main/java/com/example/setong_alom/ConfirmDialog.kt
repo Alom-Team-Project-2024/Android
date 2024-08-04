@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import com.example.setong_alom.databinding.ConfirmDialogBinding
 
-class CustomDialog(context: Context): Dialog(context) {
+class CustomDialogC(context: Context): Dialog(context) {
     private lateinit var itemClickListener: ItemClickListener
     private lateinit var binding: ConfirmDialogBinding
 

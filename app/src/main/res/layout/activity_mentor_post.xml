@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MentorPostActivity">
+
+    <ImageView
+        android:id="@+id/background_img"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/background" />
+
+    <ImageView
+        android:id="@+id/back_icon"
+        android:layout_width="18dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back_icon" />
+
+    <ImageView
+        android:id="@+id/background_board"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="108dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background_img"
+        app:srcCompat="@drawable/up_round_rectangle" />
+
+    <TextView
+        android:id="@+id/mentor_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="49dp"
+        android:text="구인 게시판"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/background_img"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background_img"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/post_profile"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background_board"
+        app:srcCompat="@drawable/profile" />
+
+    <TextView
+        android:id="@+id/post_user_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="10dp"
+        android:text="이수민"
+        android:textSize="11dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/post_profile"
+        app:layout_constraintTop_toTopOf="@+id/background_board" />
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        android:text="인공지능과 빅데이터 과외해 주실 분 구합니다."
+        android:textSize="12dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_profile" />
+
+    <TextView
+        android:id="@+id/post_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        android:text="프로그램에 대한 지식이 없어 구해봅니다. 채팅 부탁드립니다."
+        android:textSize="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_title" />
+
+    <ImageView
+        android:id="@+id/like"
+        android:layout_width="16dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_content"
+        app:srcCompat="@drawable/like_icon" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/chat_btn"
+        android:layout_width="48dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/chat_btn"
+        android:text="채팅하기"
+        android:textSize="7dp"
+        app:layout_constraintStart_toEndOf="@+id/like_count"
+        app:layout_constraintTop_toBottomOf="@+id/post_content" />
+
+    <TextView
+        android:id="@+id/like_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="21dp"
+        android:text="1"
+        android:textSize="8dp"
+        app:layout_constraintStart_toEndOf="@+id/like"
+        app:layout_constraintTop_toBottomOf="@+id/post_content" />
+
+    <TextView
+        android:id="@+id/post_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginRight="34dp"
+        android:text="2주 전"
+        android:textSize="7dp"
+        android:textColor="#9D9D9D"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background_board" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,20 +1,19 @@
-package com.example.setong_alom
-
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.setong_alom.ChatList
 import com.example.setong_alom.databinding.ChatListBinding
 
-class ChatListAdapter(private val chattingList: ArrayList<ChatList>) : RecyclerView.Adapter<ChatListAdapter.ChattingListViewHolder>() {
+class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerView.Adapter<ChatListAdapter.ChattingListViewHolder>() {
 
-    // 클릭 리스너 인터페이스 정의
+    private var filteredList: ArrayList<ChatList> = ArrayList(originalList)
+
     interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
 
     private var listener: OnItemClickListener? = null
 
-    // 클릭 리스너 설정 메서드
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
@@ -25,11 +24,11 @@ class ChatListAdapter(private val chattingList: ArrayList<ChatList>) : RecyclerV
     }
 
     override fun getItemCount(): Int {
-        return chattingList.size
+        return filteredList.size
     }
 
     override fun onBindViewHolder(holder: ChattingListViewHolder, position: Int) {
-        val currentItem = chattingList[position]
+        val currentItem = filteredList[position]
         holder.bind(currentItem)
     }
 
@@ -54,5 +53,22 @@ class ChatListAdapter(private val chattingList: ArrayList<ChatList>) : RecyclerV
             content.text = item.content
             time.text = item.time
         }
+    }
+
+    // 필터 메소드
+    fun filter(query: String) {
+        val lowerCaseQuery = query.toLowerCase()
+        filteredList = if (query.isEmpty()) {
+            ArrayList(originalList)
+        } else {
+            val resultList = ArrayList<ChatList>()
+            for (item in originalList) {
+                if (item.name.toLowerCase().contains(lowerCaseQuery)) {
+                    resultList.add(item)
+                }
+            }
+            resultList
+        }
+        notifyDataSetChanged()
     }
 }

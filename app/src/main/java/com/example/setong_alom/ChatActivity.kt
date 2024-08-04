@@ -1,17 +1,23 @@
 package com.example.setong_alom
 
-import CustomDialog
+import CustomDialogC
+import CustomDialogR
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.widget.Button
+import android.widget.RatingBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.setong_alom.databinding.ActivityChatBinding
+import com.example.setong_alom.databinding.AssessDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var assessDialog: AssessDialogBinding
     private val chattingList = ArrayList<ChatData>()
     private lateinit var adapter: ChatAdapter
 
@@ -61,26 +67,39 @@ class ChatActivity : AppCompatActivity() {
         val bottomSheetView = layoutInflater.inflate(R.layout.chat_btm_sheet, null)
         bottomSheetDialog.setContentView(bottomSheetView)
 
+        // 평가하기 다이얼로그
         bottomSheetView.findViewById<AppCompatButton>(R.id.rating_btn).setOnClickListener {
             bottomSheetDialog.dismiss()
+            showRatingDialog()
         }
 
+        // 매칭 여부 확인 다이얼로그
         bottomSheetView.findViewById<AppCompatButton>(R.id.success_btn).setOnClickListener {
             bottomSheetDialog.dismiss()
-            showSuccessDialog()
+            showConfirmDialog()
         }
     }
 
-    private fun showSuccessDialog() {
-        val dialogViewS = layoutInflater.inflate(R.layout.confirm_dialog, null)
-        val dialogS = CustomDialog(this)
+    private fun showConfirmDialog() {
+        val dialogViewC = layoutInflater.inflate(R.layout.confirm_dialog, null)
+        val dialogC = CustomDialogC(this)
 
-        dialogS.setItemClickListener(object : CustomDialog.ItemClickListener {
+        dialogC.setItemClickListener(object : CustomDialogC.ItemClickListener {
             override fun onClick(message: String) {
                 //
             }
         })
-        dialogS.show()
+        dialogC.show()
     }
 
+    private fun showRatingDialog() {
+        val dialogR = CustomDialogR(this)
+        dialogR.setContentView(R.layout.assess_dialog)
+
+        val ratingBar = dialogR.findViewById<RatingBar>(R.id.ratingBar)
+        val button3 = dialogR.findViewById<Button>(R.id.button3)
+        val buttonX = dialogR.findViewById<Button>(R.id.buttonX)
+
+        dialogR.show()
+    }
 }
