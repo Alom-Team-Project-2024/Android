@@ -1,88 +1,104 @@
 package com.example.setong_alom
 
-import androidx.appcompat.app.AppCompatActivity
+import QuestionPostService
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
 import android.widget.ImageButton
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.setong_alom.databinding.ActivityQuestionBoardBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class QuestionBoardActivity : AppCompatActivity() {
 
-    private lateinit var questionRecyclerView: RecyclerView
+    private lateinit var binding: ActivityQuestionBoardBinding
+    private lateinit var adapter: QuestionAdapterClass
     private lateinit var questionList: ArrayList<QuestionClass>
-    lateinit var nicknameList: Array<String>
-    lateinit var postTimeList: Array<String>
-    lateinit var subjectNameList: Array<String>
-    lateinit var contentList: Array<String>
-    lateinit var questionImageList: Array<Int>
-    lateinit var likeNumList: Array<Int>
-    lateinit var commentNumList: Array<Int>
-    lateinit var scrapNumList: Array<Int>
+    private lateinit var questionService: QuestionPostService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_question_board)
+        binding = ActivityQuestionBoardBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        nicknameList = arrayOf(
-            "이수민"
-        )
-        postTimeList = arrayOf(
-            "1분 전"
-        )
-        subjectNameList= arrayOf(
-            "인공지능과 빅데이터"
-        )
-        contentList = arrayOf(
-            "어쩌구저쩌구"
-        )
-        questionImageList = arrayOf(
-            R.drawable.ex_image
-        )
-        likeNumList = arrayOf(
-            1
-        )
-        commentNumList = arrayOf(
-            2
-        )
-        scrapNumList = arrayOf(
-            3
-        )
-
-        questionRecyclerView = findViewById(R.id.QuestionRecyclerView)
-        questionRecyclerView.layoutManager = LinearLayoutManager(this)
-        questionRecyclerView.setHasFixedSize(true)
-
+        // questionList 초기화
         questionList = arrayListOf()
-        getData()
 
-        val writeButton: ImageButton = findViewById(R.id.writingButton)
-        writeButton.setOnClickListener {
+        // questionService 초기화
+        questionService = RetrofitClient.instance.create(QuestionPostService::class.java)
+
+        // RecyclerView 어댑터 및 레이아웃 매니저 설정
+        setupRecyclerView()
+
+        // 데이터 가져오기
+        fetchData()
+
+        binding.writingButton.setOnClickListener {
             openPostQuestionFragment()
         }
+
+        // 검색 텍스트 변화 감지
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 텍스트 변화 전의 행동을 정의
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 텍스트가 변경될 때마다 어댑터의 필터링 메소드 호출
+                adapter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // 텍스트 변화 후의 행동을 정의
+            }
+        })
     }
 
-    private fun getData() {
-        for (i in questionImageList.indices) {
-            val quesClass = QuestionClass(
-                nicknameList[i],
-                postTimeList[i],
-                subjectNameList[i],
-                contentList[i],
-                questionImageList[i],
-                likeNumList[i],
-                commentNumList[i],
-                scrapNumList[i]
-            )
-            questionList.add(quesClass)
-        }
-
-        questionRecyclerView.adapter = QuestionAdapterClass(questionList)
+    private fun setupRecyclerView() {
+        adapter = QuestionAdapterClass(questionList)
+        binding.QuestionRecyclerView.adapter = adapter
+        binding.QuestionRecyclerView.layoutManager = LinearLayoutManager(this)
     }
+
+    private fun fetchData() {
+        val token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjIyMDExMzE1Iiwicm9sZSI6IlVTRVIiLCJuaWNrbmFtZSI6InVzZXIxMjAiLCJpYXQiOjE3MjI5MzI3MjEsImV4cCI6MTcyMjkzMzkyMX0.nk0GnSI2TA2b2Enjnyx7ntwNl5bReCA9JhUvGkGAVEg"
+
+        Log.d("FETCH_DATA", "Fetching data with token: $token")
+
+        questionService.getQuestions(token).enqueue(object : Callback<List<QuestionClass>> {
+            override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
+                if (response.isSuccessful) {
+                    Log.d("FETCH_DATA", "Data fetched successfully")
+                    response.body()?.let { questions ->
+                        questionList.clear()
+                        questionList.addAll(questions)
+                        adapter.filter(binding.etSearch.text.toString())  // 현재 검색어로 필터링
+                    }
+                } else {
+                    Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(this@QuestionBoardActivity, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<QuestionClass>>, t: Throwable) {
+                Log.e("FETCH_DATA", "Failed to fetch data", t)
+                Toast.makeText(this@QuestionBoardActivity, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
     private fun openPostQuestionFragment() {
         val fragment = QuestionPostFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.questionViewPage, fragment)
-            .addToBackStack(null) // 뒤로 가기 버튼을 사용해 Fragment를 제거하고 이전 상태로
+            .addToBackStack(null)
             .commit()
     }
 }

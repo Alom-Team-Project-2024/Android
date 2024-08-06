@@ -57,9 +57,9 @@ class QuestionPostFragment : Fragment() {
     }
 
     private fun sendPostRequest() {
-        val token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjIyMDExMzE1Iiwicm9sZSI6IlVTRVIiLCJuaWNrbmFtZSI6InVzZXIyIiwiaWF0IjoxNzIyNjYyODE2LCJleHAiOjE3MjI2NjQwMTZ9.DB5BO63wGeXtXes2k3tehRM47x6yArr7eRvLVfFJGt8" // Bearer 인증을 위한 토큰
+        val token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjIyMDExMzE1Iiwicm9sZSI6IlVTRVIiLCJuaWNrbmFtZSI6InVzZXIxMjAiLCJpYXQiOjE3MjI5MzEyMzUsImV4cCI6MTcyMjkzMjQzNX0.CjFTMasGZhbynp-FHiDRi8cG0vX6xEyJ6lwySjwWv5k" // Bearer 인증을 위한 토큰
         val subject = titleEditText.text.toString()
-        val text = contentEditText.text.toString()
+        val text = contentEditText.text.toString() //서버 키가 text임
 
         // 제목과 내용을 확인하고 비어 있지 않도록 체크
         if (subject.isBlank() || text.isBlank()) {
