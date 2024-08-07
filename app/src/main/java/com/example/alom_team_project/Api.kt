@@ -15,6 +15,9 @@ interface UserApi {
     @POST("/users/login") // 동일한 엔드포인트로 사용자 정보 전송 및 JWT 토큰 요청
     fun requestJwtToken(@Body userDTO: AuthUserDTO): Call<JwtResponse>
 
-    @POST("/users/login") // 동일한 엔드포인트로 정보 전송
+    @POST("/users/login") // 동일한 엔드포인트로 jwt발급 성공 여부 전송
     fun sendSuccessStatus(@Body successStatus: ServerResponse): Call<ServerResponse>
+
+    @POST("/users/login") //프로필 변경사항 전송
+    fun updateProfile(@Body nickname: Map<String, String>): Call<Void>
 }
