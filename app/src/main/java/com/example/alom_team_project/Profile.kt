@@ -34,14 +34,8 @@ class ProfileActivity : AppCompatActivity() {
         return sharedPref.getString("student_id", null)
     }
 
-    private fun updateProfile(nickname: String, studentId: String?) {
-
-        if (studentId == null) {
-            Toast.makeText(this, "학번 불러오기 실패.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val profileData = mapOf("nickname" to nickname, "studentId" to studentId)
+    private fun updateProfile(nickname: String, studentId: String) {
+        val profileData = mapOf("username" to studentId, "name" to nickname)
 
         RetrofitClient.userApi.updateProfile(profileData).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
