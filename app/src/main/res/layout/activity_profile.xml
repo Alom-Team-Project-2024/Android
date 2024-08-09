@@ -51,7 +51,7 @@
         android:background="@drawable/group_150"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/img_bottom"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
         android:layout_marginTop="110px"
         android:elevation="20dp"
         app:layout_constraintBottom_toTopOf="@id/rel_nickname"
