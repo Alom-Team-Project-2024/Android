@@ -32,3 +32,7 @@ data class Reply(
     @SerializedName("writer") val writer: String,
     @SerializedName("likes") val likes: Int
 )
+
+data class PostResponse(
+    val id: Long
+)

@@ -67,8 +67,7 @@ class QuestionBoardActivity : AppCompatActivity() {
     }
 
     private fun fetchData() {
-        val token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjIyMDExMzE1Iiwicm9sZSI6IlVTRVIiLCJuaWNrbmFtZSI6InVzZXIxMjAiLCJpYXQiOjE3MjI5MzI3MjEsImV4cCI6MTcyMjkzMzkyMX0.nk0GnSI2TA2b2Enjnyx7ntwNl5bReCA9JhUvGkGAVEg"
-
+        val token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjIyMDExMzc1Iiwicm9sZSI6IlVTRVIiLCJuaWNrbmFtZSI6InVzZXI3MDIiLCJpYXQiOjE3MjM3MTU4MDUsImV4cCI6MTcyMzcxNzYwNX0.42NmgXInVMSz_oBNk9AdmRghafPvgk61o74BouI04vM"
         Log.d("FETCH_DATA", "Fetching data with token: $token")
 
         questionService.getQuestions(token).enqueue(object : Callback<List<QuestionClass>> {

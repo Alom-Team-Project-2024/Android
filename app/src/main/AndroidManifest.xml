@@ -5,6 +5,12 @@
     <!-- 권한 추가: 인터넷 접근 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+
+    <!-- 갤럭리 접근 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+
     <application
         android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"

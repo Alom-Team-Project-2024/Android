@@ -29,10 +29,10 @@ class QuestionAdapterClass(private val questionList: ArrayList<QuestionClass>) :
             binding.subjectName.text = question.subject
             binding.content.text = question.text
 
-            // 이미지 로딩 및 뷰 가시성 설정
-            if (!question.user.profileImage.isNullOrEmpty()) {
+            val user = question.user
+            if (user != null && !user.profileImage.isNullOrEmpty()) {
                 Glide.with(binding.questionImage.context)
-                    .load(question.user.profileImage)
+                    .load(user.profileImage)
                     .into(binding.questionImage)
                 binding.questionImage.visibility = View.VISIBLE
             } else {
