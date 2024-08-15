@@ -1,5 +1,6 @@
 package com.example.alom_team_project
 
-data class JwtResponse(
+data class
+JwtResponse(
     val token: String
 )
