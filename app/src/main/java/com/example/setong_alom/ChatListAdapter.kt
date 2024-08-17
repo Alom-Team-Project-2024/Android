@@ -55,20 +55,24 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
         }
     }
 
+
+
     // 필터 메소드
     fun filter(query: String) {
-        val lowerCaseQuery = query.toLowerCase()
-        filteredList = if (query.isEmpty()) {
-            ArrayList(originalList)
+        val normalizedQuery = query.replace("\\s".toRegex(), "").lowercase()
+        filteredList.clear() // 필터링할 때 리스트를 비웁니다.
+
+        if (normalizedQuery.isEmpty()) {
+            filteredList.addAll(originalList) // 원본 리스트를 추가
         } else {
-            val resultList = ArrayList<ChatList>()
             for (item in originalList) {
-                if (item.name.toLowerCase().contains(lowerCaseQuery)) {
-                    resultList.add(item)
+                val normalizedItemName = item.name.replace("\\s".toRegex(), "").lowercase()
+                if (normalizedItemName.contains(normalizedQuery)) {
+                    filteredList.add(item)
                 }
             }
-            resultList
         }
-        notifyDataSetChanged()
+        notifyDataSetChanged() // 데이터 변경 알리기
     }
+
 }
