@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/response_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- 답변자 프로필 -->
+    <ImageView
+        android:id="@+id/answerer_profile"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ex_image"
+        android:background="@android:color/transparent"
+
+        app:layout_constraintTop_toTopOf="@id/response_container"
+        app:layout_constraintStart_toStartOf="@id/response_container"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        />
+
+    <!-- 답변자 닉네임 -->
+    <TextView
+        android:id="@+id/answerer_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/questionerName"
+        android:textStyle="bold"
+
+        app:layout_constraintTop_toTopOf="@id/answerer_profile"
+        app:layout_constraintBottom_toBottomOf="@id/answerer_profile"
+        app:layout_constraintStart_toEndOf="@id/answerer_profile"
+
+        android:layout_marginStart="5dp"
+        />
+
+    <!-- 답변 시간 -->
+    <TextView
+        android:id="@+id/answer_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="61dp"
+
+        android:layout_marginEnd="20dp"
+        android:text="@string/responseTime"
+        android:textSize="10sp"
+
+        app:layout_constraintEnd_toEndOf="@id/response_container"
+        app:layout_constraintTop_toTopOf="@id/response_container" />
+
+    <!-- 답변 내용 -->
+    <TextView
+        android:id="@+id/answer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/questionText"
+        android:textSize="12sp"
+
+        app:layout_constraintTop_toBottomOf="@id/answerer_profile"
+        app:layout_constraintStart_toStartOf="@id/answerer_profile"
+        android:layout_marginTop="10dp"
+        />
+
+    <!-- 좋,댓,스 -->
+    <ImageButton
+        android:id="@+id/like_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="4dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/like_button"
+        app:layout_constraintHorizontal_bias="0.411"
+        app:layout_constraintStart_toStartOf="@id/answer_text"
+        app:layout_constraintTop_toBottomOf="@+id/answer_text" />
+
+    <TextView
+        android:id="@+id/likeNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="14dp"
+        android:text="1"
+        android:textSize="8sp"
+        app:layout_constraintStart_toEndOf="@id/like_button"
+        app:layout_constraintTop_toBottomOf="@+id/answer_text" />
+
+
+    <!-- 질문 사진 -->
+    <ImageView
+        android:id="@+id/answer_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="7dp"
+        android:src="@drawable/rounded_edittext_background"
+        app:layout_constraintEnd_toEndOf="@id/response_container"
+
+        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintStart_toStartOf="@id/response_container"
+        app:layout_constraintTop_toBottomOf="@id/like_button"
+        app:layout_constraintWidth_percent="0.9" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
