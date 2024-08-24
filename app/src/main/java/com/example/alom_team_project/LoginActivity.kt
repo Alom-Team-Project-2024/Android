@@ -37,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
                         if (auth?.isAuth == "true") {
                             val userData = auth.body
                             showSuccess("로그인 성공!")
-                            requestJwtToken(userData)
+                            requestJwtToken(userData, id)
                         } else {
                             showError("로그인 실패: 인증되지 않았습니다.")
                         }
@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestJwtToken(userData: SejongAuthResponseResultBodyJson) {
+    private fun requestJwtToken(userData: SejongAuthResponseResultBodyJson, id: String) {
         // 한국어 상태 값을 영어로 매핑
         val statusMap = mapOf(
             "재학" to RegistrationStatus.ATTENDING,
@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
 
         // AuthUserDTO 생성
         val userDTO = AuthUserDTO(
-            username = binding.etId.text.toString(),
+            username = id,  // ID를 username으로 사용
             name = userData.name,
             major = userData.major,
             studentGrade = userData.grade,
@@ -83,12 +83,12 @@ class LoginActivity : AppCompatActivity() {
                     val token = authHeader?.removePrefix("Bearer ")
 
                     if (!token.isNullOrEmpty()) {
-                        // JWT 저장
-                        saveJwtToken(token)
+                        // JWT와 username 저장
+                        saveUserData(token, id)
                         JwtProvider.setToken(token)
                         showSuccess("JWT 발급 성공!")
-                        sendSuccessStatus(true)
-                        navigateToMainActivity()  // 메인 페이지로 이동
+                        //navigateToMainActivity()
+                        navigateToProfileActivity()  // 프로필 설정 페이지 이동
                     } else {
                         showError("JWT 발급 실패: 토큰이 없습니다.")
                     }
@@ -104,28 +104,19 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    private fun sendSuccessStatus(success: Boolean) {
-        val successStatus = ServerResponse(success)
-
-        // 성공 여부를 서버에 전송
-        RetrofitClient.userApi.sendSuccessStatus(successStatus).enqueue(object : Callback<ServerResponse> {
-            override fun onResponse(call: Call<ServerResponse>, response: Response<ServerResponse>) {
-                Log.d("DEBUG", "success")
-            }
-
-            override fun onFailure(call: Call<ServerResponse>, t: Throwable) {
-                Log.e("성공 여부", "왜 실패", t)
-                showError("성공 여부 전송 실패: 네트워크 오류가 발생했습니다.")
-            }
-        })
-    }
-
-    private fun saveJwtToken(token: String) {
+    private fun saveUserData(token: String, username: String) {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         with(sharedPref.edit()) {
             putString("jwt_token", token)
-            apply()
+            putString("username", username)
+            apply() // 비동기적으로 변경사항을 저장
         }
+    }
+
+    private fun navigateToProfileActivity() {
+        val intent = Intent(this@LoginActivity, ProfileActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun navigateToMainActivity() {
