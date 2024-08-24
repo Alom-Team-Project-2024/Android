@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <!-- 네트워크 및 Wi-Fi 관련 권한 추가 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 인터넷 사용 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Wi-Fi 상태 접근 -->
@@ -10,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 네트워크 상태 접근 -->
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,7 +22,7 @@
         tools:targetApi="31">
         <!-- network 코드 추가 -->
 
-        <!-- 로그인 첫페이지로 설정-->
+        <!-- 로그인을 첫페이지로 -->
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -33,6 +33,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 메인페이지를 위한 액티비티 추가 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Alom_Team_Project" />
+
+
+        <!-- 마이페이지를 위한 액티비티 추가 -->
+        <activity
+            android:name=".MypageActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Alom_Team_Project" />
+
+        <!-- 프로필 페이지를 위한 액티비티 추가 -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="true"
+            android:label="profile_page_label"
+            android:theme="@style/Theme.Alom_Team_Project" />
 
     </application>
 

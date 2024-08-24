@@ -1,11 +1,16 @@
 package com.example.alom_team_project
 
+import QuestionPostResponse
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.databinding.ActivityMainBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var recordList: ArrayList<HomeRecordData>
     private lateinit var recordAdapter: HomeRecordAdapter
@@ -16,28 +21,60 @@ class MainActivity : ComponentActivity() {
         setContentView(binding.root)
 
         recordList = ArrayList()
-        recordList.add(
-            HomeRecordData(
-                "인공지능과 빅데이터",
-                "답변완료",
-                "https://example.com/image1.jpg", // 이미지 URL 예시
-                "세종이멘토",
-                "이것은 답변 예시입니다."
-            )
-        )
-        recordList.add(
-            HomeRecordData(
-                "현대인의 정신건강과 자기발견",
-                "진행중",
-                "https://example.com/image1.jpg", // 이미지 URL 예시
-                "세종이멘토",
-                "이것은 답변 예시입니다."
-            )
-        )
-
         recordAdapter = HomeRecordAdapter(recordList)
         binding.rvRecord.adapter = recordAdapter
         binding.rvRecord.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
+        fetchQuestions()
+    }
+
+    private fun fetchQuestions() {
+        val token = getJwtToken()
+        if (token != null) {
+            RetrofitClient.userApi.getQuestions("Bearer $token").enqueue(object : Callback<List<QuestionPostResponse>> {
+                override fun onResponse(call: Call<List<QuestionPostResponse>>, response: Response<List<QuestionPostResponse>>) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { questions ->
+                            updateRecordList(questions)
+                        }
+                    } else {
+                        Toast.makeText(this@MainActivity, "Failed to load questions", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<QuestionPostResponse>>, t: Throwable) {
+                    Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+    }
+
+    private fun updateRecordList(questions: List<QuestionPostResponse>) {
+        recordList.clear()
+        questions.forEach { question ->
+            val replies = question.replies ?: emptyList() // replies가 null일 경우 빈 리스트로 처리
+            val images = question.images ?: emptyList()   // images가 null일 경우 빈 리스트로 처리
+
+            val mentorName = if (replies.isNotEmpty()) replies[0].title else "No replies"
+            val answerText = if (replies.isNotEmpty()) replies[0].text else "No answer"
+            val imageUrl = if (images.isNotEmpty()) images[0].imageUrl else ""
+
+            recordList.add(
+                HomeRecordData(
+                    title = question.subject,
+                    status = "진행중",  // 상태를 기본적으로 '진행중'으로 설정
+                    imageUrl = imageUrl,
+                    mentorName = mentorName,
+                    answer = answerText
+                )
+            )
+        }
+        recordAdapter.notifyDataSetChanged()
+    }
+
+
+    private fun getJwtToken(): String? {
+        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+        return sharedPref.getString("jwt_token", null)
     }
 }
