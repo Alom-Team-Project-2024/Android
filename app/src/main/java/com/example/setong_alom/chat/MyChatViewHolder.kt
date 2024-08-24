@@ -1,4 +1,4 @@
-package com.example.setong_alom
+package com.example.setong_alom.chat
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.setong_alom.databinding.MychatSampleBinding

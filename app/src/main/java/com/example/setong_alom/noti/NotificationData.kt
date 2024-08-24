@@ -1,4 +1,4 @@
-package com.example.setong_alom
+package com.example.setong_alom.noti
 
 data class NotificationData(
     var content: String,

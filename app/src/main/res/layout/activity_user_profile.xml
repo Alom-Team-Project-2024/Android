@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserProfileActivity">
+    tools:context=".dialog.UserProfileActivity">
 
     <ImageView
         android:id="@+id/background"
         android:layout_width="0dp"
         android:layout_height="150dp"
+        android:background="#F0F0F0"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/background" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/back_icon"
@@ -24,7 +25,7 @@
         android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_icon" />
+        app:srcCompat="@drawable/back_button" />
 
     <ImageView
         android:id="@+id/background_board"
@@ -94,19 +95,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_info"
-        app:srcCompat="@drawable/round_rectangle3" />
+        app:srcCompat="@drawable/round_rectangle6" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/ok_btn"
         android:layout_width="147dp"
         android:layout_height="34dp"
-        android:layout_marginBottom="51dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/round_rectangle2"
         android:text="확인"
         android:textSize="13dp"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/round_rectangle2"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView6"
@@ -121,13 +123,26 @@
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="282dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="28dp"
         app:layout_constraintBottom_toBottomOf="@+id/temperature_box"
-        app:layout_constraintEnd_toEndOf="@+id/temperature_box"
-        app:layout_constraintHorizontal_bias="0.17"
+        app:layout_constraintEnd_toStartOf="@id/tem_num"
         app:layout_constraintStart_toStartOf="@+id/temperature_box" />
+
+    <TextView
+        android:id="@+id/tem_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="24dp"
+        android:text="100"
+        app:layout_constraintBottom_toBottomOf="@+id/temperature_box"
+        app:layout_constraintEnd_toEndOf="@+id/temperature_box"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/progressBar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,8 +47,6 @@ android {
         resources.pickFirsts.add("META-INF/spring.tooling")
         resources.pickFirsts.add("META-INF/license.txt")
         resources.pickFirsts.add("META-INF/notice.txt")
-
-
     }
 }
 
@@ -60,6 +58,10 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     // OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.2.1")
@@ -82,4 +84,17 @@ dependencies {
     // Spring
     implementation("org.springframework:spring-messaging:5.3.9")
     implementation("org.springframework:spring-websocket:5.3.9")
+
+    implementation("org.hildan.krossbow:krossbow-stomp-core:7.2.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:7.2.0")
+    implementation("org.hildan.krossbow:krossbow-stomp-moshi:7.2.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+    //
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+
 }

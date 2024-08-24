@@ -17,16 +17,16 @@
         android:theme="@style/Theme.Setong_alom"
         tools:targetApi="31">
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".dialog.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ChatActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ChatListActivity"
+            android:name=".chat.ChatFragment"
             android:exported="false" />
         <activity
             android:name=".MentorPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chatlist.ChatListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NotificationActivity"
+            android:name=".noti.NotificationActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -1,7 +1,8 @@
+package com.example.setong_alom.chatlist
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.setong_alom.ChatList
 import com.example.setong_alom.databinding.ChatListBinding
 
 class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerView.Adapter<ChatListAdapter.ChattingListViewHolder>() {
@@ -9,7 +10,7 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
     private var filteredList: ArrayList<ChatList> = ArrayList(originalList)
 
     interface OnItemClickListener {
-        fun onItemClick(position: Int)
+        fun onItemClick(chatRoomId: Long)
     }
 
     private var listener: OnItemClickListener? = null
@@ -42,7 +43,8 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    listener?.onItemClick(position)
+                    val chatRoomId = filteredList[position].chatRoomId // chatRoomId 가져오기
+                    listener?.onItemClick(chatRoomId) // chatRoomId 전달
                 }
             }
         }
@@ -54,8 +56,6 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
             time.text = item.time
         }
     }
-
-
 
     // 필터 메소드
     fun filter(query: String) {
@@ -74,5 +74,4 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
         }
         notifyDataSetChanged() // 데이터 변경 알리기
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.setong_alom
+package com.example.setong_alom.chat
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -1,6 +1,5 @@
-package com.example.setong_alom
+package com.example.setong_alom.noti
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager

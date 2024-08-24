@@ -9,11 +9,11 @@
     <ImageView
         android:id="@+id/background_img"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="179dp"
+        android:background="#991391B4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/background" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/back_icon"
@@ -24,17 +24,19 @@
         android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_icon" />
+        app:srcCompat="@drawable/back_button" />
 
     <ImageView
         android:id="@+id/background_board"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="137dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/background_img"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/up_round_rectangle" />
 
     <TextView
@@ -44,6 +46,7 @@
         android:layout_marginTop="49dp"
         android:text="구인 게시판"
         android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/background_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -115,7 +118,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_content"
-        app:srcCompat="@drawable/like_icon" />
+        app:srcCompat="@drawable/star_icon" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/chat_btn"
@@ -154,5 +157,27 @@
         android:textColor="#9D9D9D"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background_board" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:background="@drawable/transparent"
+        app:tabSelectedTextColor="#000000"
+        app:tabIndicatorColor="#9D9D9D"
+        app:layout_constraintBottom_toTopOf="@+id/background_board"
+        app:layout_constraintStart_toStartOf="parent">>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="멘토 구해요" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="멘티 구해요" />
+
+    </com.google.android.material.tabs.TabLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,9 @@
-package com.example.setong_alom
+package com.example.setong_alom.noti
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.setong_alom.R
 import com.example.setong_alom.databinding.ItemNotificationBinding
 
 class NotificationAdapter(val notificationList: ArrayList<NotificationData>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {

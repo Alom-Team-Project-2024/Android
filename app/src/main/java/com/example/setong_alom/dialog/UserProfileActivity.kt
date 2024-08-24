@@ -1,4 +1,4 @@
-package com.example.setong_alom
+package com.example.setong_alom.dialog
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +15,8 @@ class UserProfileActivity : AppCompatActivity() {
 
         // 뒤로 가기 버튼, 확인 버튼 클릭 시 다시 채팅방으로 돌아가기
         binding.backIcon.setOnClickListener {
-            val intent = Intent(this,ChatActivity::class.java)
-            startActivity(intent)
         }
         binding.okBtn.setOnClickListener {
-            val intent = Intent(this,ChatActivity::class.java)
-            startActivity(intent)
         }
     }
 }
