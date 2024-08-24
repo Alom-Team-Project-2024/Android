@@ -77,7 +77,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     //크롭 네트워크 스택 사용
     implementation("org.chromium.net:cronet-embedded:119.6045.31")
-
+    //둥근이미지뷰 나타내기
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
