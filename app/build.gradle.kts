@@ -49,6 +49,14 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packaging {
+        resources.pickFirsts.add("META-INF/spring.schemas")
+        resources.pickFirsts.add("META-INF/spring.handlers")
+        resources.pickFirsts.add("META-INF/spring.factories")
+        resources.pickFirsts.add("META-INF/spring.tooling")
+        resources.pickFirsts.add("META-INF/license.txt")
+        resources.pickFirsts.add("META-INF/notice.txt")
+    }
 }
 
 
@@ -75,6 +83,29 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     //둥근이미지뷰 나타내기
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+    // Websocket
+    implementation("org.java-websocket:Java-WebSocket:1.5.2")
+    // Jackson
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+
+    // RxJava
+    implementation("io.reactivex.rxjava2:rxjava:2.2.5")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.0")
+
+    // Spring
+    implementation("org.springframework:spring-messaging:5.3.9")
+    implementation("org.springframework:spring-websocket:5.3.9")
+    implementation("org.hildan.krossbow:krossbow-stomp-core:7.1.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:7.1.0")
+    implementation("org.hildan.krossbow:krossbow-stomp-moshi:7.1.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    //
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
 
     implementation("androidx.core:core-ktx:1.9.0")

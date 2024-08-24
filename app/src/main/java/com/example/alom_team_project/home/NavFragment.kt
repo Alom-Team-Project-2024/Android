@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.example.alom_team_project.MainActivity
 import com.example.alom_team_project.R
+import com.example.alom_team_project.chat.ChatListActivity
 import com.example.alom_team_project.mypage.MypageActivity
 import com.example.alom_team_project.question_board.QuestionBoardActivity
 
@@ -152,6 +153,11 @@ class NavigationFragment : Fragment() {
 
                 if (menuTitleList[i] == "my") {
                     val intent = Intent(activity, MypageActivity::class.java)
+                    startActivity(intent)
+                }
+
+                if (menuTitleList[i] == "채팅") {
+                    val intent = Intent(activity, ChatListActivity::class.java)
                     startActivity(intent)
                 }
             }

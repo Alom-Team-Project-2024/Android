@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-
     <!-- 네트워크 및 Wi-Fi 관련 권한 추가 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 인터넷 사용 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Wi-Fi 상태 접근 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- Wi-Fi 상태 변경 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 네트워크 상태 접근 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".MyApp"
@@ -16,13 +14,23 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Alom_Team_Project"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
-        <!-- network 코드 추가 -->
-
+        <activity
+            android:name=".mentor_post.MentorPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notification.NotifiactionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chat.dialog.UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chat.ChatListActivity"
+            android:exported="false" /> <!-- network 코드 추가 -->
         <!-- 로그인을 첫페이지로 -->
         <activity
             android:name=".login.LoginActivity"
@@ -31,37 +39,28 @@
             android:theme="@style/Theme.Alom_Team_Project">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- 메인페이지를 위한 액티비티 추가 -->
+        </activity> <!-- 메인페이지를 위한 액티비티 추가 -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Alom_Team_Project" />
-
-
-        <!-- 마이페이지를 위한 액티비티 추가 -->
+            android:theme="@style/Theme.Alom_Team_Project" /> <!-- 마이페이지를 위한 액티비티 추가 -->
         <activity
             android:name=".mypage.MypageActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Alom_Team_Project" />
-
-        <!-- 프로필 페이지를 위한 액티비티 추가 -->
+            android:theme="@style/Theme.Alom_Team_Project" /> <!-- 프로필 페이지를 위한 액티비티 추가 -->
         <activity
             android:name=".mypage.ProfileActivity"
             android:exported="true"
             android:label="profile_page_label"
-            android:theme="@style/Theme.Alom_Team_Project" />
-
-        <!-- QuestionBoardActivity -->
+            android:theme="@style/Theme.Alom_Team_Project" /> <!-- QuestionBoardActivity -->
         <activity
             android:name=".question_board.QuestionBoardActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>
