@@ -27,7 +27,7 @@
         android:layout_marginTop="14dp"
         android:textColor="#000000"
         android:textStyle="bold"
-        android:text="스크랩한 글"
+        android:text="내가 작성한 글"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

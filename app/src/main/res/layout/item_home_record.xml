@@ -4,7 +4,7 @@
     android:layout_width="170dp"
     android:layout_height="240dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/rounded_corner"
+    android:background="@drawable/rectangle_213__1_"
     android:layout_marginStart="20dp"
 >
 
@@ -24,14 +24,26 @@
         />
 
     <TextView
-        android:id="@+id/status"
+        android:id="@+id/comment_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="8sp"
+        android:text="1"
+        android:textColor="#000000"
+        android:padding="1dp"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintStart_toEndOf="@id/comment"
+        android:layout_marginStart="1dp"
+        />
+
+    <TextView
+        android:id="@+id/comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="7sp"
-        android:text="답변완료"
         android:textColor="#000000"
         android:padding="1dp"
-        android:background="@drawable/rectangle_215"
+        android:background="@drawable/comment_button"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="10dp"
@@ -39,11 +51,12 @@
 
     <ImageView
         android:id="@+id/imageUrl"
-        android:layout_width="150dp"
-        android:layout_height="102dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="20dp"
+        android:background="@drawable/rectangle_216"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />

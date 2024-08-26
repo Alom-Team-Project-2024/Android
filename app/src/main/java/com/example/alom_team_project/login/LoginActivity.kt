@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.alom_team_project.databinding.ActivityLoginBinding
 import com.example.alom_team_project.MainActivity
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.mypage.MypageActivity
 import com.example.alom_team_project.mypage.ProfileActivity
+import com.example.alom_team_project.mypage.ScrapBoardActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,18 +40,17 @@ class LoginActivity : AppCompatActivity() {
                         val auth = response.body()?.result
                         if (auth?.isAuth == "true") {
                             val userData = auth.body
-                            showSuccess("로그인 성공!")
                             requestJwtToken(userData, id)
                         } else {
-                            showError("로그인 실패: 인증되지 않았습니다.")
+                            showError("아이디나 비밀번호가 일치하지 않습니다.")
                         }
                     } else {
-                        showError("로그인 실패: 서버 응답이 올바르지 않습니다.")
+                        showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                     }
                 }
 
                 override fun onFailure(call: Call<SejongAuthResponse>, t: Throwable) {
-                    showError("로그인 실패: 네트워크 오류가 발생했습니다.")
+                    showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                 }
             })
         }
@@ -88,20 +89,21 @@ class LoginActivity : AppCompatActivity() {
                         // JWT와 username 저장
                         saveUserData(token, id)
                         JwtProvider.setToken(token)
-                        showSuccess("JWT 발급 성공!")
                         navigateToMainActivity()
+                        //navigateToScrapActivity()
+                        //navigateToMypageActivity()
                         //navigateToProfileActivity()  // 프로필 설정 페이지 이동
                     } else {
-                        showError("JWT 발급 실패: 토큰이 없습니다.")
+                        showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                     }
                 } else {
-                    showError("JWT 발급 실패: 서버 응답이 올바르지 않습니다.")
+                    showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                 }
             }
 
             override fun onFailure(call: Call<JwtResponse>, t: Throwable) {
                 Log.e("JWT_REQUEST", "JWT 발급 오류", t)
-                showError("JWT 발급 실패: 네트워크 오류가 발생했습니다.")
+                showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
             }
         })
     }
@@ -123,6 +125,18 @@ class LoginActivity : AppCompatActivity() {
 
     private fun navigateToMainActivity() {
         val intent = Intent(this@LoginActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToMypageActivity() {
+        val intent = Intent(this@LoginActivity, MypageActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToScrapActivity() {
+        val intent = Intent(this@LoginActivity, ScrapBoardActivity::class.java)
         startActivity(intent)
         finish()
     }

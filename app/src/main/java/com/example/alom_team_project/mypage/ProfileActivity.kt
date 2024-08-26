@@ -9,27 +9,31 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.alom_team_project.MainActivity
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var etNickname: EditText
     private lateinit var btnSubmit: Button
+    private lateinit var btnCheckDouble: Button
+    private lateinit var tvCheckDouble: TextView
     private lateinit var imgProfile: ImageView
     private lateinit var btnProfile: ImageButton
 
     private var selectedImageUri: Uri? = null
+    private var isNicknameAvailable = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +41,8 @@ class ProfileActivity : AppCompatActivity() {
 
         etNickname = findViewById(R.id.et_nickname)
         btnSubmit = findViewById(R.id.btn_submit)
+        btnCheckDouble = findViewById(R.id.btn_check_double)
+        tvCheckDouble = findViewById(R.id.tv_check_double)
         imgProfile = findViewById(R.id.img_profile)
         btnProfile = findViewById(R.id.btn_profile)
 
@@ -47,15 +53,30 @@ class ProfileActivity : AppCompatActivity() {
             openGallery() // 갤러리 열기
         }
 
+        btnCheckDouble.setOnClickListener {
+            val nickname = etNickname.text.toString().trim()
+            val token = getJwtToken()
+
+            if (nickname.isNotEmpty() && token != null) {
+                checkNicknameDuplication(nickname, token)
+            } else {
+                Toast.makeText(this, "닉네임 또는 토큰을 확인해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         btnSubmit.setOnClickListener {
             val nickname = etNickname.text.toString().trim()
             val token = getJwtToken()
             val username = getUsername()
 
             if (nickname.isNotEmpty() && token != null && username != null) {
-                updateProfile(nickname, username, token)
-                if (selectedImageUri != null) {
-                    uploadProfileImage(selectedImageUri!!, username, token)
+                if (isNicknameAvailable) {
+                    updateProfile(nickname, username, token)
+                    if (selectedImageUri != null) {
+                        uploadProfileImage(selectedImageUri!!, username, token)
+                    }
+                } else {
+                    Toast.makeText(this, "닉네임 중복을 확인해주세요.", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "닉네임, 학번 또는 토큰을 확인해주세요.", Toast.LENGTH_SHORT).show()
@@ -85,6 +106,36 @@ class ProfileActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("username", null)
     }
+
+    private fun checkNicknameDuplication(nickname: String, token: String) {
+        val authHeader = "Bearer $token"
+        RetrofitClient.userApi.checkDuplicateUser(nickname, authHeader).enqueue(object : Callback<Boolean> {
+            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                if (response.isSuccessful) {
+                    val isAvailable = response.body() ?: false
+                    if (isAvailable) {
+                        tvCheckDouble.text = "사용 가능한 닉네임입니다."
+                        tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#006917"))
+                        Toast.makeText(this@ProfileActivity, "사용 가능한 닉네임입니다.", Toast.LENGTH_SHORT).show()
+                        isNicknameAvailable = true
+                    } else {
+                        tvCheckDouble.text = "사용 불가능한 닉네임입니다."
+                        tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
+                        Toast.makeText(this@ProfileActivity, "사용 불가능한 닉네임입니다.", Toast.LENGTH_SHORT).show()
+                        isNicknameAvailable = false
+                    }
+                } else {
+                    Toast.makeText(this@ProfileActivity, "닉네임 중복 체크에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                Log.e("ProfileActivity", "Network error: ${t.message}", t)
+                Toast.makeText(this@ProfileActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 
     private fun updateProfile(nickname: String, username: String, token: String) {
         val profileData = mapOf("username" to username, "nickname" to nickname)
@@ -124,7 +175,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun uploadProfileImage(imageUri: Uri, username: String, token: String) {
         val file = File(getRealPathFromURI(imageUri)!!)
-        val requestFile = RequestBody.create(contentResolver.getType(imageUri)?.toMediaTypeOrNull(), file)
+        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
         val authHeader = "Bearer $token"
 

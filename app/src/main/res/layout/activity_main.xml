@@ -52,7 +52,7 @@
         />
 
     <Button
-        android:layout_width="30dp"
+        android:layout_width="25dp"
         android:layout_height="30dp"
         android:background="@drawable/group_11"
         app:layout_constraintTop_toTopOf="parent"
@@ -133,16 +133,18 @@
         android:id="@+id/btn_container1"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:background="@drawable/rectangle_221__2_"
+        android:background="@drawable/rectangle_221__3_"
         android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="15dp"
         app:layout_constraintTop_toBottomOf="@id/tv_home_question"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="15dp"
         android:focusable="true"
-        android:padding="10dp">
+        android:padding="5dp"
+        android:paddingStart="12dp"
+        >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -184,7 +186,7 @@
         android:id="@+id/btn_container2"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:background="@drawable/rectangle_221__2_"
+        android:background="@drawable/rectangle_221__3_"
         android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="15dp"
@@ -193,7 +195,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="15dp"
         android:focusable="true"
-        android:padding="10dp">
+        android:padding="5dp"
+        android:paddingStart="12dp"
+        >
 
         <LinearLayout
             android:layout_width="wrap_content"

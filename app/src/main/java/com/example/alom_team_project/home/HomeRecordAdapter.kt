@@ -20,7 +20,7 @@ class HomeRecordAdapter(val recordList:ArrayList<HomeRecordData>):RecyclerView.A
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HomeRecordViewHolder) {
             holder.title.text = recordList[position].title
-            holder.status.text = recordList[position].status
+            holder.commentCount.text = recordList[position].commentCount.toString()
             Glide.with(holder.itemView.context)
                 .load(recordList[position].imageUrl)  // recordList[position]에서 imageUrl을 로드
                 .into(holder.imageUrl)

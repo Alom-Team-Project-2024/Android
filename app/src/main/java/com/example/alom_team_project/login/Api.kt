@@ -10,6 +10,7 @@ import com.example.alom_team_project.question_board.Reply
 import com.example.alom_team_project.databinding.AnswerItemBinding
 import com.example.alom_team_project.mentor_post.MentorPostResponse
 import com.example.alom_team_project.mypage.UserResponse
+import com.example.alom_team_project.question_board.QuestionClass
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -47,6 +48,12 @@ interface UserApi {
         @Header("Authorization") authHeader: String // JWT 토큰을 헤더에 추가
     ): Call<UserResponse>
 
+    //중복 여부 확인
+    @POST("/users/duplicate/{nickname}")
+    fun checkDuplicateUser(
+        @Path("nickname") nickname: String,
+        @Header("Authorization") authHeader: String
+    ): Call<Boolean>
 
     @GET("/question_post") //메인페이지 질문 게시판 조회
     fun getQuestions(@Header("Authorization") token: String): Call<List<QuestionPostResponse>>
@@ -54,8 +61,17 @@ interface UserApi {
     @GET("/mentor_post") //메인페이지 구인 게시판 조회
     fun getMentors(@Header("Authorization") token: String): Call<List<MentorPostResponse>>
 
-    // 스크랩된 질문들을 가져오는 API
-    @GET("/scrap-questions") // 엔드포인트를 실제 URL로 변경하세요
-    fun getScrapQuestions(@Header("Authorization") token: String): Call<List<QuestionPostResponse>>
+    @GET("/users/question_post/scrap/{username}") //마이페이지 스크랩 게시판 조회
+    fun getScrapInfo(
+        @Path("username") questionId: String,
+        @Header("Authorization") token: String
+    ): Call<QuestionClass>
+
+    // 닉네임으로 작성된 질문 게시물을 조회
+    @GET("/question_post/writer/{nickname}")
+    fun getQuestionsByNickname(
+        @Path("nickname") nickname: String,
+        @Header("Authorization") authHeader: String
+    ): Call<List<QuestionClass>>
 }
 

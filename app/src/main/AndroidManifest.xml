@@ -23,7 +23,7 @@
             android:name=".mentor_post.MentorPostActivity"
             android:exported="false" />
         <activity
-            android:name=".notification.NotifiactionActivity"
+            android:name=".notification.NotificationActivity"
             android:exported="false" />
         <activity
             android:name=".chat.dialog.UserProfileActivity"
@@ -54,10 +54,18 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.Alom_Team_Project" /> <!-- 프로필 페이지를 위한 액티비티 추가 -->
         <activity
+            android:name=".mypage.MyPostsActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Alom_Team_Project" /> <!-- 내가 작성한 글 조회를 위한 액티비티 추가 -->
+        <activity
             android:name=".mypage.ProfileActivity"
             android:exported="true"
             android:label="profile_page_label"
             android:theme="@style/Theme.Alom_Team_Project" /> <!-- QuestionBoardActivity -->
+        <activity
+            android:name=".mypage.ScrapBoardActivity"
+            android:exported="true"/>
         <activity
             android:name=".question_board.QuestionBoardActivity"
             android:exported="false" />

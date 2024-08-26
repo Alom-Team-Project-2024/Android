@@ -6,7 +6,9 @@ data class MentorPostResponse(
     val text: String,
     val writer: String,
     val major: String,
-    val likes: Int
+    val likes: Int,
+    val createdAt: String,
+    val modifiedAt: String
 )
 
 data class MentorPostDTO(
