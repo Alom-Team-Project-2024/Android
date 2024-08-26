@@ -102,8 +102,6 @@ class QuestionAdapterClass(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = filteredList[position]
 
-        //holder.uploadTime.text = elapsedTime
-
         holder.bind(currentItem)
     }
 

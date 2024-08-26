@@ -14,8 +14,8 @@ import retrofit2.http.Path
 
 interface AnswerPostService {
     // 답변 등록
-    @POST("question_post/{post_id}/reply")
-    fun postAnswers(
+    @POST("question_post/{postId}/reply")
+    fun postAnswer(
         @Header("Authorization") token: String,
         @Path("postId") postId: Long,//질문글 id
         @Body requestBody: JsonObject
@@ -25,8 +25,30 @@ interface AnswerPostService {
     @GET("question_post/{postId}/reply")
     fun getAnswers(
         @Header("Authorization") token: String,
-        @Path("postId") postId: Long,//질문글 id
+        @Path("postId") postId: Long//질문글 id
     ): Call<List<Reply>>
+
+    // postId를 통해 특정글 불러오기
+    @GET("question_post/{postId}")
+    fun getQuestionFromId(
+        @Header("Authorization") token: String,
+        @Path("postId") postId: Long
+    ): Call<QuestionClass>
+
+    // 좋아요 요청
+    @POST("question_post/{postId}/likes/up")
+    fun likePost(
+        @Header("Authorization") token: String,
+        @Path("postId") postId: Long
+    ): Call<Void>
+
+    // 스크랩 요청
+    @POST("question_post/scrap/{username}/{postId}")
+    fun scrapPost(
+        @Header("Authorization") token: String,
+        @Path("username") username: String,
+        @Path("postId") postId: Long
+    ): Call<Void>
 
 //    // 이미지 업로드 및 URL 반환
 //    @Multipart

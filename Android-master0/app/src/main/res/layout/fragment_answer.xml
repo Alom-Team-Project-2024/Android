@@ -195,11 +195,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/answer_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/question_container"
+        app:layout_constraintBottom_toBottomOf="@id/linearLayout"
         tools:listitem="@layout/answer_item">
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -244,7 +245,7 @@
                     android:layout_marginBottom="9dp"
                     android:background="@android:color/transparent"
                     android:gravity="top|start"
-                    android:hint="채팅하기..."
+                    android:hint="답변 작성하기"
                     android:imeOptions="actionDone"
                     android:inputType="textMultiLine"
                     android:maxLines="5"
@@ -256,12 +257,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <Button
                     android:id="@+id/send_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="9dp"
+                    android:layout_marginBottom="5dp"
                     android:text="전송"
                     android:textColor="@color/black"
                     android:textSize="10dp"

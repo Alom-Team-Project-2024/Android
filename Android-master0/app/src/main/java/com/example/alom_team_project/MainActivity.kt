@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<List<QuestionPostResponse>>, response: Response<List<QuestionPostResponse>>) {
                     if (response.isSuccessful) {
                         response.body()?.let { questions ->
-                            updateRecordList(questions)
+                            //updateRecordList(questions)
                         }
                     } else {
                         Toast.makeText(this@MainActivity, "Failed to load questions", Toast.LENGTH_SHORT).show()

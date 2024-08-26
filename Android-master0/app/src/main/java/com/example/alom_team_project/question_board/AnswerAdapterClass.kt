@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
 import com.example.alom_team_project.databinding.AnswerItemBinding
 import java.time.Duration
@@ -63,10 +66,11 @@ class AnswerAdapterClass(val answerList: ArrayList<Reply>): RecyclerView.Adapter
                 binding.answerImage.visibility = View.GONE
             } else {
                 binding.answerImage.visibility = View.VISIBLE
-                // 이미지가 있으면 이미지를 설정할 수 있습니다. 예: Glide를 사용하여 이미지 로드
-                // Glide.with(binding.answerImage.context).load(answer.images[0].url).into(binding.answerImage)
+//                // Glide를 사용하여 이미지 로드
+//                Glide.with(binding.answerImage.context)
+//                    .load(answer.images[0].url)
+//                    .into(binding.answerImage)
             }
-
         }
     }
 
@@ -86,6 +90,7 @@ class AnswerAdapterClass(val answerList: ArrayList<Reply>): RecyclerView.Adapter
 
         if (holder is AnswerViewHolder) {
             holder.bind(currentItem)
+            holder.itemView.requestLayout()
         }
     }
 }

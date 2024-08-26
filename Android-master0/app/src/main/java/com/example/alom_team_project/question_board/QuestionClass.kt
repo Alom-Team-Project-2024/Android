@@ -11,6 +11,7 @@ data class QuestionClass(
     val subject: String,
     val text: String,
     val writer: String,
+    val username: String,
     val likes: Int,
     val scrapCount: Int,
     val replyCount: Int,
@@ -35,9 +36,15 @@ data class User(
 data class Reply(
     val text: String,
     val writer: String,
+    val username: String,
     val likes: Int,
     val images: List<ImageData>,
     val createdAt: String
 )
+
+data class Subject(
+    val subject : String
+)
+
 
 
