@@ -1,6 +1,7 @@
 package com.example.alom_team_project.question_board
 
 
+
 import QuestionPostService
 import android.os.Bundle
 import android.text.Editable
@@ -66,7 +67,22 @@ class QuestionBoardActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = QuestionAdapterClass(questionList)
+        adapter = QuestionAdapterClass(
+            questionList = questionList,
+            onItemClickListener = { questionId ->
+                // AnswerFragment로 이동
+                val fragment = AnswerFragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("QUESTION_ID", questionId)
+                    }
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.questionViewPage, fragment)  // Fragment를 담을 컨테이너 ID 수정
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
+
         binding.QuestionRecyclerView.adapter = adapter
         binding.QuestionRecyclerView.layoutManager = LinearLayoutManager(this)
     }

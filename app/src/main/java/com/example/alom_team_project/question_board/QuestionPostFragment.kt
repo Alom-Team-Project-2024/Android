@@ -1,5 +1,6 @@
 package com.example.alom_team_project.question_board
 
+
 import QuestionPostService
 import android.Manifest
 import android.app.Activity
@@ -9,6 +10,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,8 +24,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.databinding.FragmentAnswerBinding
+import com.example.alom_team_project.databinding.FragmentQuestionPostBinding
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -42,10 +48,16 @@ class QuestionPostFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var _binding: FragmentQuestionPostBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var titleEditText: EditText
     private lateinit var contentEditText: EditText
     private lateinit var submitButton: ImageButton
     private lateinit var imageView: ImageView
+    private lateinit var adapter: SubjectAdapter
+    private lateinit var subjectList: ArrayList<Subject>
+    private lateinit var questionService: QuestionPostService
 
     private val service = RetrofitClient.instance.create(QuestionPostService::class.java)
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
@@ -60,6 +72,46 @@ class QuestionPostFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentQuestionPostBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // List 초기화
+        subjectList = arrayListOf()
+
+        // questionService 초기화
+        questionService = RetrofitClient.instance.create(QuestionPostService::class.java)
+
+        // RecyclerView 어댑터 및 레이아웃 매니저 설정
+        setupRecyclerView()
+
+        // 데이터 가져오기
+        fetchData()
+
+        // 검색 텍스트 변화 감지
+        binding.titleEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 텍스트 변화 전의 행동을 정의
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 텍스트가 변경될 때마다 어댑터의 필터링 메소드 호출
+                adapter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // 텍스트 변화 후의 행동을 정의
+            }
+        })
 
         imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -71,17 +123,6 @@ class QuestionPostFragment : Fragment() {
                 } ?: Toast.makeText(context, "Post ID is not available", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_question_post, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         titleEditText = view.findViewById(R.id.titleEditText)
         contentEditText = view.findViewById(R.id.contentEditText)
@@ -89,7 +130,6 @@ class QuestionPostFragment : Fragment() {
         imageView = view.findViewById(R.id.imageView)
 
         val btnBack : ImageButton = view.findViewById(R.id.back_button)
-
         btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -106,6 +146,7 @@ class QuestionPostFragment : Fragment() {
 
         submitButton.setOnClickListener {
             sendPostRequest()
+            parentFragmentManager.popBackStack()
         }
     }
 
@@ -113,8 +154,6 @@ class QuestionPostFragment : Fragment() {
         val sharedPref = requireContext().getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("jwt_token", "") ?: ""
     }
-
-
 
     private fun sendPostRequest() {
         val token = getJwtToken()
@@ -162,7 +201,7 @@ class QuestionPostFragment : Fragment() {
 
     private fun uploadImage(postId: Long) {
         selectedImageUri?.let { uri ->
-            val token=getJwtToken()
+            val token = getJwtToken()
 
             val filePath = getRealPathFromURI(uri) ?: return
             val file = File(filePath)
@@ -196,7 +235,6 @@ class QuestionPostFragment : Fragment() {
             }
         }
     }
-
 
     private fun getRealPathFromURI(uri: Uri): String? {
         var path: String? = null
@@ -241,6 +279,43 @@ class QuestionPostFragment : Fragment() {
                 Toast.makeText(context, "권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = SubjectAdapter(subjectList)
+        binding.subjectRecyclerView.adapter = adapter
+        binding.subjectRecyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun fetchData() {
+        val token = getJwtToken()
+        Log.d("FETCH_DATA", "Fetching data with token: $token")
+
+        questionService.getSubjects("Bearer $token").enqueue(object : Callback<List<Subject>> {
+            override fun onResponse(call: Call<List<Subject>>, response: Response<List<Subject>>) {
+                if (response.isSuccessful) {
+                    Log.d("FETCH_DATA", "Data fetched successfully")
+
+                    response.body()?.let { subjects ->
+//                        subjectList.clear()
+//                        subjectList.addAll(subjects)
+                        adapter.filter(binding.titleEditText.text.toString())  // 현재 검색어로 필터링
+
+                        response.body()?.let { subjects ->
+                            adapter.updateSubjectList(subjects)
+                        }
+                    }
+                } else {
+                    Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(context, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Subject>>, t: Throwable) {
+                Log.e("FETCH_DATA", "Failed to fetch data", t)
+                Toast.makeText(context, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     companion object {
