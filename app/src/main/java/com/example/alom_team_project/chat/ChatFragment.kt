@@ -71,7 +71,7 @@ class ChatFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 if (token.isNotEmpty()) {
-                    stompClient.connect(token)
+                    stompClient.connect("Bearer $token")
                     Log.d("WebsocketM", "Connected to STOMP server")
                 } else {
                     Log.e("Token Error", "Token is empty, cannot connect to STOMP server")
