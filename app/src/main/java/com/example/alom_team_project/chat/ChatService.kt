@@ -13,8 +13,8 @@ interface ChatService {
     @POST("chats")
     fun chatRoom( // 채팅방 생성 : 학번 2개 요청
         @Header("Authorization") token: String, // 인증 토큰
-        @Query("username1") username1: String,
-        @Query("username2") username2: String
+        @Query("nickname1") nickname1: String,
+        @Query("nickname2") nickname2: String
     ): Call<ChatRoomResponse> // 응답으로 ChatRoomResponse 클래스를 사용
 
     @GET("chats/rooms/{nickname}")
@@ -38,7 +38,13 @@ interface ChatService {
     @GET("chats/room/{chatRoomId}/messages")
     fun getChatHistory(
         @Header("Authorization") token: String,
-        @Path("chatRoomId") chatRoomId: Int
+        @Path("chatRoomId") chatRoomId: Long
     ): Call<List<ChatHistoryResponse>>
 
+    @POST("users/rate/{nickname}/{rate}")
+    fun userRate( // 유저 온도 변경
+        @Header("Authorization") token: String, // 인증 토큰
+        @Path("nickname") nickname: String,
+        @Path("rate") rate: Int
+    ): Call<Double>
 }

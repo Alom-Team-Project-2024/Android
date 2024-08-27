@@ -26,23 +26,18 @@ class MentorPostActivity : AppCompatActivity() {
         }
     }
 
-    private fun getJwtToken(): String {
-        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
-        return sharedPref.getString("jwt_token", "") ?: ""
-    }
-
     private fun createChatRoom() {
         // 토큰 가져오기
         val token = getJwtToken()
 
         // 사용자 ID 설정
-        val user1name = "23011676"  // 현재 사용자 학번 (처음 로그인 시 저장하기)
-        val user2name = "22011315"  // 게시글 작성자 학번 (게시물 조회 시 저장하기)
+        val user1nick = getUsername() // 현재 사용자 학번 (처음 로그인 시 저장하기)
+        val user2nick = "user299"  // 게시글 작성자 학번 (게시물 조회 시 저장하기)
 
         // 토큰이 null인지 확인
-        if (token != null) {
+        if (token != null && user1nick != null && user1nick != user2nick) {
             val chatService = RetrofitClient.instance.create(ChatService::class.java)
-            val call = chatService.chatRoom("Bearer $token", user1name, user2name)
+            val call = chatService.chatRoom("Bearer $token", user1nick, user2nick)
 
             call.enqueue(object : Callback<ChatRoomResponse> {
                 override fun onResponse(call: Call<ChatRoomResponse>, response: Response<ChatRoomResponse>) {
@@ -73,5 +68,15 @@ class MentorPostActivity : AppCompatActivity() {
             // 토큰이 null인 경우 처리
             Log.e("Token Error", "Token is null. Cannot create chat room.")
         }
+    }
+
+    private fun getJwtToken(): String? {
+        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+        return sharedPref.getString("jwt_token", null)
+    }
+
+    private fun getUsername(): String? {
+        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+        return sharedPref.getString("username", null)
     }
 }

@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.ActivityChatListBinding
+import com.example.alom_team_project.mypage.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,79 +50,204 @@ class ChatListActivity : AppCompatActivity() {
         })
     }
 
-    private fun getJwtToken(): String {
-        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
-        return sharedPref.getString("jwt_token", "") ?: ""
-    }
-
     private fun fetchChatList() {
         val token = getJwtToken()
-        val nickname = "user497" // 사용자(내) 닉네임
+        val username = getUsername()
 
-        if (token != null) {
-            val chatService = RetrofitClient.instance.create(ChatService::class.java)
-            val call = chatService.getChatList("Bearer $token", nickname)
+        if (token != null && username != null) {
+            fetchNickname(token, username) { nickname ->
+                if (nickname != null) {
+                    // nickname 저장
+                    val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putString("nickname", nickname)
+                        apply()
+                    }
 
-            call.enqueue(object : Callback<List<ChatRoomResponse>> {
-                override fun onResponse(call: Call<List<ChatRoomResponse>>, response: Response<List<ChatRoomResponse>>) {
+                    fetchChatRooms(token, nickname)
+                } else {
+                    Log.e("ChatList", "Failed to fetch nickname.")
+                }
+            }
+        } else {
+            Log.e("Token Error", "Token or username is null. Cannot fetch chat list.")
+        }
+    }
+
+    private fun fetchNickname(token: String, username: String, callback: (String?) -> Unit) {
+        RetrofitClient.userApi.getUserProfile(username, "Bearer $token")
+            .enqueue(object : Callback<UserResponse> {
+                override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                     if (response.isSuccessful) {
-                        val chatRooms = response.body()
-                        if (chatRooms != null) {
-                            chatList.clear() // 기존 리스트 비우기
-
-                            chatRooms.forEach { chatRoom ->
-                                val chatRoomId = chatRoom.id
-
-                                val nicknames: List<String> = chatRoom.userResponseList.map { it.nickname }
-                                val profileImages: List<String> = chatRoom.userResponseList.map { it.profileImage }
-
-                                val firstUsername: String? = nicknames.getOrNull(0)
-                                val secondUsername: String? = nicknames.getOrNull(1)
-
-                                val firstUserProfile: String? = profileImages.getOrNull(0)
-                                val secondUserProfile: String? = profileImages.getOrNull(1)
-
-                                val chatTitle: String?
-                                val profile: Int?
-
-                                if (nickname == firstUsername) {
-                                    chatTitle = secondUsername
-                                    profile = R.drawable.profile // 여기에 실제 프로필 이미지를 사용할 수 있습니다.
-                                } else {
-                                    chatTitle = firstUsername
-                                    profile = R.drawable.profile // 여기에 실제 프로필 이미지를 사용할 수 있습니다.
-                                }
-
-                                if (chatTitle != null) {
-                                    chatList.add(
-                                        ChatList(
-                                            chatRoomId = chatRoomId, // 채팅방 ID 추가
-                                            profile = profile,
-                                            name = chatTitle,
-                                            content = "안녕하세요",
-                                            time = "1분 전"
-                                        )
-                                    )
-                                }
-                            }
-                            adapter.notifyDataSetChanged() // 데이터 변경을 어댑터에 알리기
-                            adapter.filter("")
-                        } else {
-                            Log.e("ChatList", "No chat rooms found.")
-                        }
+                        val user = response.body()
+                        val nickname = user?.nickname
+                        callback(nickname)
                     } else {
-                        Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
+                        Log.e("ChatList", "Failed to fetch user profile. Response code: ${response.code()}")
+                        callback(null)
                     }
                 }
 
-                override fun onFailure(call: Call<List<ChatRoomResponse>>, t: Throwable) {
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    Log.e("ChatList", "Network Error: ${t.message}")
+                    callback(null)
+                }
+            })
+    }
+
+    private fun fetchChatRooms(token: String, nickname: String) {
+        val chatService = RetrofitClient.instance.create(ChatService::class.java)
+        val call = chatService.getChatList("Bearer $token", nickname)
+
+        call.enqueue(object : Callback<List<ChatRoomResponse>> {
+            override fun onResponse(call: Call<List<ChatRoomResponse>>, response: Response<List<ChatRoomResponse>>) {
+                if (response.isSuccessful) {
+                    val chatRooms = response.body()
+                    if (chatRooms != null) {
+                        chatList.clear()
+
+                        val fetchCount = chatRooms.size
+                        var processedCount = 0
+
+                        chatRooms.forEach { chatRoom ->
+                            val chatRoomId = chatRoom.id
+                            val nicknames = chatRoom.userResponseList.map { it.nickname }
+                            val profileImages = chatRoom.userResponseList.map { it.profileImage }
+
+                            val firstUsername = nicknames.getOrNull(0)
+                            val secondUsername = nicknames.getOrNull(1)
+
+                            val firstUserProfile = profileImages.getOrNull(0)
+                            val secondUserProfile = profileImages.getOrNull(1)
+
+                            val chatTitle: String?
+                            var profileImg: String? = null
+
+                            if (nickname == firstUsername) {
+                                chatTitle = secondUsername
+                                profileImg = secondUserProfile
+                            } else {
+                                chatTitle = firstUsername
+                                profileImg = firstUserProfile
+                            }
+
+                            fetchLastChatMessage(token, chatRoomId, nickname) { chatData ->
+                                chatData?.let { (message, timestamp) ->
+                                    Log.d("Last Message", "Message: $message, Time: $timestamp")
+
+                                    if (profileImg != null) {
+                                        chatList.add(
+                                            ChatList(
+                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
+                                                profile = profileImg,
+                                                name = chatTitle ?: "",
+                                                content = message,
+                                                time = timestamp
+                                            )
+                                        )
+                                    }
+                                    else {
+                                        chatList.add(
+                                            ChatList(
+                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
+                                                profile = "",
+                                                name = chatTitle ?: "",
+                                                content = message,
+                                                time = timestamp
+                                            )
+                                        )
+                                    }
+                                } ?: run {
+                                    Log.d("Last Message", "No message found or error occurred.")
+
+                                    // 메시지가 없을 때에도 이름과 프로필 사진은 추가
+                                    if (profileImg != null) {
+                                        chatList.add(
+                                            ChatList(
+                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
+                                                profile = profileImg,
+                                                name = chatTitle ?: "",
+                                                content = "",
+                                                time = ""
+                                            )
+                                        )
+                                    }
+                                    else {
+                                        chatList.add(
+                                            ChatList(
+                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
+                                                profile = "",
+                                                name = chatTitle ?: "",
+                                                content = "",
+                                                time = ""
+                                            )
+                                        )
+                                    }
+                                }
+
+                                processedCount++
+                                if (processedCount == fetchCount) {
+                                    adapter.notifyDataSetChanged() // 데이터 변경을 어댑터에 알리기
+                                    adapter.filter("")
+                                }
+                            }
+                        }
+                    } else {
+                        Log.e("ChatList", "No chat rooms found.")
+                    }
+                } else {
+                    Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<ChatRoomResponse>>, t: Throwable) {
+                Log.e("API Error", "Failure: ${t.message}")
+            }
+        })
+    }
+
+
+
+    // 마지막 채팅 메시지 불러오기
+    private fun fetchLastChatMessage(token: String, chatRoomId: Long, nickname: String, callback: (Pair<String, String>?) -> Unit) {
+        if (token.isNotEmpty()) {
+            val chatHistory = RetrofitClient.instance.create(ChatService::class.java)
+            val call = chatHistory.getChatHistory("Bearer $token", chatRoomId)
+
+            call.enqueue(object : Callback<List<ChatHistoryResponse>> {
+                override fun onResponse(call: Call<List<ChatHistoryResponse>>, response: Response<List<ChatHistoryResponse>>) {
+                    if (response.isSuccessful) {
+                        val chatMessages = response.body()
+                        if (chatMessages != null && chatMessages.isNotEmpty()) {
+                            // 마지막 메시지와 보낸 시각 가져오기
+                            val lastChatHistoryResponse = chatMessages.last()
+                            val message = lastChatHistoryResponse.message // 마지막 메시지 가져오기
+                            val timestamp = lastChatHistoryResponse.createdAt // 보낸 시각 가져오기
+
+                            val chatData = Pair(message, timestamp) // Pair로 메시지와 타임스탬프 묶기
+                            callback(chatData) // 콜백으로 전달
+                        } else {
+                            callback(null) // 메시지가 없으면 null 반환
+                        }
+                    } else {
+                        Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
+                        callback(null) // API 오류 시 null 반환
+                    }
+                }
+
+                override fun onFailure(call: Call<List<ChatHistoryResponse>>, t: Throwable) {
                     Log.e("API Error", "Failure: ${t.message}")
+                    callback(null) // 요청 실패 시 null 반환
                 }
             })
         } else {
-            Log.e("Token Error", "Token is null. Cannot fetch chat list.")
+            Log.e("Token Error", "Token is empty")
+            callback(null) // 토큰이 없으면 null 반환
         }
     }
+
+
+
 
     private fun openChatPage(chatRoomId: Long) {
         val fragment = ChatFragment()
@@ -134,6 +261,16 @@ class ChatListActivity : AppCompatActivity() {
             .replace(R.id.chatPage, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun getJwtToken(): String? {
+        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+        return sharedPref.getString("jwt_token", null)
+    }
+
+    private fun getUsername(): String? {
+        val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
+        return sharedPref.getString("username", null)
     }
 
 }

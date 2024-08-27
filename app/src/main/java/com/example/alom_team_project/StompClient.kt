@@ -70,11 +70,11 @@ class MyStompClient {
     }
 
     // 서버로 메시지를 보내는 메서드
-    fun sendMessage(messageContent: String) {
+    fun sendMessage(chatRoomId: Long, sender: String, messageContent: String) {
         session?.let { currentSession ->
             coroutineScope.launch {
                 try {
-                    val chatMessage = ChatMessage("1", "user1", messageContent)
+                    val chatMessage = ChatMessage(chatRoomId, sender, messageContent)
                     val jsonMessage = chatMessageAdapter.toJson(chatMessage)
                     val sendHeaders = StompSendHeaders(
                         destination = "/pub/chats/messages",

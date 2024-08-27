@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".chat.ChatFragment">
+    tools:context=".chat.ChatFragment"
+    android:elevation="15dp">
 
     <ImageView
         android:id="@+id/background"
@@ -16,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        android:background="#F0F0F0" />
+        android:background="@drawable/background2" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_chatting"
@@ -159,4 +160,5 @@
         app:layout_constraintEnd_toEndOf="@+id/chatting_profile"
         app:layout_constraintTop_toTopOf="@+id/background"
         app:srcCompat="@drawable/menu_icon" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
