@@ -25,10 +25,10 @@ interface QuestionPostService {
     // 이미지 업로드 및 URL 반환
     @Multipart
     @POST("question_post/{postId}/images")
-    fun uploadImage(
+    fun uploadImages(
         @Header("Authorization") token: String,
         @Path("postId") postId: Long,
-        @Part file: MultipartBody.Part
+        @Part file: List<MultipartBody.Part>
     ): Call<JsonArray> // 응답을 JSON으로 변경
 
     // 질문 목록 가져오기
