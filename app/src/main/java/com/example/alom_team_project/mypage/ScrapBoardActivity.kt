@@ -94,14 +94,14 @@ class ScrapBoardActivity : AppCompatActivity() {
         // 사용자 이름을 가져오는 메소드 추가 (예시: 현재 로그인된 사용자의 사용자 이름을 가져오는 메소드)
         val username = getUsername() ?: ""
 
-        api.getScrapInfo(username, "Bearer $token").enqueue(object : Callback<QuestionClass> {
-            override fun onResponse(call: Call<QuestionClass>, response: Response<QuestionClass>) {
+        api.getScrapInfo(username, "Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
+            override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
                 if (response.isSuccessful) {
                     Log.d("FETCH_DATA", "Data fetched successfully")
 
-                    response.body()?.let { post ->
+                    response.body()?.let { posts ->
                         scrapQuestionList.clear()
-                        scrapQuestionList.add(post) // 리스트에 단일 항목을 추가
+                        scrapQuestionList.addAll(posts) // 리스트에 여러 항목을 추가
                         adapter.filter(binding.etSearch.text.toString())  // 현재 검색어로 필터링
                     }
                 } else {
@@ -110,7 +110,7 @@ class ScrapBoardActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<QuestionClass>, t: Throwable) {
+            override fun onFailure(call: Call<List<QuestionClass>>, t: Throwable) {
                 Log.e("FETCH_DATA", "Failed to fetch data", t)
                 Toast.makeText(this@ScrapBoardActivity, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
             }

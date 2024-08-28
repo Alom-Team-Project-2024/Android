@@ -1,10 +1,12 @@
 package com.example.alom_team_project.mypage
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -12,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.login.LoginActivity
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,6 +29,9 @@ class MypageActivity : AppCompatActivity() {
     private lateinit var btnMyPosts: Button
     private lateinit var tvMoreScrap: TextView
     private lateinit var btnLogout: Button
+    private lateinit var ivProfileImage: ImageView
+    private lateinit var tvProfileEdit: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +46,17 @@ class MypageActivity : AppCompatActivity() {
         btnMyPosts = findViewById(R.id.button2)
         tvMoreScrap = findViewById(R.id.tv_more)
         btnLogout = findViewById(R.id.btn_logout)
+        ivProfileImage = findViewById(R.id.iv_profileImage)
+        tvProfileEdit = findViewById(R.id.tv_profile_edit)
 
         val backButton: ImageButton = findViewById(R.id.backButton)
         backButton.setOnClickListener {
             finish()
+        }
+
+        tvProfileEdit.setOnClickListener {
+            val intent = Intent(this, ProfileEditActivity::class.java)
+            startActivity(intent)
         }
 
         // 버튼 클릭 시 MyPostActivity로 이동
@@ -102,6 +115,9 @@ class MypageActivity : AppCompatActivity() {
 
                         // 로그 추가
                         Log.d("MypageActivity", "ProgressBar max: ${progressBar.max}, current progress: ${progressBar.progress}, user point: $user.point")
+
+                        // 프로필 이미지 가져오기
+                        getProfileImage(username, token)
                     }
                 } else {
                     Toast.makeText(this@MypageActivity, "사용자 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
@@ -111,6 +127,29 @@ class MypageActivity : AppCompatActivity() {
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
                 Log.e("UserProfile", "Network Error: ${t.message}")
                 Toast.makeText(this@MypageActivity, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getProfileImage(username: String, token: String) {
+        val api = RetrofitClient.userApi
+        api.getProfileImage(username, "Bearer $token").enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    responseBody?.byteStream()?.let { inputStream ->
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        ivProfileImage.setImageBitmap(bitmap)
+                    }
+                } else {
+                    Log.e("ProfileImage", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(this@MypageActivity, "Failed to fetch profile image", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("ProfileImage", "Failed to fetch profile image", t)
+                Toast.makeText(this@MypageActivity, "Failed to fetch profile image: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -70,10 +70,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateRecordList(questions: List<QuestionPostResponse>) {
+        // 최대 항목 수를 설정합니다.
+        val maxItemCount = 10
+
+        // 새로운 데이터로 기존 데이터를 업데이트합니다.
         recordList.clear()
         questions.forEach { question ->
-            val replies = question.replies ?: emptyList() // replies가 null일 경우 빈 리스트로 처리
-            val images = question.images ?: emptyList()   // images가 null일 경우 빈 리스트로 처리
+            val replies = question.replies ?: emptyList()
+            val images = question.images ?: emptyList()
             val mentorName = if (replies.isNotEmpty()) replies[0].title else "No replies"
             val answerText = if (replies.isNotEmpty()) replies[0].text else "No answer"
             val imageUrl = if (images.isNotEmpty()) images[0].imageUrl else ""
@@ -88,9 +92,27 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+
+        // 리스트가 최대 항목 수를 초과하는 경우 초과된 항목을 제거합니다.
+        if (recordList.size > maxItemCount) {
+            recordList.subList(maxItemCount, recordList.size).clear()
+        }
+
+        // 어댑터에 데이터 변경 사항을 알립니다.
         recordAdapter.notifyDataSetChanged()
-        updateRecordCount() // 새로운 데이터를 추가한 후 기록 개수를 업데이트합니다.
+
+        // 기록 개수를 업데이트합니다.
+        updateRecordCount()
     }
+
+    private fun updateRecordCount() {
+        val maxCount = 10 // 최대 표시 가능한 아이템 수
+        val currentCount = recordList.size // 현재 아이템 수
+
+        // tv_home_record_count를 "currentCount/10" 형식으로 업데이트합니다.
+        binding.tvHomeRecordCount.text = "$currentCount/$maxCount"
+    }
+
 
     private fun fetchMentors() {
         val token = getJwtToken() ?: return
@@ -153,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                     if (user != null) {
                         // UI에 데이터 반영
                         val name = user.name ?: ""
-                        binding.tvEncourage.text = "${name},\n" +
+                        binding.tvEncourage.text = "${name}님,\n" +
                                 "오늘도 화이팅하세요!"
                     }
                 } else {
@@ -217,12 +239,4 @@ class MainActivity : AppCompatActivity() {
         return sharedPref.getString("username", null)
     }
 
-    // 이 메소드는 현재 기록 개수를 업데이트합니다.
-    private fun updateRecordCount() {
-        val maxCount = 10 // 최대 표시 가능한 아이템 수
-        val currentCount = recordList.size // 현재 아이템 수
-
-        // tv_home_record_count를 "currentCount/10" 형식으로 업데이트합니다.
-        binding.tvHomeRecordCount.text = "$currentCount/$maxCount"
-    }
 }
