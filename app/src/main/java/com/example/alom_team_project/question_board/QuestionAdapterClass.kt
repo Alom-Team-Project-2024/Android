@@ -44,7 +44,6 @@ class QuestionAdapterClass(
         fun bind(question: QuestionClass) {
 
             val utcTime = question.createdAt
-            Log.d("zzzz", utcTime.toString())
 
             // DateTimeFormatter를 커스터마이즈하여 오프셋 없는 포맷을 처리
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
@@ -76,9 +75,25 @@ class QuestionAdapterClass(
             binding.subjectName.text = question.subject
             binding.content.text = question.text
 
+            val baseUrl = "http://15.165.213.186/uploads/" // 서버의 기본 URL
+
+            // 이미지가 있을 경우 첫 번째 이미지를 ImageView에 로드
+            if (question.images.isNotEmpty()) {
+                val fullImageUrl = baseUrl + question.images[0].imageUrl
+                //Log.d("ImageURL", "Loading image from URL: $fullImageUrl")
+                Glide.with(binding.questionImage.context)
+                    .load(fullImageUrl)
+                    .placeholder(R.drawable.ex_image)  // 이미지 로딩 전까지 보여줄 플레이스홀더
+                    .error(R.drawable.ex_image)  // 이미지 로딩 실패 시 보여줄 이미지
+                    .into(binding.questionImage)
+            } else {
+                binding.questionImage.visibility = View.GONE
+            }
+
             binding.likeNum.text = question.likes.toString()
             binding.commentNum.text = question.replyCount.toString()
             binding.scrapNum.text = question.scrapCount.toString()
+
 
             // Button 스타일 설정 (필요에 따라 조정)
             binding.likeButton.setBackgroundResource(R.drawable.like_button)
@@ -87,7 +102,7 @@ class QuestionAdapterClass(
 
             // 아이템 클릭 리스너 설정
             itemView.setOnClickListener {
-                Log.d("QuestionAdapter", "질문글 ID: ${question.id}")
+                //Log.d("QuestionAdapter", "질문글 ID: ${question.id}")
                 onItemClickListener(question.id)  // 클릭된 아이템의 ID 전달
             }
         }

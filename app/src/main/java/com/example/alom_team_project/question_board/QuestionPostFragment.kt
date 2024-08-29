@@ -56,7 +56,6 @@ class QuestionPostFragment : Fragment() {
     private lateinit var titleEditText: EditText
     private lateinit var contentEditText: EditText
     private lateinit var submitButton: ImageButton
-    private lateinit var imageView: ImageView
     private lateinit var adapter: SubjectAdapter
     private lateinit var subjectList: ArrayList<Subject>
     private lateinit var questionService: QuestionPostService
@@ -65,7 +64,6 @@ class QuestionPostFragment : Fragment() {
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
 
     private var postId: Long? = null
-    private var selectedImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

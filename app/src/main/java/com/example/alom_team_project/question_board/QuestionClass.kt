@@ -15,16 +15,16 @@ data class QuestionClass(
     val scrapCount: Int,
     val replyCount: Int,
     val replies: List<Reply>,
-    val images: List<ImageData>,
+    val images: List<QuestionImage>,
     val createdAt: String
+)
+
+data class QuestionImage(
+    val imageUrl: String
 )
 data class Replyitem(
     val title: String,
     val text: String
-)
-
-data class ImageData(
-    val imageUrl: String
 )
 
 data class User(
@@ -33,12 +33,17 @@ data class User(
 )
 
 data class Reply(
-    val title: String,
+    val id : Long,
     val text: String,
     val writer: String,
     val likes: Int,
     val images: List<ImageData>,
-    val createdAt: String
+    val createdAt: String,
+    var isImageLoaded: Boolean = false
+)
+
+data class ImageData(
+    val imageUrl: String
 )
 
 data class Subject(

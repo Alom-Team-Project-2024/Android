@@ -36,11 +36,18 @@ interface AnswerPostService {
         @Path("postId") postId: Long
     ): Call<QuestionClass>
 
-    // 좋아요 요청
+    // 질문글 좋아요 요청
     @POST("question_post/{postId}/likes/up")
     fun likePost(
         @Header("Authorization") token: String,
         @Path("postId") postId: Long
+    ): Call<Void>
+
+    // 답변글 좋아요 요청
+    @POST("question_post/reply/{replyId}/likes/up")
+    fun likeReply(
+        @Header("Authorization") token: String,
+        @Path("replyId") replyId: Long
     ): Call<Void>
 
     // 스크랩 요청
@@ -54,10 +61,10 @@ interface AnswerPostService {
     // 이미지 업로드 및 URL 반환
     @Multipart
     @POST("question_post/{postId}/reply/images")
-    fun uploadImage(
+    fun uploadImages(
         @Header("Authorization") token: String,
         @Path("postId") postId: Long,
-        @Part file: MultipartBody.Part
+        @Part file: List<MultipartBody.Part>
     ): Call<JsonArray> // 응답을 JSON으로 변경
 
 
