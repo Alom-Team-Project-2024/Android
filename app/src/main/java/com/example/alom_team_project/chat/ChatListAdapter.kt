@@ -1,15 +1,19 @@
 package com.example.alom_team_project.chat
 
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.R
 import com.example.alom_team_project.databinding.ChatListBinding
 import java.time.Duration
@@ -48,11 +52,6 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
     }
 
     inner class ChattingListViewHolder(private val binding: ChatListBinding) : RecyclerView.ViewHolder(binding.root) {
-        val profileImageView = binding.profile
-        val username = binding.userName
-        val content = binding.content
-        val time = binding.time
-
         init {
             itemView.setOnClickListener {
                 val position = adapterPosition
@@ -67,10 +66,9 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(item: ChatList) {
             val utcTime = item.time
-            Log.d("zzzz", utcTime.toString())
 
             // 기본적으로 빈 문자열을 처리할 경우 "Unknown time"을 설정
-            val elapsedTime: String = if (utcTime.isNotEmpty()) {
+            val elapsedTime: String = if (utcTime.isNotEmpty() && utcTime != "9999-12-31T23:59:59") {
                 // DateTimeFormatter를 커스터마이즈하여 오프셋 없는 포맷을 처리
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
@@ -102,16 +100,17 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
                     "" // 기본값으로 설정
                 }
             } else {
-                "" // 빈 문자열일 때 기본값
+                "" // 메시지와 타임스탬프가 비어있는 경우 표시할 기본 문자열
             }
 
-            // 프로필 이미지 설정
-            bindProfileImage(profileImageView, item.profile)
             // 나머지 데이터 설정
-            username.text = item.name
-            content.text = item.content
-            time.text = elapsedTime
+            binding.userName.text = item.name
+            binding.content.text = item.content
+            binding.time.text = elapsedTime
+
+            bindProfileImage(binding.profile, item.profile)
         }
+
 
 
     }
@@ -135,20 +134,19 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
     }
 
     fun bindProfileImage(imageView: ImageView, profile: String?) {
-        profile?.let {
-            if (it.startsWith("http")) {
-                // URL 기반 이미지 로드 (Glide 사용)
-                Glide.with(imageView.context)
-                    .load(it)
-                    .into(imageView)
-            } else {
-                // Base64 이미지 로드
-                val decodedBytes = Base64.decode(it, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                imageView.setImageBitmap(bitmap)
-            }
-        } ?: run {
-            imageView.setImageResource(R.drawable.profile) // 기본 이미지 설정
+        if (profile != null) {
+            val imageUrl = "http://15.165.213.186/$profile"
+            Log.d("ChatListAdapter", "Loading image from URL: $imageUrl")
+
+            Glide.with(imageView.context)
+                .load(imageUrl)
+                .apply(RequestOptions.circleCropTransform())
+                .into(imageView)
+        } else {
+            imageView.setImageResource(R.drawable.profile)
         }
     }
+
+
+
 }

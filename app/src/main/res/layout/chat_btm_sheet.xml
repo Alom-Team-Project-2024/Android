@@ -19,6 +19,7 @@
         android:text="세종이님 평가하기"
         android:textColor="@color/white"
         android:textSize="12dp"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@+id/success_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

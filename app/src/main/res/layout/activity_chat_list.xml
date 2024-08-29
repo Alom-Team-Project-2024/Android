@@ -11,13 +11,13 @@
         android:id="@+id/background"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:background="#FFFFFF" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/search_box"
@@ -46,11 +46,12 @@
 
     <EditText
         android:id="@+id/et_search"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="7dp"
         android:layout_marginTop="9dp"
         android:layout_marginBottom="9dp"
+        android:layout_marginEnd="10dp"
         android:elevation="10dp"
         android:background="@android:color/transparent"
         android:hint="검색하기"
@@ -60,6 +61,7 @@
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/search_box"
         app:layout_constraintStart_toEndOf="@+id/search_icon"
+        app:layout_constraintEnd_toEndOf="@+id/search_box"
         app:layout_constraintTop_toTopOf="@+id/search_box"
         app:layout_constraintVertical_bias="0.333" />
 
@@ -72,12 +74,11 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="13dp"
         android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/nav_btn"
+        app:layout_constraintBottom_toTopOf="@+id/btm_nav"
         app:layout_constraintEnd_toEndOf="@+id/background"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/background"
         app:layout_constraintTop_toBottomOf="@+id/search_box"
-        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/chat_list" />
 
 
@@ -95,13 +96,33 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/nav_btn"
-        android:layout_width="24dp"
-        android:layout_height="32dp"
-        android:layout_marginBottom="10dp"
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="@+id/background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/btm_nav" />
+        app:srcCompat="@drawable/nav_btm" />
+
+    <ImageView
+        android:id="@+id/btm_nav"
+        android:layout_width="38.03dp"
+        android:layout_height="38.03dp"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/btm_nav_btn" />
+
+    <FrameLayout
+        android:id="@+id/chat_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
