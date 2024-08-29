@@ -91,10 +91,11 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-
     // RxJava
     implementation("io.reactivex.rxjava2:rxjava:2.2.5")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.0")
+    //SVG
+    implementation("com.caverock:androidsvg-aar:1.4")
 
     // Spring
     implementation("org.springframework:spring-messaging:5.3.9")

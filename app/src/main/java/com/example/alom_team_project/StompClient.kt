@@ -1,6 +1,7 @@
 package com.example.alom_team_project
 
 import android.util.Log
+import com.example.alom_team_project.chat.ChatData
 import com.example.alom_team_project.chat.ChatMessage
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.StompSession
 import org.hildan.krossbow.stomp.frame.FrameBody
@@ -18,16 +20,24 @@ import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
 import org.hildan.krossbow.websocket.okhttp.OkHttpWebSocketClient
 
 class MyStompClient {
+    // MessageListener 인터페이스 정의
+    interface MessageListener {
+        fun onMessageReceived(chatMessage: ChatMessage)
+    }
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    private val chatMessageAdapter = moshi.adapter(ChatMessage::class.java)
-    private var session: StompSession? = null // 세션을 nullable로 유지
-    private val coroutineScope = CoroutineScope(Dispatchers.IO) // CoroutineScope 생성
+    private val chatMessageAdapter = moshi.adapter(ChatMessage::class.java).lenient()
 
-    // STOMP 서버에 연결하는 메서드
+    private var session: StompSession? = null
+    private var messageListener: MessageListener? = null
+
+    fun setMessageListener(listener: MessageListener) {
+        messageListener = listener
+    }
+
     fun connect(token: String) = runBlocking {
         try {
             val client = StompClient(OkHttpWebSocketClient())
@@ -35,56 +45,63 @@ class MyStompClient {
                 "ws://15.165.213.186:8080/ws-stomp",
                 customStompConnectHeaders = mapOf("Authorization" to token)
             )
-            Log.d("MyStompClient", "Connected to WebSocket server with Authorization header")
+            Log.d("StompC", "Connected to WebSocket server with Authorization header")
+            subscribeToChatRoom(2) // 채팅방 ID를 사용하여 구독
         } catch (e: Exception) {
-            Log.e("MyStompClient", "Failed to connect: ${e.message}")
+            Log.e("StompC", "Failed to connect", e)
         }
     }
 
-    // 구독을 설정하는 메서드
-    fun subscribe(token: String, roomId: String) {
+    fun subscribeToChatRoom(roomId: Long) {
         session?.let { currentSession ->
-            coroutineScope.launch {
+            val destination = "/sub/chats/room/$roomId"
+            val subscribeHeaders = StompSubscribeHeaders(destination)
+
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val subscribeHeaders = StompSubscribeHeaders(
-                        destination = "/sub/chats/room/$roomId", // URL 수정
-                        customHeaders = mapOf("Authorization" to token)
-                    )
+                    currentSession.subscribe(subscribeHeaders).collect { message ->
+                        val rawMessage = message.body.toString()
+                        Log.d("StompS", "Raw message: $rawMessage")
 
-                    val messageFlow: Flow<StompFrame.Message> =
-                        currentSession.subscribe(subscribeHeaders)
+                        try {
+                            val jsonPart = rawMessage.substringAfter("Text(text=").substringBeforeLast(")")
+                            val chatMessage = chatMessageAdapter.fromJson(jsonPart)
 
-                    messageFlow.collect { frame ->
-                        val chatMessage = chatMessageAdapter.fromJson(frame.bodyAsText)
-                        if (chatMessage != null) {
-                            Log.d("WebsocketS", "Received message: $chatMessage")
-                        } else {
-                            Log.e("WebsocketS", "Failed to parse message: ${frame.bodyAsText}")
+                            Log.d("StompS", "Received message: $chatMessage")
+
+                            // 메시지 수신을 리스너에 전달
+                            chatMessage?.let {
+                                withContext(Dispatchers.Main) {
+                                    messageListener?.onMessageReceived(it)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("StompS", "Failed to parse message", e)
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("WebsocketS", "Failed to subscribe: ${e.message}")
+                    Log.e("StompS", "Failed to subscribe", e)
                 }
             }
-        } ?: Log.e("WebsocketS", "Session is not initialized. Please connect first.")
+            Log.d("StompS", "Subscribed to chat room $roomId")
+        } ?: Log.e("StompS", "Session is not initialized. Please connect first.")
     }
 
-    // 서버로 메시지를 보내는 메서드
     fun sendMessage(chatRoomId: Long, sender: String, messageContent: String) {
         session?.let { currentSession ->
-            coroutineScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val chatMessage = ChatMessage(chatRoomId, sender, messageContent)
+                    Log.d("StompS", "ChatMessage before sending: $chatMessage")
                     val jsonMessage = chatMessageAdapter.toJson(chatMessage)
-                    val sendHeaders = StompSendHeaders(
-                        destination = "/pub/chats/messages",
-                    )
+                    val sendHeaders = StompSendHeaders(destination = "/pub/chats/messages")
                     currentSession.send(sendHeaders, FrameBody.Text(jsonMessage))
-                    Log.d("WebsocketS", "Sent message: $jsonMessage")
+                    Log.d("StompS", "Sent message: $jsonMessage")
                 } catch (e: Exception) {
-                    Log.e("WebsocketS", "Failed to send message: ${e.message}")
+                    Log.e("StompS", "Failed to send message", e)
                 }
             }
-        } ?: Log.e("WebsocketS", "Session is not initialized. Please connect first.")
+        } ?: Log.e("StompS", "Session is not initialized. Please connect first.")
     }
 }
+

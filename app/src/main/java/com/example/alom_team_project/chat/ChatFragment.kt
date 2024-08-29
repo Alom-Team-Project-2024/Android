@@ -15,6 +15,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.MyStompClient
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
@@ -40,7 +41,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ChatFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ChatFragment : Fragment() {
+class ChatFragment : Fragment(), MyStompClient.MessageListener {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var assessDialog: AssessDialogBinding
     private val chattingList = ArrayList<ChatData>()
@@ -52,15 +53,31 @@ class ChatFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // 레이아웃 인플레이트
         binding = FragmentChatBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onMessageReceived(chatMessage: ChatMessage) {
+        // 수신된 메시지를 채팅 리스트에 추가하고 UI를 갱신합니다.
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            val nickname = getUsernick()
+            val viewType: Int
+            if (chatMessage.sender == nickname) // 내가 보낸 메시지라면 뷰타입 1
+                viewType = 1
+            else
+                viewType = 0
+            chattingList.add(ChatData(chatMessage.message, viewType)) // 상대방 메시지 viewType = 0
+            adapter.notifyDataSetChanged()
+            binding.rcvChatting.scrollToPosition(chattingList.size - 1)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        stompClient = MyStompClient()
+        stompClient = MyStompClient().apply {
+            setMessageListener(this@ChatFragment) // 메시지 리스너 설정
+        }
         val token = getJwtToken()
         val chatRoomId = arguments?.getLong("ChatRoomId") ?: 0L
         val myNick = getUsernick()!!
@@ -73,6 +90,8 @@ class ChatFragment : Fragment() {
                 if (token.isNotEmpty()) {
                     stompClient.connect("Bearer $token")
                     Log.d("WebsocketM", "Connected to STOMP server")
+                    stompClient.subscribeToChatRoom(chatRoomId)
+                    Log.d("WebsocketM", "Subscribed to chat room $chatRoomId")
                 } else {
                     Log.e("Token Error", "Token is empty, cannot connect to STOMP server")
                 }
@@ -82,8 +101,22 @@ class ChatFragment : Fragment() {
         }
 
         if (chatRoomId != 0L) {
-            setupUserProfile(token, chatRoomId, myNick)
+            setupUserProfile(token, chatRoomId, myNick) { chatTitle ->
+                chatTitle?.let { title ->
+                    Log.d("chatTitle", "$title")
+                    binding.profileImg.setOnClickListener {
+                        navigateToProfile(title)
+                    }
+
+                    binding.nicknameTv.setOnClickListener {
+                        navigateToProfile(title)
+                    }
+
+                    setupBottomSheet(title)
+                }
+            }
         }
+
         setupRecyclerView()
 
         fetchChatHistory(token, chatRoomId, myNick)
@@ -91,7 +124,6 @@ class ChatFragment : Fragment() {
         binding.sendBtn.setOnClickListener {
             val messageContent = binding.etMessage.text.toString()
             if (messageContent.isNotEmpty()) {
-                chattingList.add(ChatData(messageContent, 1))
                 adapter.notifyDataSetChanged()
                 binding.rcvChatting.scrollToPosition(chattingList.size - 1)
 
@@ -115,24 +147,12 @@ class ChatFragment : Fragment() {
             startActivity(intent)
         }
 
-        setupBottomSheet()
-
         binding.menuBtn.setOnClickListener {
             bottomSheetDialog.show()
         }
-
-        binding.profileImg.setOnClickListener {
-            val intent = Intent(requireActivity(), UserProfileActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.nicknameTv.setOnClickListener {
-            val intent = Intent(requireActivity(), UserProfileActivity::class.java)
-            startActivity(intent)
-        }
     }
 
-    private fun setupUserProfile(token: String, chatRoomId: Long, nickname: String) {
+    private fun setupUserProfile(token: String, chatRoomId: Long, nickname: String, callback: (String?) -> Unit) {
         if (token.isNotEmpty()) {
             val userInfo = RetrofitClient.instance.create(ChatService::class.java)
             val call = userInfo.getChatRoomById("Bearer $token", chatRoomId)
@@ -157,22 +177,40 @@ class ChatFragment : Fragment() {
                             Log.d("Chat", "User: $chatTitle")
 
                             binding.nicknameTv.text = chatTitle
+                            if (profile != null) {
+                                val imageUrl = getAbsoluteUrl(profile)
+                                Log.d("ProfileImage", "$imageUrl")
 
-                            Glide.with(requireContext())
-                                .load(profile)
-                                .into(binding.profileImg)
+                                Glide.with(binding.profileImg.context)
+                                    .load(imageUrl)
+                                    .apply(RequestOptions.circleCropTransform()) // 원형 변환
+                                    .into(binding.profileImg)
+                            }
+                            else {
+                                Glide.with(binding.profileImg.context)
+                                    .load(R.drawable.profile_img)
+                                    .apply(RequestOptions.circleCropTransform()) // 원형 변환
+                                    .into(binding.profileImg)
+                            }
+                            // callback을 통해 chatTitle을 전달
+                            callback(chatTitle)
+                        } ?: run {
+                            callback(null)
                         }
                     } else {
                         Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
+                        callback(null)
                     }
                 }
 
                 override fun onFailure(call: Call<ChatRoomResponse>, t: Throwable) {
                     Log.e("API Error", "Failure: ${t.message}")
+                    callback(null)
                 }
             })
         } else {
             Log.e("Token Error", "Token is empty")
+            callback(null)
         }
     }
 
@@ -235,10 +273,13 @@ class ChatFragment : Fragment() {
 
     }
 
-    private fun setupBottomSheet() {
+    private fun setupBottomSheet(nickname: String) {
         bottomSheetDialog = BottomSheetDialog(requireContext())
         val bottomSheetView = layoutInflater.inflate(R.layout.chat_btm_sheet, null)
         bottomSheetDialog.setContentView(bottomSheetView)
+
+        Log.d("BottomSheet", "$nickname")
+        bottomSheetView.findViewById<AppCompatButton>(R.id.rating_btn).text = "${nickname}님 평가하기"
 
         bottomSheetView.findViewById<AppCompatButton>(R.id.rating_btn).setOnClickListener {
             bottomSheetDialog.dismiss()
@@ -287,5 +328,17 @@ class ChatFragment : Fragment() {
     private fun getUsernick(): String? {
         val sharedPref = requireContext().getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
         return sharedPref.getString("nickname", null)
+    }
+
+    private fun navigateToProfile(chatTitle: String) {
+        val intent = Intent(requireContext(), UserProfileActivity::class.java).apply {
+            putExtra("chatTitle", "$chatTitle")
+        }
+        startActivity(intent)
+    }
+
+    fun getAbsoluteUrl(relativeUrl: String): String {
+        val baseUrl = "http://15.165.213.186/" // 서버의 기본 URL
+        return baseUrl + relativeUrl
     }
 }
