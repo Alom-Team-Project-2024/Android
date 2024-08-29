@@ -51,14 +51,14 @@ interface AnswerPostService {
         @Path("postId") postId: Long
     ): Call<Void>
 
-//    // 이미지 업로드 및 URL 반환
-//    @Multipart
-//    @POST("question_post/{postId}/images")
-//    fun uploadImage(
-//        @Header("Authorization") token: String,
-//        @Path("postId") postId: Long,
-//        @Part file: MultipartBody.Part
-//    ): Call<JsonArray> // 응답을 JSON으로 변경
-//
+    // 이미지 업로드 및 URL 반환
+    @Multipart
+    @POST("question_post/{postId}/reply/images")
+    fun uploadImage(
+        @Header("Authorization") token: String,
+        @Path("postId") postId: Long,
+        @Part file: MultipartBody.Part
+    ): Call<JsonArray> // 응답을 JSON으로 변경
+
 
 }

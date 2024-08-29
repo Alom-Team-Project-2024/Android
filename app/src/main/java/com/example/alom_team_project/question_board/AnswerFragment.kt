@@ -3,6 +3,8 @@ package com.example.alom_team_project.question_board
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,6 +22,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class AnswerFragment : Fragment() {
+
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
+    private val refreshInterval: Long = 500 // 5초 (원하는 간격으로 설정)
 
     private var _binding: FragmentAnswerBinding? = null
     private val binding get() = _binding!!
@@ -39,6 +45,8 @@ class AnswerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupAutoRefresh()
 
         // 뒤로가기 버튼 설정
         val btnBack: ImageButton = view.findViewById(R.id.back_button)
@@ -101,11 +109,6 @@ class AnswerFragment : Fragment() {
                 sendPostAnswer(questionId)
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun getJwtToken(): String {
@@ -300,5 +303,28 @@ class AnswerFragment : Fragment() {
     private fun getScrapStatus(postId: Long): Boolean {
         val sharedPref = requireContext().getSharedPreferences("scraps", Context.MODE_PRIVATE)
         return sharedPref.getBoolean("post_$postId", false)
+    }
+
+    private fun setupAutoRefresh() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                val questionId = arguments?.getLong("QUESTION_ID")
+                if (questionId != null) {
+                    // 좋아요, 스크랩 상태 업데이트
+                    fetchQuestionDetails(questionId)
+                    // 댓글 목록 업데이트
+                    fetchReply(questionId)
+                }
+                handler.postDelayed(this, refreshInterval)
+            }
+        }
+        handler.post(runnable)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        handler.removeCallbacks(runnable)  // Fragment가 파괴될 때 Runnable 제거
     }
 }

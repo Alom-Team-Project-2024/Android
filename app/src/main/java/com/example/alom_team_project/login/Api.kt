@@ -11,12 +11,16 @@ import com.example.alom_team_project.databinding.AnswerItemBinding
 import com.example.alom_team_project.mentor_post.MentorPostResponse
 import com.example.alom_team_project.mypage.UserResponse
 import com.example.alom_team_project.question_board.QuestionClass
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface SejongApi {
@@ -35,12 +39,20 @@ interface UserApi {
         @Body profileData: Map<String, String> // 학번과 닉네임
     ): Call<String> // 응답을 String으로 받음
 
-    @POST("/users/{username}/profile-image") // 프로필 이미지 업로드
+    @GET("users/{userId}/profile-image") // 프로필 이미지 조회
+    fun getProfileImage(
+        @Path("userId") userId: String,
+        @Header("Authorization") authHeader: String
+    ): Call<ResponseBody>
+
+    @Multipart
+    @POST("users/{username}/profile-image") //프로필 이미지 변경
     fun uploadProfileImage(
-        @Path("username") username: String, // 학번 경로 파라미터
-        @Header("Authorization") authHeader: String, // JWT 토큰을 헤더에 추가
-        @retrofit2.http.Part file: okhttp3.MultipartBody.Part // 업로드할 파일
-    ): Call<String> // 응답을 String으로 받음
+        @Path("username") username: String,
+        @Header("Authorization") authHeader: String,
+        @Part file: MultipartBody.Part
+    ): Call<ResponseBody>
+
 
     @GET("/users/username/{username}") // 사용자 정보 조회
     fun getUserProfile(
@@ -65,7 +77,8 @@ interface UserApi {
     fun getScrapInfo(
         @Path("username") questionId: String,
         @Header("Authorization") token: String
-    ): Call<QuestionClass>
+    ): Call<List<QuestionClass>>
+
 
     // 닉네임으로 작성된 질문 게시물을 조회
     @GET("/question_post/writer/{nickname}")

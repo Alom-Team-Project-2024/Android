@@ -4,6 +4,8 @@ package com.example.alom_team_project.question_board
 
 import QuestionPostService
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -23,6 +25,10 @@ class QuestionBoardActivity : AppCompatActivity() {
     private lateinit var adapter: QuestionAdapterClass
     private lateinit var questionList: ArrayList<QuestionClass>
     private lateinit var questionService: QuestionPostService
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
+
+    private val refreshInterval: Long = 2000 // 10초
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +70,7 @@ class QuestionBoardActivity : AppCompatActivity() {
                 // 텍스트 변화 후의 행동을 정의
             }
         })
+        setupAutoRefresh()
     }
 
     private fun setupRecyclerView() {
@@ -120,6 +127,23 @@ class QuestionBoardActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun setupAutoRefresh() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                fetchData()
+                handler.postDelayed(this, refreshInterval)
+            }
+        }
+        handler.post(runnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(runnable) // Activity가 파괴될 때 Runnable 제거
+    }
+
 
 
     private fun openPostQuestionFragment() {

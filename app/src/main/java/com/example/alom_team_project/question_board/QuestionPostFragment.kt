@@ -1,6 +1,5 @@
 package com.example.alom_team_project.question_board
 
-
 import QuestionPostService
 import android.Manifest
 import android.app.Activity
@@ -51,6 +50,9 @@ class QuestionPostFragment : Fragment() {
     private var _binding: FragmentQuestionPostBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var imageAdapter: ImageAdapter
+    private var selectedImageUris: List<Uri>? = null
+
     private lateinit var titleEditText: EditText
     private lateinit var contentEditText: EditText
     private lateinit var submitButton: ImageButton
@@ -85,6 +87,10 @@ class QuestionPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        titleEditText = view.findViewById(R.id.titleEditText)
+        contentEditText = view.findViewById(R.id.contentEditText)
+        submitButton = view.findViewById(R.id.submitButton)
+
         // List 초기화
         subjectList = arrayListOf()
 
@@ -104,6 +110,7 @@ class QuestionPostFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.subjectRecyclerView.visibility = View.VISIBLE
                 // 텍스트가 변경될 때마다 어댑터의 필터링 메소드 호출
                 adapter.filter(s.toString())
             }
@@ -113,23 +120,40 @@ class QuestionPostFragment : Fragment() {
             }
         })
 
+        // RecyclerView 초기화
+        binding.recyclerViewImages.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        imageAdapter = ImageAdapter(emptyList())  // 초기에는 빈 리스트
+        binding.recyclerViewImages.adapter = imageAdapter
+
+        // 이미지 선택 후 RecyclerView 업데이트
         imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                selectedImageUri = result.data?.data
-                imageView.setImageURI(selectedImageUri)
+                val clipData = result.data?.clipData
+                val imageUris = mutableListOf<Uri>()
 
-                postId?.let { id ->
-                    uploadImage(id)
-                } ?: Toast.makeText(context, "Post ID is not available", Toast.LENGTH_SHORT).show()
+                if (clipData != null) {
+                    // 여러 장의 이미지를 선택한 경우
+                    for (i in 0 until clipData.itemCount) {
+                        val item = clipData.getItemAt(i)
+                        imageUris.add(item.uri)
+                    }
+                } else {
+                    // 단일 이미지를 선택한 경우
+                    result.data?.data?.let { uri ->
+                        imageUris.add(uri)
+                    }
+                }
+
+                selectedImageUris = imageUris
+                // RecyclerView의 어댑터를 업데이트
+                imageAdapter = ImageAdapter(imageUris)
+                binding.recyclerViewImages.adapter = imageAdapter
             }
         }
 
-        titleEditText = view.findViewById(R.id.titleEditText)
-        contentEditText = view.findViewById(R.id.contentEditText)
-        submitButton = view.findViewById(R.id.submitButton)
-        imageView = view.findViewById(R.id.imageView)
 
         val btnBack : ImageButton = view.findViewById(R.id.back_button)
+
         btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -146,7 +170,6 @@ class QuestionPostFragment : Fragment() {
 
         submitButton.setOnClickListener {
             sendPostRequest()
-            parentFragmentManager.popBackStack()
         }
     }
 
@@ -162,7 +185,7 @@ class QuestionPostFragment : Fragment() {
 
         // 제목과 내용을 확인하고 비어 있지 않도록 체크
         if (subject.isBlank() || text.isBlank()) {
-            Toast.makeText(context, "Please fill in both fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "과목명과 내용을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -175,11 +198,14 @@ class QuestionPostFragment : Fragment() {
             override fun onResponse(call: Call<Long>, response: Response<Long>) {
                 if (response.isSuccessful) {
                     postId = response.body()
-                    Toast.makeText(context, "Post submitted successfully. ID: $postId", Toast.LENGTH_SHORT).show()
+
                     // 이미지 업로드는 포스트 ID를 받은 후 처리
-                    selectedImageUri?.let { uri ->
-                        uploadImage(postId ?: return)
+                    selectedImageUris?.let { uris ->
+                        uploadImages(postId ?: return, uris)
                     }
+
+                    Toast.makeText(context, "글이 정상적으로 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
                 } else {
                     Log.e("POST_REQUEST", "Error: ${response.code()}")
                     Toast.makeText(context, "Request failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
@@ -196,45 +222,44 @@ class QuestionPostFragment : Fragment() {
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // 여러 파일 선택 허용
         imagePickerLauncher.launch(intent)
     }
 
-    private fun uploadImage(postId: Long) {
-        selectedImageUri?.let { uri ->
-            val token = getJwtToken()
-
-            val filePath = getRealPathFromURI(uri) ?: return
-            val file = File(filePath)
-
-            if (file.exists()) {
+    private fun uploadImages(postId: Long, imageUris: List<Uri>) {
+        val token = getJwtToken()
+        val fileParts = imageUris.mapNotNull { uri ->
+            val filePath = getRealPathFromURI(uri)
+            filePath?.let {
+                val file = File(it)
                 val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-
-                // Use the correct service method for image upload
-                service.uploadImage("Bearer $token", postId, body).enqueue(object : Callback<JsonArray> {
-                    override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
-                        if (response.isSuccessful) {
-                            Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-
-                            // 서버로부터의 응답 데이터 확인
-                            val imageUrls = response.body()?.map { it.asJsonObject.get("imageUrl").asString }
-                            Log.d("UPLOAD_IMAGE", "Image URLs: $imageUrls")
-                        } else {
-                            Log.e("UPLOAD_IMAGE", "Error: ${response.code()} - ${response.message()}")
-                            Toast.makeText(context, "Image upload failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<JsonArray>, t: Throwable) {
-                        Log.e("UPLOAD_IMAGE", "Failed to upload image", t)
-                        Toast.makeText(context, "Image upload failed: ${t.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            } else {
-                Toast.makeText(context, "File does not exist", Toast.LENGTH_SHORT).show()
+                MultipartBody.Part.createFormData("file", file.name, requestFile)
             }
         }
+
+        if (fileParts.isEmpty()) {
+            Toast.makeText(context, "No valid images to upload", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        service.uploadImages("Bearer $token", postId, fileParts).enqueue(object : Callback<JsonArray> {
+            override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "사진을 정상적으로 업로드하였습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("UPLOAD_IMAGES", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(context, "Image upload failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+                Log.e("UPLOAD_IMAGES", "Failed to upload images", t)
+                Toast.makeText(context, "Image upload failed: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
+
+
 
     private fun getRealPathFromURI(uri: Uri): String? {
         var path: String? = null
