@@ -74,7 +74,8 @@ class ScrapBoardActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = QuestionAdapterClass(scrapQuestionList)
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1111
+        //adapter = QuestionAdapterClass(scrapQuestionList)
         binding.QuestionRecyclerView.adapter = adapter
         binding.QuestionRecyclerView.layoutManager = LinearLayoutManager(this)
     }

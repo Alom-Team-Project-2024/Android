@@ -1,10 +1,12 @@
 package com.example.alom_team_project.question_board
 
+
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,8 +23,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.TimeZone
 
-class QuestionAdapterClass(private val questionList: ArrayList<QuestionClass>) :
-    RecyclerView.Adapter<QuestionAdapterClass.ViewHolder>() {
+class QuestionAdapterClass(
+    private val questionList: ArrayList<QuestionClass>,
+    private val onItemClickListener: (Long) -> Unit // 클릭 리스너 추가
+) : RecyclerView.Adapter<QuestionAdapterClass.ViewHolder>() {
 
     private var filteredList: ArrayList<QuestionClass> = ArrayList(questionList)
 
@@ -31,8 +35,11 @@ class QuestionAdapterClass(private val questionList: ArrayList<QuestionClass>) :
     }
 
 
-    class ViewHolder(private val binding: QuestionBoardItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(
+        private val binding: QuestionBoardItemBinding,
+        private val onItemClickListener: (Long) -> Unit // 클릭 리스너를 생성자에 추가
+    ) : RecyclerView.ViewHolder(binding.root) {
+
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(question: QuestionClass) {
 
@@ -77,20 +84,24 @@ class QuestionAdapterClass(private val questionList: ArrayList<QuestionClass>) :
             binding.likeButton.setBackgroundResource(R.drawable.like_button)
             binding.commentButton.setBackgroundResource(R.drawable.comment_button)
             binding.scrapButton.setBackgroundResource(R.drawable.scrap_button)
+
+            // 아이템 클릭 리스너 설정
+            itemView.setOnClickListener {
+                Log.d("QuestionAdapter", "질문글 ID: ${question.id}")
+                onItemClickListener(question.id)  // 클릭된 아이템의 ID 전달
+            }
         }
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = QuestionBoardItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding,onItemClickListener)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = filteredList[position]
-
-        //holder.uploadTime.text = elapsedTime
 
         holder.bind(currentItem)
     }

@@ -1,4 +1,6 @@
 import com.example.alom_team_project.question_board.QuestionClass
+import com.example.alom_team_project.question_board.QuestionPostFragment
+import com.example.alom_team_project.question_board.Subject
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -23,10 +25,10 @@ interface QuestionPostService {
     // 이미지 업로드 및 URL 반환
     @Multipart
     @POST("question_post/{postId}/images")
-    fun uploadImage(
+    fun uploadImages(
         @Header("Authorization") token: String,
         @Path("postId") postId: Long,
-        @Part file: MultipartBody.Part
+        @Part file: List<MultipartBody.Part>
     ): Call<JsonArray> // 응답을 JSON으로 변경
 
     // 질문 목록 가져오기
@@ -34,4 +36,10 @@ interface QuestionPostService {
     fun getQuestions(
         @Header("Authorization") token: String // Authorization 헤더에 토큰 추가
     ): Call<List<QuestionClass>>
+
+    // 과목 목록 가져오기
+    @GET("subjects")
+    fun getSubjects(
+        @Header("Authorization") token: String // Authorization 헤더에 토큰 추가
+    ): Call<List<Subject>>
 }

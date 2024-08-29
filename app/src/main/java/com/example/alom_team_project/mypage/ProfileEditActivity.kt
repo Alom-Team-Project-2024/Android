@@ -30,10 +30,16 @@ class ProfileEditActivity : AppCompatActivity() {
     private lateinit var tvCheckDouble: TextView
     private lateinit var imgProfile: ImageView
     private lateinit var btnProfile: ImageButton
+    private lateinit var btnBack: ImageButton
 
     private var selectedImageUri: Uri? = null
     private var isNicknameAvailable = false
     private var originalNickname: String? = null
+    private var isNicknameChecked = false // Track if the nickname has been checked
+    private fun finishWithResult() {
+        setResult(RESULT_OK)
+        finish()
+    }
 
     private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -55,14 +61,17 @@ class ProfileEditActivity : AppCompatActivity() {
         tvCheckDouble = findViewById(R.id.tv_check_double)
         imgProfile = findViewById(R.id.img_profile)
         btnProfile = findViewById(R.id.btn_profile)
-
-        imgProfile.setBackgroundResource(R.drawable.group_256)
+        btnBack = findViewById(R.id.btn_back)
 
         // Load user profile on create
         getUserProfile()
 
         btnProfile.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        }
+
+        btnBack.setOnClickListener {
+            finish()
         }
 
         btnCheckDouble.setOnClickListener {
@@ -81,16 +90,30 @@ class ProfileEditActivity : AppCompatActivity() {
             val username = getUsername()
 
             if (newNickname.isNotEmpty() && token != null && username != null) {
-                if (newNickname != originalNickname) {
-                    // Only update profile if nickname has changed
-                    updateProfile(newNickname, username, token)
-                }
-                if (selectedImageUri != null) {
-                    // Upload profile image if selected
-                    uploadProfileImage(selectedImageUri!!, username, token)
-                } else if (newNickname == originalNickname) {
-                    // No change to nickname and no image selected
-                    Toast.makeText(this, "변경 사항이 없습니다.", Toast.LENGTH_SHORT).show()
+                if (newNickname == originalNickname) {
+                    // No change to nickname
+                    if (selectedImageUri != null) {
+                        // Upload profile image if selected
+                        uploadProfileImage(selectedImageUri!!, username, token)
+                    } else {
+                        // No change to nickname and no image selected
+                        Toast.makeText(this, "변경 사항이 없습니다.", Toast.LENGTH_SHORT).show()
+                        finishWithResult() // Notify that the result is OK
+                    }
+                } else {
+                    // Nickname changed, check for duplication
+                    if (isNicknameChecked) {
+                        if (isNicknameAvailable) {
+                            updateProfile(newNickname, username, token)
+                            if (selectedImageUri != null) {
+                                uploadProfileImage(selectedImageUri!!, username, token)
+                            }
+                        } else {
+                            Toast.makeText(this, "닉네임 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        checkNicknameDuplication(newNickname, token)
+                    }
                 }
             } else {
                 Toast.makeText(this, "닉네임, 학번 또는 토큰을 확인해주세요.", Toast.LENGTH_SHORT).show()
@@ -142,13 +165,13 @@ class ProfileEditActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.e("ProfileImage", "Error: ${response.code()} - ${response.message()}")
-                    Toast.makeText(this@ProfileEditActivity, "Failed to fetch profile image", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProfileEditActivity, "프로필 이미지를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.e("ProfileImage", "Failed to fetch profile image", t)
-                Toast.makeText(this@ProfileEditActivity, "Failed to fetch profile image: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProfileEditActivity, "프로필 이미지 가져오기 실패: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -179,6 +202,7 @@ class ProfileEditActivity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                             isNicknameAvailable = true
+                            isNicknameChecked = true // Mark as checked
                         } else {
                             tvCheckDouble.text = "사용 불가능한 닉네임입니다."
                             tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
@@ -188,6 +212,7 @@ class ProfileEditActivity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                             isNicknameAvailable = false
+                            isNicknameChecked = true // Mark as checked
                         }
                     } else {
                         Toast.makeText(
@@ -208,6 +233,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 }
             })
     }
+
     private fun updateProfile(nickname: String, username: String, token: String) {
         val profileData = mapOf("username" to username, "nickname" to nickname)
         val authHeader = "Bearer $token"
@@ -231,7 +257,7 @@ class ProfileEditActivity : AppCompatActivity() {
                                         "프로필 수정 성공",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    navigateToMainActivity()
+                                    finish()
                                 }
                                 "0" -> {
                                     Toast.makeText(
@@ -283,6 +309,7 @@ class ProfileEditActivity : AppCompatActivity() {
                         val responseBody = response.body()?.string()  // Read response as a string
                         Log.d("ProfileEditActivity", "Response: $responseBody")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 성공", Toast.LENGTH_SHORT).show()
+                        finish()
                     } else {
                         val errorBody = response.errorBody()?.string()  // Read error body
                         Log.e("ProfileEditActivity", "응답 오류: $errorBody")

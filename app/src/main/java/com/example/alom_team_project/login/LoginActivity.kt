@@ -89,10 +89,10 @@ class LoginActivity : AppCompatActivity() {
                         // JWT와 username 저장
                         saveUserData(token, id)
                         JwtProvider.setToken(token)
-                        //navigateToMainActivity()
+                        navigateToMainActivity()
                         //navigateToScrapActivity()
                         //navigateToMypageActivity()
-                        navigateToProfileActivity()  // 프로필 설정 페이지 이동
+                        //navigateToProfileActivity()  // 프로필 설정 페이지 이동
                     } else {
                         showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                     }

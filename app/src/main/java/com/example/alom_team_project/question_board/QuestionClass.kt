@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 data class QuestionClass(
+    val id : Long,
     val subject: String,
     val text: String,
     val writer: String,
@@ -40,4 +41,7 @@ data class Reply(
     val createdAt: String
 )
 
+data class Subject(
+    val subject : String
+)
 

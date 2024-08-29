@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
@@ -31,8 +32,12 @@ class MypageActivity : AppCompatActivity() {
     private lateinit var btnLogout: Button
     private lateinit var ivProfileImage: ImageView
     private lateinit var tvProfileEdit: TextView
-
-
+    private val editProfileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // 정보 수정 후 돌아올 때 사용자 정보 새로고침
+            getUserProfile()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mypage)
@@ -56,7 +61,7 @@ class MypageActivity : AppCompatActivity() {
 
         tvProfileEdit.setOnClickListener {
             val intent = Intent(this, ProfileEditActivity::class.java)
-            startActivity(intent)
+            editProfileLauncher.launch(intent)
         }
 
         // 버튼 클릭 시 MyPostActivity로 이동
@@ -163,4 +168,5 @@ class MypageActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("username", null)
     }
+
 }

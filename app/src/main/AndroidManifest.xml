@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- Wi-Fi 상태 변경 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <!-- 외부 저장소에 파일을 접근 권한 추가 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

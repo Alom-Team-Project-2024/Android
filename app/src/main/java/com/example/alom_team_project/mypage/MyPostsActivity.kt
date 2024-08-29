@@ -74,7 +74,8 @@ class MyPostsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = QuestionAdapterClass(myPostList)
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //adapter = QuestionAdapterClass(myPostList)
         binding.QuestionRecyclerView.adapter = adapter
         binding.QuestionRecyclerView.layoutManager = LinearLayoutManager(this)
     }

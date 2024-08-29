@@ -50,7 +50,7 @@
         android:layout_marginTop="25dp"
         android:layout_marginEnd="13dp"
         app:layout_constraintHorizontal_bias="1.0"
-        app:srcCompat="@drawable/round_rectangle1"
+        app:srcCompat="@drawable/round_rectangle9"
         app:layout_constraintBottom_toTopOf="@+id/QuestionRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,11 +69,9 @@
 
     <EditText
         android:id="@+id/et_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="7dp"
-        android:layout_marginTop="9dp"
-        android:layout_marginBottom="9dp"
         android:background="@android:color/transparent"
         android:hint="검색하기"
         android:imeOptions="actionDone"
@@ -81,6 +79,7 @@
         android:textColorHint="#9D9D9D"
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/search_box"
+        app:layout_constraintEnd_toEndOf="@id/search_box"
         app:layout_constraintStart_toEndOf="@+id/search_icon"
         app:layout_constraintTop_toTopOf="@+id/search_box"
         app:layout_constraintVertical_bias="0.333" />

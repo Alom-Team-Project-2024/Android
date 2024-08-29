@@ -18,7 +18,7 @@ data class ChatRoom(
 )
 
 data class ChatMessage(
-    val chatRoomId: String,
+    val chatRoomId: Long,
     val sender: String,
     val message: String
 )
@@ -47,10 +47,14 @@ data class UserResponse(
     val modifiedAt: String
 )
 
+data class UserRate(
+    val point: Double
+)
+
 data class ChatHistoryResponse(
     val chatRoomId: String,
     val sender: String,
-    val messages: String,
+    val message: String,
     val createdAt: String
 )
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#CFC5FB"
-    tools:context=".AnswerFragment">
+    tools:context="com.example.alom_team_project.question_board.AnswerFragment">
 
     <!-- 뒤로가기 버튼 -->
     <ImageButton
@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="@string/myHistoryTitleText"
+        android:textColor="@color/black"
         android:textSize="20sp"
 
         android:textStyle="bold"
@@ -81,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/questionerName"
+            android:textColor="@color/black"
             android:textStyle="bold"
 
             app:layout_constraintTop_toTopOf="@id/questioner_profile"
@@ -96,6 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/questionText"
+            android:textColor="@color/black"
             android:textSize="12sp"
 
             app:layout_constraintTop_toBottomOf="@id/questioner_profile"
@@ -123,6 +126,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="14dp"
             android:text="1"
+            android:textColor="@color/black"
             android:textSize="8sp"
             app:layout_constraintStart_toEndOf="@id/like_button"
             app:layout_constraintTop_toBottomOf="@+id/question_text" />
@@ -145,6 +149,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="14dp"
             android:text="2"
+            android:textColor="@color/black"
             android:textSize="8sp"
             app:layout_constraintStart_toEndOf="@id/comment_button"
             app:layout_constraintTop_toBottomOf="@+id/question_text" />
@@ -167,6 +172,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="14dp"
             android:text="3"
+            android:textColor="@color/black"
             android:textSize="8sp"
             app:layout_constraintStart_toEndOf="@id/scrap_button"
             app:layout_constraintTop_toBottomOf="@+id/question_text" />
@@ -186,35 +192,49 @@
             app:layout_constraintWidth_percent="0.9" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/answer_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/question_container"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/answer_item"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/question_container"
+        app:layout_constraintBottom_toBottomOf="@id/linearLayout"
+        tools:listitem="@layout/answer_item">
 
     </androidx.recyclerview.widget.RecyclerView>
-
-
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/up_round_rectangle2"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnPickImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="37dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="13dp"
+            android:background="@android:color/transparent"
+
+            android:padding="0dp"
+            android:src="@drawable/photo"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/chatting_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="13dp"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="13dp"
             android:layout_marginBottom="30dp"
@@ -230,6 +250,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+
                 <EditText
                     android:id="@+id/et_message"
                     android:layout_width="0dp"
@@ -240,7 +261,7 @@
                     android:layout_marginBottom="9dp"
                     android:background="@android:color/transparent"
                     android:gravity="top|start"
-                    android:hint="채팅하기..."
+                    android:hint="답변 작성하기"
                     android:imeOptions="actionDone"
                     android:inputType="textMultiLine"
                     android:maxLines="5"
@@ -252,12 +273,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <Button
                     android:id="@+id/send_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="9dp"
+                    android:layout_marginBottom="5dp"
                     android:text="전송"
                     android:textColor="@color/black"
                     android:textSize="10dp"

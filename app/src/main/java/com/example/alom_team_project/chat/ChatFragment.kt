@@ -46,7 +46,6 @@ class ChatFragment : Fragment() {
     private val chattingList = ArrayList<ChatData>()
     private lateinit var adapter: ChatAdapter
     private lateinit var stompClient: MyStompClient
-
     private lateinit var binding: FragmentChatBinding
 
     override fun onCreateView(
@@ -58,24 +57,17 @@ class ChatFragment : Fragment() {
         return binding.root
     }
 
-    private fun getJwtToken(): String {
-        val sharedPref = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
-        return sharedPref.getString("jwt_token", "") ?: ""
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         stompClient = MyStompClient()
-
         val token = getJwtToken()
-
         val chatRoomId = arguments?.getLong("ChatRoomId") ?: 0L
-        val myNick = "user497"
+        val myNick = getUsernick()!!
+        Log.d("MyNick", "$myNick")
 
         Log.d("ChatFragment", "Received ChatRoom ID: $chatRoomId")
 
-        // STOMP 클라이언트 연결 및 구독
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 if (token.isNotEmpty()) {
@@ -90,26 +82,31 @@ class ChatFragment : Fragment() {
         }
 
         if (chatRoomId != 0L) {
-            setupUserProfile("Bearer $token", chatRoomId, myNick)
+            setupUserProfile(token, chatRoomId, myNick)
         }
         setupRecyclerView()
 
+        fetchChatHistory(token, chatRoomId, myNick)
+
         binding.sendBtn.setOnClickListener {
-            if (binding.etMessage.length() > 0) {
-                chattingList.add(ChatData(binding.etMessage.text.toString(), 1))
+            val messageContent = binding.etMessage.text.toString()
+            if (messageContent.isNotEmpty()) {
+                chattingList.add(ChatData(messageContent, 1))
                 adapter.notifyDataSetChanged()
-                binding.etMessage.setText("")
                 binding.rcvChatting.scrollToPosition(chattingList.size - 1)
 
-                val messageContent = binding.etMessage.text.toString()
+                Log.d("SendMessage", "Sending message: $messageContent")
+
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     try {
-                        stompClient.sendMessage(messageContent)
+                        stompClient.sendMessage(chatRoomId, myNick, messageContent)
                         Log.d("WebsocketM", "Sent message: $messageContent")
                     } catch (e: Exception) {
                         Log.e("WebsocketM", "Error sending message", e)
                     }
                 }
+
+                binding.etMessage.setText("")
             }
         }
 
@@ -144,26 +141,18 @@ class ChatFragment : Fragment() {
                 override fun onResponse(call: Call<ChatRoomResponse>, response: Response<ChatRoomResponse>) {
                     if (response.isSuccessful) {
                         val chatRoom: ChatRoomResponse? = response.body()
-                        if (chatRoom != null) {
-                            val nicknames: List<String> = chatRoom.userResponseList.map { it.nickname }
-                            val profileImages: List<String> = chatRoom.userResponseList.map { it.profileImage }
+                        chatRoom?.let {
+                            val nicknames = it.userResponseList.map { user -> user.nickname }
+                            val profileImages = it.userResponseList.map { user -> user.profileImage }
 
-                            val firstUsername: String? = nicknames.getOrNull(0)
-                            val secondUsername: String? = nicknames.getOrNull(1)
+                            val firstUsername = nicknames.getOrNull(0)
+                            val secondUsername = nicknames.getOrNull(1)
 
-                            val firstUserProfile: String? = profileImages.getOrNull(0)
-                            val secondUserProfile: String? = profileImages.getOrNull(1)
+                            val firstUserProfile = profileImages.getOrNull(0)
+                            val secondUserProfile = profileImages.getOrNull(1)
 
-                            var chatTitle: String? = null
-                            var profile: String? = null
-
-                            if (nickname == firstUsername) {
-                                chatTitle = secondUsername
-                                profile = secondUserProfile
-                            } else {
-                                chatTitle = firstUsername
-                                profile = firstUserProfile
-                            }
+                            val chatTitle = if (nickname == firstUsername) secondUsername else firstUsername
+                            val profile = if (nickname == firstUsername) secondUserProfile else firstUserProfile
 
                             Log.d("Chat", "User: $chatTitle")
 
@@ -187,10 +176,63 @@ class ChatFragment : Fragment() {
         }
     }
 
+
     private fun setupRecyclerView() {
         adapter = ChatAdapter(chattingList)
         binding.rcvChatting.adapter = adapter
         binding.rcvChatting.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun fetchChatHistory(token: String, chatRoomId: Long, nickname: String) {
+        if (token.isNotEmpty()) {
+            val chatHistory = RetrofitClient.instance.create(ChatService::class.java)
+            val call = chatHistory.getChatHistory("Bearer $token", chatRoomId)
+
+            call.enqueue(object : Callback<List<ChatHistoryResponse>> {
+                override fun onResponse(call: Call<List<ChatHistoryResponse>>, response: Response<List<ChatHistoryResponse>>) {
+                    if (response.isSuccessful) {
+                        val chatMessages = response.body()
+                        if (chatMessages != null) {
+                            chattingList.clear()
+
+                            chatMessages.forEach { chatHistoryResponse ->
+                                val chatSender = chatHistoryResponse.sender
+                                val message = chatHistoryResponse.message
+                                Log.d("msg", "$message")
+
+                                if (chatSender != nickname) {
+                                    chattingList.add(
+                                        ChatData(
+                                            chat = message,
+                                            viewType = 0
+                                        )
+                                    )
+                                }
+                                else {
+                                    chattingList.add(
+                                        ChatData(
+                                            chat = message,
+                                            viewType = 1
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        adapter.notifyDataSetChanged()
+
+                    } else {
+                        Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<List<ChatHistoryResponse>>, t: Throwable) {
+                    Log.e("API Error", "Failure: ${t.message}")
+                }
+            })
+        } else {
+            Log.e("Token Error", "Token is empty")
+        }
+
     }
 
     private fun setupBottomSheet() {
@@ -225,10 +267,25 @@ class ChatFragment : Fragment() {
         val dialogR = CustomDialogR(requireContext())
         dialogR.setContentView(R.layout.assess_dialog)
 
+        val chatNick = binding.nicknameTv.text.toString()
+        Log.d("temperature", "$chatNick")
+        dialogR.setChatNick(chatNick)
+
+
         val ratingBar = dialogR.findViewById<RatingBar>(R.id.ratingBar)
         val button3 = dialogR.findViewById<Button>(R.id.button3)
         val buttonX = dialogR.findViewById<Button>(R.id.buttonX)
 
         dialogR.show()
+    }
+
+    private fun getJwtToken(): String {
+        val sharedPref = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
+        return sharedPref.getString("jwt_token", "") ?: ""
+    }
+
+    private fun getUsernick(): String? {
+        val sharedPref = requireContext().getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
+        return sharedPref.getString("nickname", null)
     }
 }

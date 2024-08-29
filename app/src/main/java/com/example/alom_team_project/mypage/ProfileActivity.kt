@@ -29,6 +29,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var tvCheckDouble: TextView
     private lateinit var imgProfile: ImageView
     private lateinit var btnProfile: ImageButton
+    private lateinit var btnBack:ImageButton
 
     private var selectedImageUri: Uri? = null
     private var isNicknameAvailable = false
@@ -54,12 +55,17 @@ class ProfileActivity : AppCompatActivity() {
         tvCheckDouble = findViewById(R.id.tv_check_double)
         imgProfile = findViewById(R.id.img_profile)
         btnProfile = findViewById(R.id.btn_profile)
+        btnBack = findViewById(R.id.btn_back)
 
         imgProfile.setBackgroundResource(R.drawable.group_256)
 
         btnProfile.setOnClickListener {
             // Launch the photo picker to select an image or video
             pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        }
+
+        btnBack.setOnClickListener {
+            finish()
         }
 
         btnCheckDouble.setOnClickListener {
