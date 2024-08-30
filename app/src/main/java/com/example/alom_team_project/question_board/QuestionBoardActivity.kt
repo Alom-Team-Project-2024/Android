@@ -2,7 +2,6 @@ package com.example.alom_team_project.question_board
 
 
 
-import QuestionPostService
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper

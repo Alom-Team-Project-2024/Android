@@ -1,6 +1,5 @@
 package com.example.alom_team_project.question_board
 
-import QuestionPostService
 import android.Manifest
 import android.app.Activity
 import android.content.Context.MODE_PRIVATE
@@ -17,7 +16,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,7 +24,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
-import com.example.alom_team_project.databinding.FragmentAnswerBinding
 import com.example.alom_team_project.databinding.FragmentQuestionPostBinding
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -38,14 +35,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+
 private const val PERMISSION_REQUEST_CODE = 100
 
 class QuestionPostFragment : Fragment() {
 
-    private var param1: String? = null
-    private var param2: String? = null
 
     private var _binding: FragmentQuestionPostBinding? = null
     private val binding get() = _binding!!
@@ -67,11 +61,6 @@ class QuestionPostFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -257,8 +246,6 @@ class QuestionPostFragment : Fragment() {
         })
     }
 
-
-
     private fun getRealPathFromURI(uri: Uri): String? {
         var path: String? = null
         val projection = arrayOf(MediaStore.Images.Media.DATA)
@@ -308,6 +295,12 @@ class QuestionPostFragment : Fragment() {
         adapter = SubjectAdapter(subjectList)
         binding.subjectRecyclerView.adapter = adapter
         binding.subjectRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        // 아이템 클릭 리스너 설정
+        adapter.setOnItemClickListener { subject ->
+            titleEditText.setText(subject.subject)
+            binding.subjectRecyclerView.visibility = View.GONE // 선택 후 RecyclerView 숨기기
+        }
     }
 
     private fun fetchData() {
@@ -320,8 +313,6 @@ class QuestionPostFragment : Fragment() {
                     Log.d("FETCH_DATA", "Data fetched successfully")
 
                     response.body()?.let { subjects ->
-//                        subjectList.clear()
-//                        subjectList.addAll(subjects)
                         adapter.filter(binding.titleEditText.text.toString())  // 현재 검색어로 필터링
 
                         response.body()?.let { subjects ->
@@ -341,14 +332,4 @@ class QuestionPostFragment : Fragment() {
         })
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            QuestionPostFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

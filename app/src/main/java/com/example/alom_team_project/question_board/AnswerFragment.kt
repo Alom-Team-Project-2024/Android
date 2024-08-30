@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -24,7 +23,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.FragmentAnswerBinding
@@ -36,16 +34,16 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import setupGlide
 import java.io.File
 
 private const val PERMISSION_REQUEST_CODE = 100
 
 class AnswerFragment : Fragment() {
 
+    //새로고침
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
-    private val refreshInterval: Long = 500 // 5초 (원하는 간격으로 설정)
+    private val refreshInterval: Long = 500 // 0.5초
 
     private var _binding: FragmentAnswerBinding? = null
     private val binding get() = _binding!!
@@ -55,11 +53,10 @@ class AnswerFragment : Fragment() {
     private var isLiked = false
     private var isScrapped = false
 
-
+    //이미지 선택
     private var selectedImageUris: MutableList<Uri> = mutableListOf()
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
 
-    private var isImageLoaded = false // 이미지가 로드되었는지 여부를 추적하는 변수
 
 
     override fun onCreateView(
@@ -313,6 +310,7 @@ class AnswerFragment : Fragment() {
         // 질문자 이름 및 질문 내용 설정
         binding.questionerName.text = question.writer
         binding.questionText.text = question.text
+
 
         // 좋아요 수, 댓글 수, 스크랩 수 설정
         binding.likeNum.text = question.likes.toString()

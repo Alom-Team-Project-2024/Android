@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#CFC5FB"
-    tools:context="com.example.alom_team_project.question_board.AnswerFragment">
+    tools:context="com.example.alom_team_project.question_board.AnswerFragment"
+    android:clickable="true"
+    android:focusable="true">
 
     <!-- 뒤로가기 버튼 -->
     <ImageButton

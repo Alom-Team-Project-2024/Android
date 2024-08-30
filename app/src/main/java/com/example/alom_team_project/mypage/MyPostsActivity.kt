@@ -13,7 +13,7 @@ import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.ActivityMyPostsBinding
 import com.example.alom_team_project.question_board.QuestionAdapterClass
-import com.example.alom_team_project.question_board.QuestionClass
+import com.example.alom_team_project.job_board.MentorClass
 import com.example.alom_team_project.login.UserApi
 import com.example.alom_team_project.question_board.QuestionPostFragment
 import retrofit2.Call
@@ -24,7 +24,7 @@ class MyPostsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMyPostsBinding
     private lateinit var adapter: QuestionAdapterClass
-    private lateinit var myPostList: ArrayList<QuestionClass>
+    private lateinit var myPostList: ArrayList<MentorClass>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,8 +121,8 @@ class MyPostsActivity : AppCompatActivity() {
     private fun fetchQuestions(nickname: String, token: String) {
         val api = RetrofitClient.instance.create(UserApi::class.java)
 
-        api.getQuestionsByNickname(nickname, "Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
-            override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
+        api.getQuestionsByNickname(nickname, "Bearer $token").enqueue(object : Callback<List<MentorClass>> {
+            override fun onResponse(call: Call<List<MentorClass>>, response: Response<List<MentorClass>>) {
                 if (response.isSuccessful) {
                     Log.d("FETCH_DATA", "Data fetched successfully")
 
@@ -137,7 +137,7 @@ class MyPostsActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<List<QuestionClass>>, t: Throwable) {
+            override fun onFailure(call: Call<List<MentorClass>>, t: Throwable) {
                 Log.e("FETCH_DATA", "Failed to fetch questions", t)
                 Toast.makeText(this@MyPostsActivity, "Failed to fetch questions: ${t.message}", Toast.LENGTH_SHORT).show()
             }

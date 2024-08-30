@@ -13,8 +13,8 @@ import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.ActivityScrapBoardBinding
 import com.example.alom_team_project.question_board.QuestionAdapterClass
-import com.example.alom_team_project.question_board.QuestionClass
 import com.example.alom_team_project.login.UserApi
+import com.example.alom_team_project.question_board.QuestionClass
 import com.example.alom_team_project.question_board.QuestionPostFragment
 import retrofit2.Call
 import retrofit2.Callback

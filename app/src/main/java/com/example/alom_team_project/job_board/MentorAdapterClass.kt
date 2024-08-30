@@ -1,43 +1,39 @@
-package com.example.alom_team_project.question_board
-
+package com.example.alom_team_project.job_board
 
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
-import com.example.alom_team_project.databinding.QuestionBoardItemBinding
+import com.example.alom_team_project.databinding.MentorBoardItemBinding
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-class QuestionAdapterClass(
-    private val questionList: ArrayList<QuestionClass>,
+class MentorAdapterClass(
+    private val mentorList: ArrayList<MentorClass>,
     private val onItemClickListener: (Long) -> Unit // 클릭 리스너 추가
-) : RecyclerView.Adapter<QuestionAdapterClass.ViewHolder>() {
+) : RecyclerView.Adapter<MentorAdapterClass.ViewHolder>() {
 
-    private var filteredList: ArrayList<QuestionClass> = ArrayList(questionList)
+    private var filteredList: ArrayList<MentorClass> = ArrayList(mentorList)
 
     init {
-        filteredList = ArrayList(questionList) // 초기화 시 filteredList에 questionList를 할당
+        filteredList = ArrayList(mentorList)
     }
 
 
     class ViewHolder(
-        private val binding: QuestionBoardItemBinding,
+        private val binding: MentorBoardItemBinding,
         private val onItemClickListener: (Long) -> Unit // 클릭 리스너를 생성자에 추가
     ) : RecyclerView.ViewHolder(binding.root) {
 
         @RequiresApi(Build.VERSION_CODES.O)
-        fun bind(question: QuestionClass) {
+        fun bind(mentor: MentorClass) {
 
-            val utcTime = question.createdAt
+            val utcTime = mentor.createdAt
 
             // DateTimeFormatter를 커스터마이즈하여 오프셋 없는 포맷을 처리
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
@@ -66,45 +62,23 @@ class QuestionAdapterClass(
             }
 
             binding.postTime.text = elapsedTime
-            binding.subjectName.text = question.subject
-            binding.content.text = question.text
-
-            val baseUrl = "http://15.165.213.186/uploads/" // 서버의 기본 URL
-
-            // 이미지가 있을 경우 첫 번째 이미지를 ImageView에 로드
-            if (question.images.isNotEmpty()) {
-                val fullImageUrl = baseUrl + question.images[0].imageUrl
-                //Log.d("ImageURL", "Loading image from URL: $fullImageUrl")
-                Glide.with(binding.questionImage.context)
-                    .load(fullImageUrl)
-                    .placeholder(R.drawable.ex_image)  // 이미지 로딩 전까지 보여줄 플레이스홀더
-                    .error(R.drawable.ex_image)  // 이미지 로딩 실패 시 보여줄 이미지
-                    .into(binding.questionImage)
-            } else {
-                binding.questionImage.visibility = View.GONE
-            }
-
-            binding.likeNum.text = question.likes.toString()
-            binding.commentNum.text = question.replyCount.toString()
-            binding.scrapNum.text = question.scrapCount.toString()
+            binding.title.text = mentor.title
+            binding.content.text = mentor.text
 
 
-            // Button 스타일 설정 (필요에 따라 조정)
-            binding.likeButton.setBackgroundResource(R.drawable.like_button)
-            binding.commentButton.setBackgroundResource(R.drawable.comment_button)
+            binding.scrapNum.text = mentor.scrapCount.toString()
             binding.scrapButton.setBackgroundResource(R.drawable.scrap_button)
 
             // 아이템 클릭 리스너 설정
             itemView.setOnClickListener {
-                //Log.d("QuestionAdapter", "질문글 ID: ${question.id}")
-                onItemClickListener(question.id)  // 클릭된 아이템의 ID 전달
+                onItemClickListener(mentor.id)  // 클릭된 아이템의 ID 전달
             }
         }
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = QuestionBoardItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = MentorBoardItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding,onItemClickListener)
     }
 
@@ -122,11 +96,11 @@ class QuestionAdapterClass(
     fun filter(query: String) {
         val lowerCaseQuery = query.lowercase(Locale.getDefault())
         filteredList = if (query.isEmpty()) {
-            ArrayList(questionList)  // 전체 리스트를 복사
+            ArrayList(mentorList)  // 전체 리스트를 복사
         } else {
-            questionList.filter {
-                it.subject.lowercase(Locale.getDefault()).contains(lowerCaseQuery)
-            } as ArrayList<QuestionClass>
+            mentorList.filter {
+                it.title.lowercase(Locale.getDefault()).contains(lowerCaseQuery)
+            } as ArrayList<MentorClass>
         }
         notifyDataSetChanged()  // 데이터 변경 알림
     }

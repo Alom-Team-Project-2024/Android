@@ -7,17 +7,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".question_board.QuestionPostFragment"
+    tools:context=".job_board.MentorPostFragment"
     android:clickable="true"
     android:focusable="true">
 
     <!-- 질문 작성 text -->
     <TextView
-        android:id="@+id/writeQuestionText"
+        android:id="@+id/writeMentorText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="@string/writeQuestionText"
+        android:layout_marginTop="50dp"
+        android:text="구인 글 작성"
         android:textColor="@color/black"
         android:textSize="25sp"
 
@@ -26,18 +26,60 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/btn_mentor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="67dp"
+        android:text="멘토 게시판"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back_button" />
+
+
+    <TextView
+        android:id="@+id/btn_mentee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="67dp"
+        android:text="멘티 게시판"
+        android:textColor="#000000"
+        app:layout_constraintStart_toEndOf="@id/btn_mentor"
+        app:layout_constraintTop_toBottomOf="@id/back_button" />
+
+    <ImageView
+        android:id="@+id/underbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/vector_30"
+        app:layout_constraintTop_toBottomOf="@id/btn_mentor"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="15dp"
+        />
+
+    <ImageView
+        android:id="@+id/underbar2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/vector_30"
+        app:layout_constraintTop_toBottomOf="@id/btn_mentee"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="100dp"
+        />
 
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
 
-        android:layout_marginTop="50dp"
-        android:background="@drawable/rounded_edittext"
+        android:layout_marginTop="16dp"
 
+        android:background="@drawable/rounded_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/writeQuestionText"
+        app:layout_constraintTop_toBottomOf="@id/btn_mentor"
         app:layout_constraintWidth_percent="0.9" />
 
     <TextView
@@ -47,9 +89,9 @@
 
         android:layout_marginStart="12dp"
 
-        android:text="@string/title"
-        android:textSize="13sp"
+        android:text="제목"
         android:textColor="#4825D8"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/imageView5"
         app:layout_constraintStart_toStartOf="@id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
@@ -63,7 +105,7 @@
         android:layout_marginStart="20dp"
         android:background="@android:color/transparent"
 
-        android:hint="@string/titleText"
+        android:hint="제목을 입력하세요"
         android:textColor="@color/black"
         android:maxLength="20"
         android:singleLine="true"
@@ -122,43 +164,6 @@
         app:layout_constraintWidth_percent="0.9" />
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-
-        app:layout_constraintTop_toBottomOf="@id/imageView5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        >
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/subjectRecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="108dp"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <ImageButton
-        android:id="@+id/btnPickImage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
-        android:background="@android:color/transparent"
-
-        android:padding="0dp"
-        android:src="@drawable/photo"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
@@ -176,44 +181,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageview7"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/round_rectangle1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageview6" />
-
-    <TextView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/image"
-        android:textSize="13sp"
-        android:textColor="#4825D8"
-        app:layout_constraintStart_toStartOf="@+id/imageview7"
-        app:layout_constraintTop_toTopOf="@+id/imageview7" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewImages"
-        android:layout_width="324dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-
-        app:layout_constraintEnd_toEndOf="@+id/imageview7"
-        app:layout_constraintStart_toStartOf="@+id/imageview7"
-        app:layout_constraintTop_toBottomOf="@+id/image"/>
-
 
     <ImageButton
         android:id="@+id/submitButton"
@@ -221,7 +188,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="70dp"
 
-        android:background="@drawable/post_button"
+        android:background="@drawable/post_button2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
 

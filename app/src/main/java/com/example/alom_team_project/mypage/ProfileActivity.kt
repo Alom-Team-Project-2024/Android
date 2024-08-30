@@ -1,6 +1,7 @@
 package com.example.alom_team_project.mypage
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -18,8 +19,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import android.provider.MediaStore
+import android.util.Base64
 import androidx.activity.result.PickVisualMediaRequest
 import okhttp3.ResponseBody
+import java.io.ByteArrayOutputStream
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -229,6 +232,8 @@ class ProfileActivity : AppCompatActivity() {
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
+                        // 이미지를 SharedPreferences에 저장
+                        saveProfileImageToPreferences(imageUri)
                         val responseBody = response.body()?.string()  // Read response as a string
                         Log.d("ProfileActivity", "Response: $responseBody")
                         Toast.makeText(this@ProfileActivity, "프로필 이미지 업로드 성공", Toast.LENGTH_SHORT).show()
@@ -264,4 +269,19 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+    private fun saveProfileImageToPreferences(imageUri: Uri) {
+        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val imageBytes = outputStream.toByteArray()
+        val encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+
+        val sharedPref = getSharedPreferences("profile", MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString("profile_image", encodedImage)
+            apply()
+        }
+    }
+
 }
