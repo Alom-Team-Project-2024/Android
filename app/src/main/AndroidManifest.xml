@@ -35,6 +35,7 @@
             android:exported="false" />
         <activity
             android:name=".chat.ChatListActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:exported="false" /> <!-- network 코드 추가 -->
         <!-- 로그인을 첫페이지로 -->
         <activity
@@ -78,6 +79,7 @@
             android:exported="true" />
         <activity
             android:name=".question_board.QuestionBoardActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
     </application>
 
