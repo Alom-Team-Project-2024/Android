@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="deploymentTargetDropDown">
-<<<<<<< HEAD
     <value>
       <entry key="app">
         <State>
@@ -16,23 +15,9 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-28T14:10:00.676150600Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-29T13:29:05.422573400Z" />
         </State>
       </entry>
     </value>
-=======
-    <targetSelectedWithDropDown>
-      <Target>
-        <type value="QUICK_BOOT_TARGET" />
-        <deviceKey>
-          <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\Hyerim\.android\avd\New_Device_API_34_1.avd" />
-          </Key>
-        </deviceKey>
-      </Target>
-    </targetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2024-08-26T05:41:55.639668700Z" />
->>>>>>> e04096186d2226e7024fbda8e2512e5f0a4faf0d
   </component>
 </project>

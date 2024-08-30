@@ -15,7 +15,7 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/round_rectangle10"
-        android:elevation="4dp"
+        android:elevation="25dp"
         android:text="세종이님 평가하기"
         android:textColor="@color/white"
         android:textSize="12dp"
@@ -37,7 +37,7 @@
         android:text="매칭 완료"
         android:textColor="@color/white"
         android:textSize="12dp"
-        android:elevation="4dp"
+        android:elevation="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -52,5 +52,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/line" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/x_btn"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/vector_10"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

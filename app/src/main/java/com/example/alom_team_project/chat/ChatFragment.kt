@@ -1,5 +1,6 @@
 package com.example.alom_team_project.chat
 
+import CustomDialogR
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.RatingBar
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +22,6 @@ import com.example.alom_team_project.MyStompClient
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.chat.dialog.CustomDialogC
-import com.example.alom_team_project.chat.dialog.CustomDialogR
 import com.example.alom_team_project.chat.dialog.UserProfileActivity
 import com.example.alom_team_project.databinding.AssessDialogBinding
 import com.example.alom_team_project.databinding.FragmentChatBinding
@@ -54,6 +55,11 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentChatBinding.inflate(inflater, container, false)
+
+        binding.root.setOnClickListener {
+            hideKeyboard()
+        }
+
         return binding.root
     }
 
@@ -112,18 +118,23 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
                         navigateToProfile(title)
                     }
 
-                    setupBottomSheet(title)
+                    setupBottomSheet(chatRoomId, title)
                 }
             }
         }
 
         setupRecyclerView()
 
+        binding.rcvChatting.setOnTouchListener { _, _ ->
+            hideKeyboard()  // RecyclerView를 터치했을 때 키보드를 숨김
+            false  // 여기서 false를 반환하면 RecyclerView의 기본 터치 이벤트 처리가 계속 진행됨
+        }
+
         fetchChatHistory(token, chatRoomId, myNick)
 
         binding.sendBtn.setOnClickListener {
             val messageContent = binding.etMessage.text.toString()
-            if (messageContent.isNotEmpty()) {
+            if (messageContent.isNotEmpty() && messageContent.isNotBlank()) {
                 adapter.notifyDataSetChanged()
                 binding.rcvChatting.scrollToPosition(chattingList.size - 1)
 
@@ -273,8 +284,8 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
 
     }
 
-    private fun setupBottomSheet(nickname: String) {
-        bottomSheetDialog = BottomSheetDialog(requireContext())
+    private fun setupBottomSheet(chatRoomId: Long, nickname: String) {
+        bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.AppBottomSheetDialogTheme)
         val bottomSheetView = layoutInflater.inflate(R.layout.chat_btm_sheet, null)
         bottomSheetDialog.setContentView(bottomSheetView)
 
@@ -283,7 +294,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
 
         bottomSheetView.findViewById<AppCompatButton>(R.id.rating_btn).setOnClickListener {
             bottomSheetDialog.dismiss()
-            showRatingDialog()
+            showRatingDialog(chatRoomId, nickname)
         }
 
         bottomSheetView.findViewById<AppCompatButton>(R.id.success_btn).setOnClickListener {
@@ -296,16 +307,11 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         val dialogViewC = layoutInflater.inflate(R.layout.confirm_dialog, null)
         val dialogC = CustomDialogC(requireContext())
 
-        dialogC.setItemClickListener(object : CustomDialogC.ItemClickListener {
-            override fun onClick(message: String) {
-                //
-            }
-        })
         dialogC.show()
     }
 
-    private fun showRatingDialog() {
-        val dialogR = CustomDialogR(requireContext())
+    private fun showRatingDialog(chatRoomId: Long, nickname: String) {
+        val dialogR = CustomDialogR(requireContext(), chatRoomId, nickname)
         dialogR.setContentView(R.layout.assess_dialog)
 
         val chatNick = binding.nicknameTv.text.toString()
@@ -330,6 +336,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         return sharedPref.getString("nickname", null)
     }
 
+    // 상대방 프로필로 이동
     private fun navigateToProfile(chatTitle: String) {
         val intent = Intent(requireContext(), UserProfileActivity::class.java).apply {
             putExtra("chatTitle", "$chatTitle")
@@ -337,8 +344,17 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         startActivity(intent)
     }
 
+    // Url 변환
     fun getAbsoluteUrl(relativeUrl: String): String {
         val baseUrl = "http://15.165.213.186/" // 서버의 기본 URL
         return baseUrl + relativeUrl
+    }
+
+    // 화면 터치 시 키보드 내리기
+    private fun hideKeyboard() {
+        if (activity != null && requireActivity().currentFocus != null) {
+            val inputManager: InputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
     }
 }

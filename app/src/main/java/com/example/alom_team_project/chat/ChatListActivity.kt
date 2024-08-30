@@ -1,11 +1,15 @@
 package com.example.alom_team_project.chat
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
@@ -45,6 +49,7 @@ class ChatListActivity : AppCompatActivity() {
         // 클릭 리스너 설정
         adapter.setOnItemClickListener(object : ChatListAdapter.OnItemClickListener {
             override fun onItemClick(chatRoomId: Long) {
+                hideKeyboard()
                 openChatPage(chatRoomId)
                 Log.d("ChatList", "$chatRoomId")
             }
@@ -52,6 +57,10 @@ class ChatListActivity : AppCompatActivity() {
 
         binding.btmNav.setOnClickListener {
             openNavFragment()
+        }
+
+        binding.root.setOnClickListener {
+            hideKeyboard()
         }
     }
 
@@ -267,5 +276,13 @@ class ChatListActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.chat_nav, fragment)
             .commit()
+    }
+
+    // 화면 터치 시 키보드 내리기
+    private fun hideKeyboard() {
+        if (this != null && this.currentFocus != null) {
+            val inputManager: InputMethodManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(this.currentFocus?.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
+        }
     }
 }
