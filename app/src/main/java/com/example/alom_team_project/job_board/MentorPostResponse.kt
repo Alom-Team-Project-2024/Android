@@ -1,4 +1,4 @@
-package com.example.alom_team_project.mentor_post
+package com.example.alom_team_project.job_board
 
 data class MentorPostResponse(
     val category: String,

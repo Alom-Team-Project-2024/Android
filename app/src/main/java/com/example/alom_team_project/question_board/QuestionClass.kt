@@ -33,6 +33,7 @@ data class User(
 )
 
 data class Reply(
+    val id : Long,
     val title: String,
     val text: String,
     val writer: String,
@@ -44,4 +45,3 @@ data class Reply(
 data class Subject(
     val subject : String
 )
-

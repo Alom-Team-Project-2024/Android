@@ -1,15 +1,20 @@
 package com.example.alom_team_project.chat
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.ActivityChatListBinding
+import com.example.alom_team_project.home.NavigationFragment
 import com.example.alom_team_project.mypage.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,10 +49,19 @@ class ChatListActivity : AppCompatActivity() {
         // 클릭 리스너 설정
         adapter.setOnItemClickListener(object : ChatListAdapter.OnItemClickListener {
             override fun onItemClick(chatRoomId: Long) {
+                hideKeyboard()
                 openChatPage(chatRoomId)
                 Log.d("ChatList", "$chatRoomId")
             }
         })
+
+        binding.btmNav.setOnClickListener {
+            openNavFragment()
+        }
+
+        binding.root.setOnClickListener {
+            hideKeyboard()
+        }
     }
 
     private fun fetchChatList() {
@@ -103,8 +117,9 @@ class ChatListActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<ChatRoomResponse>>, response: Response<List<ChatRoomResponse>>) {
                 if (response.isSuccessful) {
                     val chatRooms = response.body()
+                    Log.d("chatRoomResponse", "$chatRooms")
                     if (chatRooms != null) {
-                        chatList.clear()
+                        chatList.clear() // 이전 채팅 목록 초기화
 
                         val fetchCount = chatRooms.size
                         var processedCount = 0
@@ -130,63 +145,44 @@ class ChatListActivity : AppCompatActivity() {
                                 chatTitle = firstUsername
                                 profileImg = firstUserProfile
                             }
+                            Log.d("ChatlistAct", "$chatTitle, $profileImg")
 
                             fetchLastChatMessage(token, chatRoomId, nickname) { chatData ->
                                 chatData?.let { (message, timestamp) ->
                                     Log.d("Last Message", "Message: $message, Time: $timestamp")
 
-                                    if (profileImg != null) {
-                                        chatList.add(
-                                            ChatList(
-                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
-                                                profile = profileImg,
-                                                name = chatTitle ?: "",
-                                                content = message,
-                                                time = timestamp
-                                            )
+                                    // 메시지나 타임스탬프가 비어있는 경우는 가장 최신 메시지로 간주
+                                    val effectiveTimestamp = if (timestamp.isNotEmpty()) timestamp else "9999-12-31T23:59:59" // 가상의 미래 타임스탬프
+
+                                    chatList.add(
+                                        ChatList(
+                                            chatRoomId = chatRoomId,
+                                            profile = profileImg,
+                                            name = chatTitle ?: "",
+                                            content = message,
+                                            time = effectiveTimestamp
                                         )
-                                    }
-                                    else {
-                                        chatList.add(
-                                            ChatList(
-                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
-                                                profile = "",
-                                                name = chatTitle ?: "",
-                                                content = message,
-                                                time = timestamp
-                                            )
-                                        )
-                                    }
+                                    )
+
                                 } ?: run {
                                     Log.d("Last Message", "No message found or error occurred.")
 
                                     // 메시지가 없을 때에도 이름과 프로필 사진은 추가
-                                    if (profileImg != null) {
-                                        chatList.add(
-                                            ChatList(
-                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
-                                                profile = profileImg,
-                                                name = chatTitle ?: "",
-                                                content = "",
-                                                time = ""
-                                            )
+                                    chatList.add(
+                                        ChatList(
+                                            chatRoomId = chatRoomId,
+                                            profile = profileImg,
+                                            name = chatTitle ?: "",
+                                            content = "",
+                                            time = "9999-12-31T23:59:59" // 가상의 미래 타임스탬프
                                         )
-                                    }
-                                    else {
-                                        chatList.add(
-                                            ChatList(
-                                                chatRoomId = chatRoomId, // 채팅방 ID 추가
-                                                profile = "",
-                                                name = chatTitle ?: "",
-                                                content = "",
-                                                time = ""
-                                            )
-                                        )
-                                    }
+                                    )
                                 }
 
                                 processedCount++
                                 if (processedCount == fetchCount) {
+                                    // 처리된 메시지 수가 전체 메시지 수와 같을 때 정렬 및 업데이트
+                                    chatList.sortByDescending { it.time } // 최신 메시지 순으로 정렬
                                     adapter.notifyDataSetChanged() // 데이터 변경을 어댑터에 알리기
                                     adapter.filter("")
                                 }
@@ -205,6 +201,7 @@ class ChatListActivity : AppCompatActivity() {
             }
         })
     }
+
 
 
 
@@ -273,4 +270,19 @@ class ChatListActivity : AppCompatActivity() {
         return sharedPref.getString("username", null)
     }
 
+    private fun openNavFragment() {
+        // 네비게이션 프래그먼트
+        val fragment = NavigationFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.chat_nav, fragment)
+            .commit()
+    }
+
+    // 화면 터치 시 키보드 내리기
+    private fun hideKeyboard() {
+        if (this != null && this.currentFocus != null) {
+            val inputManager: InputMethodManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(this.currentFocus?.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
+        }
+    }
 }

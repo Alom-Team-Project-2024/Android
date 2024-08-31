@@ -1,10 +1,16 @@
 package com.example.alom_team_project.question_board
 
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,20 +18,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.FragmentAnswerBinding
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+
+private const val PERMISSION_REQUEST_CODE = 100
 
 class AnswerFragment : Fragment() {
 
+    //새로고침
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
-    private val refreshInterval: Long = 500 // 5초 (원하는 간격으로 설정)
+    private val refreshInterval: Long = 500 // 0.5초
 
     private var _binding: FragmentAnswerBinding? = null
     private val binding get() = _binding!!
@@ -34,6 +52,12 @@ class AnswerFragment : Fragment() {
     private lateinit var answerService: AnswerPostService
     private var isLiked = false
     private var isScrapped = false
+
+    //이미지 선택
+    private var selectedImageUris: MutableList<Uri> = mutableListOf()
+    private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +83,7 @@ class AnswerFragment : Fragment() {
 
         // Arguments에서 questionId 받기
         val questionId = arguments?.getLong("QUESTION_ID")
-        Log.d("AnswerFragment", "Question ID: $questionId")
+        //Log.d("AnswerFragment", "Question ID: $questionId")
 
         // 좋아요 및 스크랩 상태 초기화
         if (questionId != null) {
@@ -94,7 +118,9 @@ class AnswerFragment : Fragment() {
 
         // RecyclerView 초기화
         answerList = arrayListOf()
-        adapter = AnswerAdapterClass(answerList)
+        adapter = AnswerAdapterClass(answerList){ answer, position->
+
+        }
         binding.answerContainer.adapter = adapter
         binding.answerContainer.layoutManager = LinearLayoutManager(requireContext())
 
@@ -104,10 +130,79 @@ class AnswerFragment : Fragment() {
             fetchQuestionDetails(questionId)
         }
 
+        // 이미지 선택 후 ImageView 업데이트
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val clipData = result.data?.clipData
+                val imageUris = mutableListOf<Uri>()
+
+                if (clipData != null) {
+                    // 여러 장의 이미지를 선택한 경우
+                    for (i in 0 until clipData.itemCount) {
+                        val item = clipData.getItemAt(i)
+                        imageUris.add(item.uri)
+                    }
+                } else {
+                    // 단일 이미지를 선택한 경우
+                    result.data?.data?.let { uri ->
+                        imageUris.add(uri)
+                    }
+                }
+
+                selectedImageUris = imageUris
+
+                // 첫 번째 이미지만 표시하도록 설정
+                if (selectedImageUris.isNotEmpty()) {
+                    val firstImageUri = selectedImageUris[0]
+                    binding.imageViewSelected.apply {
+                        visibility = View.VISIBLE // ImageView를 보이도록 설정
+                        Glide.with(this.context) // Glide를 사용하여 이미지 로드
+                            .load(firstImageUri)
+                            .into(this)
+                    }
+                } else {
+                    binding.imageViewSelected.visibility = View.GONE // 이미지가 없으면 ImageView를 숨김
+                }
+            }
+        }
+
+        val btnPickImage: ImageButton = view.findViewById(R.id.btnPickImage)
+
+        btnPickImage.setOnClickListener {
+            if (hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))) {
+                openGallery()
+            } else {
+                checkAndRequestPermissions()
+            }
+        }
+
         binding.sendBtn.setOnClickListener {
             if (questionId != null) {
                 sendPostAnswer(questionId)
             }
+        }
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // 여러 파일 선택 허용
+        imagePickerLauncher.launch(intent)
+    }
+
+    private fun checkAndRequestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (!hasPermissions(permissions)) {
+            requestPermissions(permissions, PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    private fun hasPermissions(permissions: Array<String>): Boolean {
+        return permissions.all {
+            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
         }
     }
 
@@ -141,9 +236,15 @@ class AnswerFragment : Fragment() {
                     var answerId = response.body()!!
 
                     // 이미지 업로드는 포스트 ID를 받은 후 처리
-//                    selectedImageUri?.let { uri ->
-//                        uploadImage(postId ?: return)
-//                    }
+                    selectedImageUris?.let { uris ->
+                        uploadImages(answerId ?: return, uris)
+                    }
+
+                    binding.imageViewSelected.visibility = View.GONE
+                    binding.etMessage.apply {
+                        setText("")  // 텍스트를 지웁니다.
+                        hint = "답변 작성하기"  // 힌트를 설정합니다.
+                    }
                 } else {
                     Log.e("POST_REQUEST", "Error: ${response.code()}")
                     Toast.makeText(context, "Request failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
@@ -159,19 +260,18 @@ class AnswerFragment : Fragment() {
 
     private fun fetchReply(questionId: Long) {
         val token = getJwtToken()
-        Log.d("FETCH_DATA", "Fetching data with token: $token")
 
         answerService.getAnswers("Bearer $token", questionId).enqueue(object :
             Callback<List<Reply>> {
             override fun onResponse(call: Call<List<Reply>>, response: Response<List<Reply>>) {
                 if (response.isSuccessful) {
-                    Log.d("FETCH_DATA", "Data fetched successfully")
 
                     response.body()?.let { replies ->
-                        Log.d("FETCH_DATA", "Replies size: ${replies.size}")
                         answerList.clear()
                         answerList.addAll(replies)
                         adapter.notifyDataSetChanged()
+
+
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
@@ -196,7 +296,7 @@ class AnswerFragment : Fragment() {
                         bindQuestionToViews(question)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Failed to load question details", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "불러오기 실패", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -210,6 +310,7 @@ class AnswerFragment : Fragment() {
         // 질문자 이름 및 질문 내용 설정
         binding.questionerName.text = question.writer
         binding.questionText.text = question.text
+
 
         // 좋아요 수, 댓글 수, 스크랩 수 설정
         binding.likeNum.text = question.likes.toString()
@@ -327,4 +428,52 @@ class AnswerFragment : Fragment() {
         _binding = null
         handler.removeCallbacks(runnable)  // Fragment가 파괴될 때 Runnable 제거
     }
+
+    private fun getRealPathFromURI(uri: Uri): String? {
+        var path: String? = null
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = context?.contentResolver?.query(uri, projection, null, null, null)
+        cursor?.let {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                path = it.getString(columnIndex)
+            }
+            it.close()
+        }
+        return path
+    }
+
+    private fun uploadImages(postId: Long, imageUris: List<Uri>) {
+        val token = getJwtToken()
+        val fileParts = imageUris.mapNotNull { uri ->
+            val filePath = getRealPathFromURI(uri)
+            filePath?.let {
+                val file = File(it)
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("file", file.name, requestFile)
+            }
+        }
+
+        if (fileParts.isEmpty()) {
+            Toast.makeText(context, "No valid images to upload", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        answerService.uploadImages("Bearer $token", postId, fileParts).enqueue(object : Callback<JsonArray> {
+            override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(context, "사진을 정상적으로 업로드하였습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("UPLOAD_IMAGES", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(context, "Image upload failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+                Log.e("UPLOAD_IMAGES", "Failed to upload images", t)
+                Toast.makeText(context, "Image upload failed: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 }

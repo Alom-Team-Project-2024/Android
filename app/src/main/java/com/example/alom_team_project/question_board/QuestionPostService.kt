@@ -1,5 +1,6 @@
-import com.example.alom_team_project.question_board.QuestionClass
-import com.example.alom_team_project.question_board.QuestionPostFragment
+package com.example.alom_team_project.question_board
+
+import com.example.alom_team_project.job_board.MentorClass
 import com.example.alom_team_project.question_board.Subject
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -10,7 +11,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 

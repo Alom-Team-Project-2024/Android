@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.example.alom_team_project.MainActivity
 import com.example.alom_team_project.R
 import com.example.alom_team_project.chat.ChatListActivity
+import com.example.alom_team_project.job_board.MentorBoardActivity
 import com.example.alom_team_project.mypage.MypageActivity
 import com.example.alom_team_project.question_board.QuestionBoardActivity
 
@@ -158,6 +159,11 @@ class NavigationFragment : Fragment() {
 
                 if (menuTitleList[i] == "채팅") {
                     val intent = Intent(activity, ChatListActivity::class.java)
+                    startActivity(intent)
+                }
+
+                if (menuTitleList[i] == "구인") {
+                    val intent = Intent(activity, MentorBoardActivity::class.java)
                     startActivity(intent)
                 }
             }

@@ -1,15 +1,9 @@
 package com.example.alom_team_project.login
 
 import QuestionPostResponse
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.alom_team_project.question_board.Reply
-import com.example.alom_team_project.databinding.AnswerItemBinding
-import com.example.alom_team_project.mentor_post.MentorPostResponse
+import com.example.alom_team_project.job_board.MentorPostResponse
 import com.example.alom_team_project.mypage.UserResponse
+import com.example.alom_team_project.job_board.MentorClass
 import com.example.alom_team_project.question_board.QuestionClass
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -85,6 +79,6 @@ interface UserApi {
     fun getQuestionsByNickname(
         @Path("nickname") nickname: String,
         @Header("Authorization") authHeader: String
-    ): Call<List<QuestionClass>>
+    ): Call<List<MentorClass>>
 }
 

@@ -23,20 +23,26 @@ import java.util.Locale
 class SubjectAdapter(val subjectList: ArrayList<Subject>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var filteredList: ArrayList<Subject> = ArrayList(subjectList)
+    private var onItemClickListener: ((Subject) -> Unit)? = null
 
+    fun setOnItemClickListener(listener: (Subject) -> Unit) {
+        onItemClickListener = listener
+    }
     init {
         filteredList = ArrayList(subjectList) // 초기화 시 filteredList에 questionList를 할당
     }
-    class SubjectViewHolder(private val binding: SubjectItemBinding):RecyclerView.ViewHolder(binding.root){
+    inner class SubjectViewHolder(private val binding: SubjectItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(subject: Subject) {
             binding.subject.text = subject.subject
+            itemView.setOnClickListener {
+                onItemClickListener?.invoke(subject)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         val binding = SubjectItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         return SubjectViewHolder(binding)
     }

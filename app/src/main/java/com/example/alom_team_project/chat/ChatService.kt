@@ -47,4 +47,11 @@ interface ChatService {
         @Path("nickname") nickname: String,
         @Path("rate") rate: Int
     ): Call<Double>
+
+    @GET("users/nickname/{nickname}")
+    fun getUserInfobyNick(
+        @Header("Authorization") token: String,
+        @Path("nickname") nickname: String
+    ): Call<UserResponse>
+
 }

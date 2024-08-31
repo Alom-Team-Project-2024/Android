@@ -11,7 +11,7 @@ import com.example.alom_team_project.home.HomeRecordAdapter
 import com.example.alom_team_project.home.HomeRecordData
 import com.example.alom_team_project.home.NavigationFragment
 import com.example.alom_team_project.login.UserApi
-import com.example.alom_team_project.mentor_post.MentorPostResponse
+import com.example.alom_team_project.job_board.MentorPostResponse
 import com.example.alom_team_project.mypage.UserResponse
 import retrofit2.Call
 import retrofit2.Callback

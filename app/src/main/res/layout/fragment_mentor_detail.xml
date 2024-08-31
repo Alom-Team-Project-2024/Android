@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".mentor_post.MentorPostActivity">
+    tools:context=".job_board.MentorPostFragment"
+    android:clickable="true"
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/background_img"
         android:layout_width="0dp"
         android:layout_height="179dp"
-        android:background="#991391B4"
+        android:background="#74BDD2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,8 +45,9 @@
         android:id="@+id/mentor_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="49dp"
+        android:layout_marginTop="60dp"
         android:text="구인 게시판"
+        android:textColor="@color/black"
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/background_img"
@@ -75,6 +78,7 @@
         android:text="이수민"
         android:textSize="11dp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/post_profile"
         app:layout_constraintTop_toTopOf="@+id/background_board" />
 
@@ -90,6 +94,7 @@
         android:text="인공지능과 빅데이터 과외해 주실 분 구합니다."
         android:textSize="12dp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_profile" />
@@ -105,12 +110,13 @@
         android:layout_marginRight="21dp"
         android:text="프로그램에 대한 지식이 없어 구해봅니다. 채팅 부탁드립니다."
         android:textSize="10dp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_title" />
 
     <ImageView
-        android:id="@+id/like"
+        android:id="@+id/scrap"
         android:layout_width="16dp"
         android:layout_height="15dp"
         android:layout_marginStart="20dp"
@@ -119,6 +125,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_content"
         app:srcCompat="@drawable/star_icon" />
+
+    <TextView
+        android:id="@+id/scrap_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="21dp"
+        android:text="1"
+        android:textSize="8dp"
+        app:layout_constraintStart_toEndOf="@+id/scrap"
+        app:layout_constraintTop_toBottomOf="@+id/post_content" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/chat_btn"
@@ -130,19 +148,7 @@
         android:background="@drawable/chat_btn"
         android:text="채팅하기"
         android:textSize="7dp"
-        app:layout_constraintStart_toEndOf="@+id/like_count"
-        app:layout_constraintTop_toBottomOf="@+id/post_content" />
-
-    <TextView
-        android:id="@+id/like_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="21dp"
-        android:text="1"
-        android:textSize="8dp"
-        app:layout_constraintStart_toEndOf="@+id/like"
+        app:layout_constraintStart_toEndOf="@+id/scrap_count"
         app:layout_constraintTop_toBottomOf="@+id/post_content" />
 
     <TextView
@@ -158,26 +164,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background_board" />
 
-    <com.google.android.material.tabs.TabLayout
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:background="@drawable/transparent"
-        app:tabSelectedTextColor="#000000"
-        app:tabIndicatorColor="#9D9D9D"
-        app:layout_constraintBottom_toTopOf="@+id/background_board"
-        app:layout_constraintStart_toStartOf="parent">>
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="멘토 구해요" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="멘티 구해요" />
-
-    </com.google.android.material.tabs.TabLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -45,6 +45,7 @@
         android:layout_marginTop="49dp"
         android:text="프로필"
         android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background" />
@@ -52,27 +53,26 @@
     <ImageView
         android:id="@+id/user_profile_img"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="165dp"
         android:layout_marginTop="37dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/background"
         app:layout_constraintTop_toTopOf="@+id/background_board"
-        app:srcCompat="@drawable/basic_profile" />
+        app:srcCompat="@drawable/group_172" />
 
     <TextView
         android:id="@+id/user_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:background="@drawable/round_rectangle4"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="3dp"
         android:text="23학번 | 디자인이노베이션학과"
         android:textSize="13dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_nickname"
-        android:background="@drawable/round_rectangle4"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="3dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/user_nickname" />
 
     <TextView
         android:id="@+id/user_nickname"
@@ -111,7 +111,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/user_tem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
@@ -128,21 +128,26 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="28dp"
+        android:max="100"
+        android:progressBackgroundTint="#D2D2D2"
+        android:progressTint="#4825D8"
+        android:indeterminate="false"
         app:layout_constraintBottom_toBottomOf="@+id/temperature_box"
         app:layout_constraintEnd_toStartOf="@id/tem_num"
-        app:layout_constraintStart_toStartOf="@+id/temperature_box" />
+        app:layout_constraintStart_toStartOf="@+id/temperature_box"
+        tools:progress="36" />
 
     <TextView
         android:id="@+id/tem_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="28dp"
         android:text="100"
         app:layout_constraintBottom_toBottomOf="@+id/temperature_box"
         app:layout_constraintEnd_toEndOf="@+id/temperature_box"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/progressBar" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

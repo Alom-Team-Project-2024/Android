@@ -3,6 +3,7 @@ package com.example.alom_team_project
 import android.content.Context
 import com.example.alom_team_project.login.SejongApi
 import com.example.alom_team_project.login.UserApi
+import com.example.alom_team_project.question_board.AnswerPostService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -84,5 +85,16 @@ object RetrofitClient {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
+    }
+
+    private val retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("http://15.165.213.186:8080/") // 서버의 base URL을 입력하세요
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    val service: AnswerPostService by lazy {
+        retrofit.create(AnswerPostService::class.java)
     }
 }

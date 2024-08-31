@@ -2,7 +2,6 @@ package com.example.alom_team_project.question_board
 
 
 
-import QuestionPostService
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,6 +17,7 @@ import com.example.alom_team_project.databinding.ActivityQuestionBoardBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import setupGlide
 
 class QuestionBoardActivity : AppCompatActivity() {
 
@@ -28,12 +28,14 @@ class QuestionBoardActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
-    private val refreshInterval: Long = 2000 // 10초
+    private val refreshInterval: Long = 12000 // 1분
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuestionBoardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setupGlide(this)
 
         binding.backButton.setOnClickListener{
             finish()
@@ -102,13 +104,13 @@ class QuestionBoardActivity : AppCompatActivity() {
 
     private fun fetchData() {
         val token = getJwtToken()
-        Log.d("FETCH_DATA", "Fetching data with token: $token")
+        //Log.d("FETCH_DATA", "Fetching data with token: $token")
 
 
         questionService.getQuestions("Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
             override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
                 if (response.isSuccessful) {
-                    Log.d("FETCH_DATA", "Data fetched successfully")
+                    //Log.d("FETCH_DATA", "Data fetched successfully")
 
                     response.body()?.let { questions ->
                         questionList.clear()

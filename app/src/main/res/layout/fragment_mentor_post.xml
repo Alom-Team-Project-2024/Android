@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".job_board.MentorPostFragment"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- 질문 작성 text -->
+    <TextView
+        android:id="@+id/writeMentorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="구인 글 작성"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/btn_mentor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="67dp"
+        android:text="멘토 게시판"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back_button" />
+
+
+    <TextView
+        android:id="@+id/btn_mentee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="67dp"
+        android:text="멘티 게시판"
+        android:textColor="#000000"
+        app:layout_constraintStart_toEndOf="@id/btn_mentor"
+        app:layout_constraintTop_toBottomOf="@id/back_button" />
+
+    <ImageView
+        android:id="@+id/underbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/vector_30"
+        app:layout_constraintTop_toBottomOf="@id/btn_mentor"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="15dp"
+        />
+
+    <ImageView
+        android:id="@+id/underbar2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/vector_30"
+        app:layout_constraintTop_toBottomOf="@id/btn_mentee"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="100dp"
+        />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="16dp"
+
+        android:background="@drawable/rounded_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_mentor"
+        app:layout_constraintWidth_percent="0.9" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="12dp"
+
+        android:text="제목"
+        android:textColor="#4825D8"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/imageView5"
+        app:layout_constraintStart_toStartOf="@id/imageView5"
+        app:layout_constraintTop_toTopOf="@+id/imageView5" />
+
+    <!-- 제목 editText-->
+    <EditText
+        android:id="@+id/titleEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="20dp"
+        android:background="@android:color/transparent"
+
+        android:hint="제목을 입력하세요"
+        android:textColor="@color/black"
+        android:maxLength="20"
+        android:singleLine="true"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/imageView5"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toTopOf="@+id/imageView5"
+        app:layout_constraintWidth_percent="0.9" />
+
+
+
+    <ImageView
+        android:id="@+id/imageview6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="11dp"
+        android:background="@drawable/round_rectangle1"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:layout_constraintWidth_percent="0.9" />
+
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+
+        android:text="@string/content"
+        android:textSize="13sp"
+        android:textColor="#4825D8"
+        app:layout_constraintStart_toStartOf="@id/imageview6"
+        app:layout_constraintTop_toTopOf="@+id/imageview6" />
+
+    <EditText
+        android:id="@+id/contentEditText"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:gravity="top"
+        android:hint="@string/contentText"
+        android:textColor="@color/black"
+        android:inputType="textMultiLine"
+        android:maxLines="10"
+        android:textSize="13sp"
+        app:layout_constraintStart_toEndOf="@id/content"
+        app:layout_constraintTop_toTopOf="@+id/imageview6"
+        app:layout_constraintWidth_percent="0.9" />
+
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+
+        android:background="@android:color/transparent"
+        android:padding="0dp"
+
+        android:src="@drawable/left_arrow"
+        android:textColor="#9D9D9D"
+        android:textSize="11dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageButton
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="70dp"
+
+        android:background="@drawable/post_button2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.4" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
