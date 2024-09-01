@@ -51,6 +51,7 @@
 
         android:text="@string/title"
         android:textSize="13sp"
+        android:textStyle="bold"
         android:textColor="#4825D8"
         app:layout_constraintBottom_toBottomOf="@id/imageView5"
         app:layout_constraintStart_toStartOf="@id/imageView5"
@@ -107,6 +108,7 @@
         android:text="@string/content"
         android:textColor="#4825D8"
         android:textSize="13sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/imageview6"
         app:layout_constraintTop_toTopOf="@+id/imageview6" />
 
@@ -132,25 +134,43 @@
         app:layout_constraintTop_toTopOf="@+id/imageview6"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/subjectView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
 
-        app:layout_constraintTop_toBottomOf="@id/imageView5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/round_rectangle13"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView5"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:text="관련"
+            android:textColor="@color/black"
+            android:textSize="13dp"
+            app:layout_constraintStart_toStartOf="@id/subjectView"
+            app:layout_constraintTop_toTopOf="@id/subjectView">
+
+        </TextView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/subjectRecyclerView"
             android:layout_width="0dp"
             android:layout_height="108dp"
 
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="26dp"
+            app:layout_constraintEnd_toEndOf="@id/subjectView"
+            app:layout_constraintStart_toEndOf="@id/text"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
+            tools:listitem="@layout/subject_item" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
@@ -208,6 +228,7 @@
         android:layout_marginTop="15dp"
         android:text="@string/image"
         android:textSize="13sp"
+        android:textStyle="bold"
         android:textColor="#4825D8"
         app:layout_constraintStart_toStartOf="@+id/imageview7"
         app:layout_constraintTop_toTopOf="@+id/imageview7" />

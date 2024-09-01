@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".chat.ChatFragment"
     android:id="@+id/chat_fragment_page"
+    android:clickable="true"
+    android:focusable="true"
     android:elevation="15dp">
 
     <ImageView

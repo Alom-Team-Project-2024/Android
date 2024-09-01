@@ -11,6 +11,7 @@ data class QuestionClass(
     val subject: String,
     val text: String,
     val writer: String,
+    val username: String,
     val likes: Int,
     val scrapCount: Int,
     val replyCount: Int,
@@ -18,18 +19,14 @@ data class QuestionClass(
     val images: List<ImageData>,
     val createdAt: String
 )
-data class Replyitem(
-    val title: String,
-    val text: String
-)
 
 data class ImageData(
     val imageUrl: String
 )
 
 data class User(
-    @SerializedName("nickname") val nickname: String,
-    @SerializedName("profileImage") val profileImage: String
+    val nickname: String,
+    val profileImage: String
 )
 
 data class Reply(
@@ -37,6 +34,7 @@ data class Reply(
     val title: String,
     val text: String,
     val writer: String,
+    val username: String,
     val likes: Int,
     val images: List<ImageData>,
     val createdAt: String
@@ -45,3 +43,5 @@ data class Reply(
 data class Subject(
     val subject : String
 )
+
+

@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -31,6 +32,7 @@ import com.google.gson.JsonObject
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,6 +42,8 @@ private const val PERMISSION_REQUEST_CODE = 100
 
 class AnswerFragment : Fragment() {
 
+    private var isRecyclerViewInitialized = false
+
     //새로고침
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
@@ -47,6 +51,8 @@ class AnswerFragment : Fragment() {
 
     private var _binding: FragmentAnswerBinding? = null
     private val binding get() = _binding!!
+    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var imagePreviewAdapter: ImagePreviewAdapter
     private lateinit var adapter: AnswerAdapterClass
     private lateinit var answerList: ArrayList<Reply>
     private lateinit var answerService: AnswerPostService
@@ -84,6 +90,38 @@ class AnswerFragment : Fragment() {
         // Arguments에서 questionId 받기
         val questionId = arguments?.getLong("QUESTION_ID")
         //Log.d("AnswerFragment", "Question ID: $questionId")
+
+        // RecyclerView 초기화
+        binding.imagePreview.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        imagePreviewAdapter = ImagePreviewAdapter(emptyList())  // 초기에는 빈 리스트
+        binding.imagePreview.adapter = imagePreviewAdapter
+
+        // 이미지 선택 후 RecyclerView 업데이트
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val clipData = result.data?.clipData
+                val imageUris = mutableListOf<Uri>()
+
+                if (clipData != null) {
+                    // 여러 장의 이미지를 선택한 경우
+                    for (i in 0 until clipData.itemCount) {
+                        val item = clipData.getItemAt(i)
+                        imageUris.add(item.uri)
+                    }
+                } else {
+                    // 단일 이미지를 선택한 경우
+                    result.data?.data?.let { uri ->
+                        imageUris.add(uri)
+                    }
+                }
+
+                selectedImageUris = imageUris
+                // RecyclerView의 어댑터를 업데이트
+                binding.imagePreview.visibility= View.VISIBLE
+                imagePreviewAdapter = ImagePreviewAdapter(imageUris)
+                binding.imagePreview.adapter= imagePreviewAdapter
+            }
+        }
 
         // 좋아요 및 스크랩 상태 초기화
         if (questionId != null) {
@@ -128,42 +166,6 @@ class AnswerFragment : Fragment() {
         if (questionId != null) {
             fetchReply(questionId)
             fetchQuestionDetails(questionId)
-        }
-
-        // 이미지 선택 후 ImageView 업데이트
-        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val clipData = result.data?.clipData
-                val imageUris = mutableListOf<Uri>()
-
-                if (clipData != null) {
-                    // 여러 장의 이미지를 선택한 경우
-                    for (i in 0 until clipData.itemCount) {
-                        val item = clipData.getItemAt(i)
-                        imageUris.add(item.uri)
-                    }
-                } else {
-                    // 단일 이미지를 선택한 경우
-                    result.data?.data?.let { uri ->
-                        imageUris.add(uri)
-                    }
-                }
-
-                selectedImageUris = imageUris
-
-                // 첫 번째 이미지만 표시하도록 설정
-                if (selectedImageUris.isNotEmpty()) {
-                    val firstImageUri = selectedImageUris[0]
-                    binding.imageViewSelected.apply {
-                        visibility = View.VISIBLE // ImageView를 보이도록 설정
-                        Glide.with(this.context) // Glide를 사용하여 이미지 로드
-                            .load(firstImageUri)
-                            .into(this)
-                    }
-                } else {
-                    binding.imageViewSelected.visibility = View.GONE // 이미지가 없으면 ImageView를 숨김
-                }
-            }
         }
 
         val btnPickImage: ImageButton = view.findViewById(R.id.btnPickImage)
@@ -240,7 +242,6 @@ class AnswerFragment : Fragment() {
                         uploadImages(answerId ?: return, uris)
                     }
 
-                    binding.imageViewSelected.visibility = View.GONE
                     binding.etMessage.apply {
                         setText("")  // 텍스트를 지웁니다.
                         hint = "답변 작성하기"  // 힌트를 설정합니다.
@@ -307,8 +308,7 @@ class AnswerFragment : Fragment() {
     }
 
     private fun bindQuestionToViews(question: QuestionClass) {
-        // 질문자 이름 및 질문 내용 설정
-        binding.questionerName.text = question.writer
+        // 질문 내용 설정
         binding.questionText.text = question.text
 
 
@@ -316,7 +316,62 @@ class AnswerFragment : Fragment() {
         binding.likeNum.text = question.likes.toString()
         binding.commentNum.text = question.replyCount.toString()
         binding.scrapNum.text = question.scrapCount.toString()
+
+        val username = question.username
+        //질문자 프로필 설정
+        fetchUpdateUserInfo(username)
+
+        // RecyclerView 초기화 및 어댑터 설정
+        if (!isRecyclerViewInitialized) {
+            binding.recyclerViewImages.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = QuestionImageAdapter(question.images) // ImageData 리스트를 직접 전달
+            }
+            isRecyclerViewInitialized = true
+            if(question.images.isNotEmpty()){
+                binding.recyclerViewImages.visibility = View.VISIBLE
+            }
+        }
+
     }
+
+    private fun fetchUpdateUserInfo(username: String) {
+        val token = getJwtToken()
+
+        // 프로필 정보 가져오기 요청
+        answerService.getProfile("Bearer $token", username).enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful) {
+                    // 성공적으로 사용자 프로필 정보를 받았을 때 처리
+                    response.body()?.let { user ->
+                        // 사용자 닉네임을 UI에 설정
+                        binding.questionerName.text = user.nickname
+
+
+                        if (user.profileImage.isNotEmpty()) {
+                            val fullImageUrl = "http://15.165.213.186/" + user.profileImage
+                            Glide.with(binding.root.context)
+                                .load(fullImageUrl)
+                                .into(binding.questionerProfile)
+                        } else {
+                            // 프로필 이미지가 없을 경우 기본 이미지 설정
+                            binding.questionerProfile.setImageResource(R.drawable.group_172)
+                        }
+                    }
+                } else {
+                    // 요청이 실패했을 때 처리 (예: 에러 메시지 출력)
+                    Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                // 네트워크 오류나 다른 문제가 발생했을 때 처리
+                Log.e("UserProfile", "Request failed", t)
+            }
+        })
+    }
+
+
 
     private fun postLike(postId: Long) {
         val token = getJwtToken()

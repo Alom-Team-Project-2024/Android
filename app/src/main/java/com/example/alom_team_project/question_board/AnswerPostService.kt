@@ -4,6 +4,7 @@ package com.example.alom_team_project.question_board
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -67,5 +68,11 @@ interface AnswerPostService {
         @Part file: List<MultipartBody.Part>
     ): Call<JsonArray> // 응답을 JSON으로 변경
 
+    //username으로 user조회
+    @GET("users/username/{username}")
+    fun getProfile(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Call<User>
 
 }

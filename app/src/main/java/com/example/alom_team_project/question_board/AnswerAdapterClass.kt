@@ -67,7 +67,6 @@ class AnswerAdapterClass(
 
             binding.answerTime.text = elapsedTime
             binding.answerText.text = answer.text
-            binding.answererName.text = answer.writer
             binding.likeNum.text = answer.likes.toString()
 
 
@@ -91,8 +90,8 @@ class AnswerAdapterClass(
 
                     val imageView = ImageView(binding.root.context)
                     val layoutParams = LinearLayout.LayoutParams(
-                        150, // 너비를 150px로 설정
-                        150  // 높이를 150px로 설정
+                        360, // 너비를 150px로 설정
+                        360  // 높이를 150px로 설정
                     ).apply {
                         setMargins(4, 4, 4, 4) // 여백 설정
                     }
@@ -137,7 +136,55 @@ class AnswerAdapterClass(
 
                 binding.likeButton.isEnabled = true
             }
+
+            // 질문자 프로필 설정
+            fetchUpdateUserInfo(answer.username) { user ->
+                if (user != null) {
+                    // 사용자 닉네임과 프로필 이미지를 UI에 설정
+                    binding.answererName.text = user.nickname
+
+                    if (user.profileImage.isNotEmpty()) {
+                        val fullImageUrl = "http://15.165.213.186/" + user.profileImage
+                        Log.d("fullImageUrl", fullImageUrl)
+                        Glide.with(binding.root.context)
+                            .load(fullImageUrl)
+                            .into(binding.answererProfile)
+                    } else {
+                        // 프로필 이미지가 없을 경우 기본 이미지 설정
+                        binding.answererProfile.setImageResource(R.drawable.group_172)
+                    }
+                } else {
+                    // 실패 시 UI 업데이트 처리 (필요시)
+                    binding.answererProfile.setImageResource(R.drawable.group_172)  // 기본 이미지 설정
+                }
+            }
         }
+
+        private fun fetchUpdateUserInfo(username: String, callback: (User?) -> Unit) {
+            val token = getJwtToken()
+
+            // 프로필 정보 가져오기 요청
+            RetrofitClient.service.getProfile("Bearer $token", username).enqueue(object : Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // 성공적으로 사용자 프로필 정보를 받았을 때
+                        val user = response.body()
+                        callback(user)  // JSON 데이터 반환 (User 객체)
+                    } else {
+                        // 요청이 실패했을 때
+                        Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
+                        callback(null)  // 실패 시 null 반환
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    // 네트워크 오류나 다른 문제가 발생했을 때
+                    Log.e("UserProfile", "Request failed", t)
+                    callback(null)  // 오류 시 null 반환
+                }
+            })
+        }
+
 
         private fun postLike(replyId: Long) {
             val token = getJwtToken()
