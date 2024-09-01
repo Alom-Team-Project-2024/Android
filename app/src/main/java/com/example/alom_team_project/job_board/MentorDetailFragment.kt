@@ -16,6 +16,7 @@ import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.chat.ChatRoomResponse
 import com.example.alom_team_project.chat.ChatService
 import com.example.alom_team_project.databinding.FragmentMentorDetailBinding
+import com.example.alom_team_project.mypage.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,7 +83,8 @@ class MentorDetailFragment : Fragment() {
 
         // 구인 정보 가져오기
         if (mentorId != null) {
-            fetchMentorDetails(mentorId)
+            fetchMentorDetails(mentorId) { writer ->
+            }
         }
     }
 
@@ -90,44 +92,84 @@ class MentorDetailFragment : Fragment() {
         // 토큰 가져오기
         val token = getJwtToken()
 
-        // 사용자 ID 설정
-        val user1nick = getUsername() // 현재 사용자 학번 (처음 로그인 시 저장하기)
-        val user2nick = "user299"  // 게시글 작성자 학번 (게시물 조회 시 저장하기)
+        // 사용자 학번 설정
+        val username = getUsername()!! // 현재 사용자 학번을 가져오는 함수
+        Log.d("MentorPostU", "$username")
 
-        // 토큰이 null인지 확인
-        if (token != null && user1nick != null && user1nick != user2nick) {
-            val chatService = RetrofitClient.instance.create(ChatService::class.java)
-            val call = chatService.chatRoom("Bearer $token", user1nick, user2nick)
+        // Arguments에서 멘토게시물Id 받기
+        val mentorId = arguments?.getLong("MENTOR_ID")
 
-            call.enqueue(object : Callback<ChatRoomResponse> {
-                override fun onResponse(call: Call<ChatRoomResponse>, response: Response<ChatRoomResponse>) {
-                    if (response.isSuccessful) {
-                        val chatRoomResponse = response.body()
+        if (token != null && mentorId != null) {
+            fetchMentorDetails(mentorId) { user2nick ->
+                if (user2nick != null) {
+                    fetchNickname(token, username) { user1nick ->
+                        Log.d("MentorPostU", "$user1nick, $user2nick")
+                        if (user1nick != null && user1nick != user2nick) {
+                            val chatService = RetrofitClient.instance.create(ChatService::class.java)
+                            val call = chatService.chatRoom("Bearer $token", user1nick, user2nick)
+                            Log.d("MentorPostUN", "$user1nick, $user2nick")
 
-                        // chatRoomResponse가 null이 아닌 경우 id 가져오기
-                        chatRoomResponse?.let {
-                            val chatRoomId = it.id
-                            Log.d("ChatRoom ID", "ChatRoom ID: $chatRoomId")
+                            call.enqueue(object : Callback<ChatRoomResponse> {
+                                override fun onResponse(call: Call<ChatRoomResponse>, response: Response<ChatRoomResponse>) {
+                                    if (response.isSuccessful) {
+                                        val chatRoomResponse = response.body()
 
-                            // 챗화면으로 이동
-                        } ?: run {
-                            Log.e("API Error", "ChatRoomResponse is null")
+                                        // chatRoomResponse가 null이 아닌 경우 id 가져오기
+                                        chatRoomResponse?.let {
+                                            val chatRoomId = it.id
+                                            Log.d("ChatRoom ID", "ChatRoom ID: $chatRoomId")
+
+                                            // 챗화면으로 이동
+                                        } ?: run {
+                                            Log.e("API ErrorM", "ChatRoomResponse is null")
+                                        }
+                                    } else {
+                                        // 응답 실패 처리
+                                        Log.e("API ErrorM", "Response Code: ${response.code()}, Message: ${response.message()}")
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<ChatRoomResponse>, t: Throwable) {
+                                    // 요청 실패 처리
+                                    Log.e("API ErrorM", "Failure: ${t.message}")
+                                }
+                            })
+                        } else {
+                            // user1nick이 null이거나 user2nick과 동일한 경우 처리
+                            Log.e("Nickname Error", "Failed to fetch nickname or usernames are identical.")
                         }
+                    }
+                } else {
+                    // user2nick이 null인 경우 처리
+                    Log.e("Mentor Error", "Failed to fetch mentor details or user2nick is null.")
+                }
+            }
+        } else {
+            // 토큰이 null이거나 mentorId가 null인 경우 처리
+            Log.e("Token or MentorId Error", "Token or MentorId is null. Cannot create chat room.")
+        }
+    }
+
+
+    private fun fetchNickname(token: String, username: String, callback: (String?) -> Unit) {
+        RetrofitClient.userApi.getUserProfile(username, "Bearer $token")
+            .enqueue(object : Callback<UserResponse> {
+                override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                    if (response.isSuccessful) {
+                        val user = response.body()
+                        val nickname = user?.nickname
+                        callback(nickname)
                     } else {
-                        // 응답 실패 처리
-                        Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
+                        Log.e("MentorPostU", "Failed to fetch user profile. Response code: ${response.code()}")
+                        callback(null)
                     }
                 }
 
-                override fun onFailure(call: Call<ChatRoomResponse>, t: Throwable) {
-                    // 요청 실패 처리
-                    Log.e("API Error", "Failure: ${t.message}")
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    Log.e("MentorPostU", "Network Error: ${t.message}")
+                    callback(null)
                 }
             })
-        } else {
-            // 토큰이 null인 경우 처리
-            Log.e("Token Error", "Token is null. Cannot create chat room.")
-        }
     }
 
     private fun getJwtToken(): String {
@@ -140,7 +182,7 @@ class MentorDetailFragment : Fragment() {
         return sharedPref.getString("username", null)
     }
 
-    private fun fetchMentorDetails(mentorId: Long) {
+    private fun fetchMentorDetails(mentorId: Long, callback: (String?) -> Unit) {
         val token = getJwtToken()
 
         mentorService.getMentorFromId("Bearer $token", mentorId).enqueue(object : Callback<MentorClass> {
@@ -148,17 +190,23 @@ class MentorDetailFragment : Fragment() {
                 if (response.isSuccessful) {
                     response.body()?.let { mentor ->
                         bindMentorToViews(mentor)
+                        callback(mentor.writer) // 콜백을 통해 mentor.writer 전달
+                    } ?: run {
+                        callback(null) // mentor가 null인 경우
                     }
                 } else {
                     Toast.makeText(requireContext(), "불러오기 실패", Toast.LENGTH_SHORT).show()
+                    callback(null) // 실패 시 null 전달
                 }
             }
 
             override fun onFailure(call: Call<MentorClass>, t: Throwable) {
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                callback(null) // 오류 발생 시 null 전달
             }
         })
     }
+
 
     private fun bindMentorToViews(mentor: MentorClass) {
         // 질문자 이름 및 질문 내용 설정
@@ -220,14 +268,15 @@ class MentorDetailFragment : Fragment() {
             override fun run() {
                 val mentorId = arguments?.getLong("MENTOR_ID")
                 if (mentorId != null) {
-                    // 스크랩 상태 업데이트
-                    fetchMentorDetails(mentorId)
+                    fetchMentorDetails(mentorId) { writer ->
+                    }
                 }
                 handler.postDelayed(this, refreshInterval)
             }
         }
         handler.post(runnable)
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
