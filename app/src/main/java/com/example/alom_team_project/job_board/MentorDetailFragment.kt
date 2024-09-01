@@ -1,6 +1,7 @@
 package com.example.alom_team_project.job_board
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.chat.ChatListActivity
 import com.example.alom_team_project.chat.ChatRoomResponse
 import com.example.alom_team_project.chat.ChatService
 import com.example.alom_team_project.databinding.FragmentMentorDetailBinding
@@ -119,7 +121,6 @@ class MentorDetailFragment : Fragment() {
                                             val chatRoomId = it.id
                                             Log.d("ChatRoom ID", "ChatRoom ID: $chatRoomId")
 
-                                            // 챗화면으로 이동
                                         } ?: run {
                                             Log.e("API ErrorM", "ChatRoomResponse is null")
                                         }

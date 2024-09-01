@@ -37,6 +37,10 @@ class CustomDialogC(context: Context): Dialog(context) {
         binding.yesBtn.setOnClickListener {
             dismiss()
         }
+
+        binding.xBtn.setOnClickListener {
+            dismiss()
+        }
     }
 
     // 다이얼로그 위치 조정 메서드
