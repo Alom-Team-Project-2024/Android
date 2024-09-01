@@ -11,12 +11,14 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.chat.ChatRoomResponse
 import com.example.alom_team_project.chat.ChatService
 import com.example.alom_team_project.databinding.FragmentMentorDetailBinding
 import com.example.alom_team_project.mypage.UserResponse
+import com.example.alom_team_project.question_board.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -209,13 +211,52 @@ class MentorDetailFragment : Fragment() {
 
 
     private fun bindMentorToViews(mentor: MentorClass) {
-        // 질문자 이름 및 질문 내용 설정
-        binding.postUserId.text = mentor.writer
+        // 질문 내용 설정
         binding.postContent.text = mentor.text
 
 
         // 좋아요 수, 댓글 수, 스크랩 수 설정
         binding.scrapCount.text = mentor.scrapCount.toString()
+
+        val username = mentor.username
+        //질문자 프로필 설정
+        fetchUpdateUserInfo(username)
+    }
+
+    private fun fetchUpdateUserInfo(username: String) {
+        val token = getJwtToken()
+
+        // 프로필 정보 가져오기 요청
+        mentorService.getProfile("Bearer $token", username).enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful) {
+                    // 성공적으로 사용자 프로필 정보를 받았을 때 처리
+                    response.body()?.let { user ->
+                        // 사용자 닉네임을 UI에 설정
+                        binding.postUserId.text = user.nickname
+
+
+                        if (user.profileImage.isNotEmpty()) {
+                            val fullImageUrl = "http://15.165.213.186/" + user.profileImage
+                            Glide.with(binding.root.context)
+                                .load(fullImageUrl)
+                                .into(binding.postProfile)
+                        } else {
+                            // 프로필 이미지가 없을 경우 기본 이미지 설정
+                            binding.postProfile.setImageResource(R.drawable.group_172)
+                        }
+                    }
+                } else {
+                    // 요청이 실패했을 때 처리 (예: 에러 메시지 출력)
+                    Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                // 네트워크 오류나 다른 문제가 발생했을 때 처리
+                Log.e("UserProfile", "Request failed", t)
+            }
+        })
     }
 
     private fun postScrap(username: String, mentorId: Long) {
