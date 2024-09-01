@@ -6,6 +6,7 @@ data class MentorClass (
     val title: String,
     val text: String,
     val writer: String,
+    val username: String,
     val scrapCount: Int,
     val createdAt: String
 )

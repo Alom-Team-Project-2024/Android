@@ -1,7 +1,9 @@
 package com.example.alom_team_project.question_board
 
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +11,11 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
+import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.QuestionBoardItemBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -74,12 +80,13 @@ class QuestionAdapterClass(
             // 이미지가 있을 경우 첫 번째 이미지를 ImageView에 로드
             if (question.images.isNotEmpty()) {
                 val fullImageUrl = baseUrl + question.images[0].imageUrl
-                //Log.d("ImageURL", "Loading image from URL: $fullImageUrl")
+                //android.util.Log.d("ImageURL", "Loading image from URL: $fullImageUrl")
                 Glide.with(binding.questionImage.context)
                     .load(fullImageUrl)
                     .placeholder(R.drawable.ex_image)  // 이미지 로딩 전까지 보여줄 플레이스홀더
                     .error(R.drawable.ex_image)  // 이미지 로딩 실패 시 보여줄 이미지
                     .into(binding.questionImage)
+                binding.questionImage.visibility = View.VISIBLE
             } else {
                 binding.questionImage.visibility = View.GONE
             }
@@ -94,11 +101,51 @@ class QuestionAdapterClass(
             binding.commentButton.setBackgroundResource(R.drawable.comment_button)
             binding.scrapButton.setBackgroundResource(R.drawable.scrap_button)
 
+
+
             // 아이템 클릭 리스너 설정
             itemView.setOnClickListener {
                 //Log.d("QuestionAdapter", "질문글 ID: ${question.id}")
                 onItemClickListener(question.id)  // 클릭된 아이템의 ID 전달
             }
+
+            // 질문자 닉네임 설정
+            fetchUpdateUserInfo(question.username) { user ->
+                if (user != null) {
+                    binding.nickname.text = user.nickname
+                }
+            }
+        }
+
+        private fun fetchUpdateUserInfo(username: String, callback: (User?) -> Unit) {
+            val token = getJwtToken()
+
+            // 프로필 정보 가져오기 요청
+            RetrofitClient.service.getProfile("Bearer $token", username).enqueue(object :
+                Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // 성공적으로 사용자 프로필 정보를 받았을 때
+                        val user = response.body()
+                        callback(user)  // JSON 데이터 반환 (User 객체)
+                    } else {
+                        // 요청이 실패했을 때
+                        Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
+                        callback(null)  // 실패 시 null 반환
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    // 네트워크 오류나 다른 문제가 발생했을 때
+                    Log.e("UserProfile", "Request failed", t)
+                    callback(null)  // 오류 시 null 반환
+                }
+            })
+        }
+
+        private fun getJwtToken(): String {
+            val sharedPref = binding.root.context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+            return sharedPref.getString("jwt_token", "") ?: ""
         }
 
     }

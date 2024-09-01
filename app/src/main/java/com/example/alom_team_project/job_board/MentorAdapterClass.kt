@@ -1,12 +1,19 @@
 package com.example.alom_team_project.job_board
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alom_team_project.R
+import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.MentorBoardItemBinding
+import com.example.alom_team_project.question_board.User
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -73,8 +80,45 @@ class MentorAdapterClass(
             itemView.setOnClickListener {
                 onItemClickListener(mentor.id)  // 클릭된 아이템의 ID 전달
             }
+
+            // 질문자 닉네임 설정
+            fetchUpdateUserInfo(mentor.username) { user ->
+                if (user != null) {
+                    binding.nickname.text = user.nickname
+                }
+            }
         }
 
+        private fun fetchUpdateUserInfo(username: String, callback: (User?) -> Unit) {
+            val token = getJwtToken()
+
+            // 프로필 정보 가져오기 요청
+            RetrofitClient.service.getProfile("Bearer $token", username).enqueue(object :
+                Callback<User> {
+                override fun onResponse(call: Call<User>, response: Response<User>) {
+                    if (response.isSuccessful) {
+                        // 성공적으로 사용자 프로필 정보를 받았을 때
+                        val user = response.body()
+                        callback(user)  // JSON 데이터 반환 (User 객체)
+                    } else {
+                        // 요청이 실패했을 때
+                        Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
+                        callback(null)  // 실패 시 null 반환
+                    }
+                }
+
+                override fun onFailure(call: Call<User>, t: Throwable) {
+                    // 네트워크 오류나 다른 문제가 발생했을 때
+                    Log.e("UserProfile", "Request failed", t)
+                    callback(null)  // 오류 시 null 반환
+                }
+            })
+        }
+
+        private fun getJwtToken(): String {
+            val sharedPref = binding.root.context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+            return sharedPref.getString("jwt_token", "") ?: ""
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
