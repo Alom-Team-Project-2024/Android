@@ -55,9 +55,11 @@ class ChatListActivity : AppCompatActivity() {
             }
         })
 
-        binding.btmNav.setOnClickListener {
-            openNavFragment()
-        }
+        // 네비게이션 프래그먼트
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.chat_nav, NavigationFragment())
+        transaction.commit()
+
 
         binding.root.setOnClickListener {
             hideKeyboard()

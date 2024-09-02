@@ -26,7 +26,7 @@
         android:layout_marginStart="13dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="13dp"
-        android:elevation="10dp"
+        android:elevation="5dp"
         android:background="@drawable/round_rectangle9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginStart="10dp"
-        android:elevation="10dp"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/search_box"
         app:layout_constraintStart_toStartOf="@+id/search_box"
         app:layout_constraintTop_toTopOf="@+id/search_box"
@@ -52,7 +52,7 @@
         android:layout_marginTop="9dp"
         android:layout_marginBottom="9dp"
         android:layout_marginEnd="10dp"
-        android:elevation="10dp"
+        android:elevation="5dp"
         android:background="@android:color/transparent"
         android:hint="검색하기"
         android:imeOptions="actionDone"
@@ -73,8 +73,8 @@
         android:layout_marginStart="13dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="13dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/btm_nav"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/background"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/background"
@@ -105,21 +105,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/nav_btm" />
 
-    <ImageView
-        android:id="@+id/btm_nav"
-        android:layout_width="38.03dp"
-        android:layout_height="38.03dp"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/navigation_btn"/>
-    <!--SVG 파일로 다운 받으면 안에 그림자가 안보임 / PNG 파일로 하면 깨짐-->
-
     <FrameLayout
         android:id="@+id/chat_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

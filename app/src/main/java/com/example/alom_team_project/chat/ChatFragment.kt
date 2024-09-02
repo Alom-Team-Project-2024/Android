@@ -96,7 +96,6 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
                 if (token.isNotEmpty()) {
                     stompClient.connect("Bearer $token", chatRoomId)
                     Log.d("WebsocketM", "Connected to STOMP server")
-                    stompClient.subscribeToChatRoom(chatRoomId)
                     Log.d("WebsocketM", "Subscribed to chat room $chatRoomId")
                 } else {
                     Log.e("Token Error", "Token is empty, cannot connect to STOMP server")
