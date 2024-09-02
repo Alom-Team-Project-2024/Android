@@ -2,6 +2,8 @@ package com.example.alom_team_project.mypage
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,24 +13,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
-import com.example.alom_team_project.databinding.ActivityScrapBoardBinding
-import com.example.alom_team_project.question_board.QuestionAdapterClass
+import com.example.alom_team_project.databinding.ActivityScrapQuestionBoardBinding
 import com.example.alom_team_project.login.UserApi
+import com.example.alom_team_project.question_board.AnswerFragment
+import com.example.alom_team_project.question_board.QuestionAdapterClass
 import com.example.alom_team_project.question_board.QuestionClass
 import com.example.alom_team_project.question_board.QuestionPostFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ScrapBoardActivity : AppCompatActivity() {
+class MyPostsQuestionActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityScrapBoardBinding
+    private lateinit var binding: ActivityScrapQuestionBoardBinding
     private lateinit var adapter: QuestionAdapterClass
     private lateinit var scrapQuestionList: ArrayList<QuestionClass>
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
+
+    private val refreshInterval: Long = 12000 // 1분
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityScrapBoardBinding.inflate(layoutInflater)
+        binding = ActivityScrapQuestionBoardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.backButton.setOnClickListener {
@@ -71,11 +78,26 @@ class ScrapBoardActivity : AppCompatActivity() {
 
         // 초기 선택 상태 설정 (기본적으로 질문 게시판 선택됨)
         selectButton(binding.btnQuestion)
+
+        setupAutoRefresh()
     }
 
     private fun setupRecyclerView() {
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1111
-        //adapter = QuestionAdapterClass(scrapQuestionList)
+        adapter = QuestionAdapterClass(
+            questionList = scrapQuestionList,
+            onItemClickListener = { questionId ->
+                // AnswerFragment로 이동
+                val fragment = AnswerFragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("QUESTION_ID", questionId)
+                    }
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.questionViewPage, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
         binding.QuestionRecyclerView.adapter = adapter
         binding.QuestionRecyclerView.layoutManager = LinearLayoutManager(this)
     }
@@ -85,17 +107,33 @@ class ScrapBoardActivity : AppCompatActivity() {
         return sharedPref.getString("jwt_token", "") ?: ""
     }
 
+    private fun getSearchText(): String {
+        return binding.etSearch.text.toString()
+    }
+
+    private fun openScrapMyPostsBoardFragment() {
+        val fragment = ScrapMentorBoardFragment().apply {
+            // Arguments 전달 (검색 텍스트와 같은 데이터)
+            arguments = Bundle().apply {
+                putString("SEARCH_TEXT", getSearchText())
+            }
+        }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
     private fun fetchData() {
         val token = getJwtToken()
         Log.d("FETCH_DATA", "Fetching data with token: $token")
 
-        // RetrofitClient의 UserApi 인스턴스를 생성합니다
         val api = RetrofitClient.instance.create(UserApi::class.java)
 
         // 사용자 이름을 가져오는 메소드 추가 (예시: 현재 로그인된 사용자의 사용자 이름을 가져오는 메소드)
         val username = getUsername() ?: ""
 
-        api.getScrapInfo(username, "Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
+        api.getMyPostsQuestionInfo(username, "Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
             override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
                 if (response.isSuccessful) {
                     Log.d("FETCH_DATA", "Data fetched successfully")
@@ -107,13 +145,13 @@ class ScrapBoardActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
-                    Toast.makeText(this@ScrapBoardActivity, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MyPostsQuestionActivity, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<QuestionClass>>, t: Throwable) {
                 Log.e("FETCH_DATA", "Failed to fetch data", t)
-                Toast.makeText(this@ScrapBoardActivity, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MyPostsQuestionActivity, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -124,17 +162,42 @@ class ScrapBoardActivity : AppCompatActivity() {
         val selectedMentorColor = "#1391B4" // 파란색
         val unselectedColor = "#000000" // 기본 검은색
 
-        // 언더바 visibility 조정
-        if (selectedButton.id == binding.btnQuestion.id) {
-            binding.btnQuestion.setTextColor(Color.parseColor(selectedQuestionColor))
-            binding.btnMentor.setTextColor(Color.parseColor(unselectedColor))
-            binding.underbar.visibility = android.view.View.VISIBLE
-            binding.underbar2.visibility = android.view.View.INVISIBLE
-        } else {
-            binding.btnQuestion.setTextColor(Color.parseColor(unselectedColor))
-            binding.btnMentor.setTextColor(Color.parseColor(selectedMentorColor))
-            binding.underbar.visibility = android.view.View.INVISIBLE
-            binding.underbar2.visibility = android.view.View.VISIBLE
+        when (selectedButton.id) {
+            binding.btnQuestion.id -> {
+                // 질문 버튼 클릭 시
+                binding.btnQuestion.setTextColor(Color.parseColor(selectedQuestionColor))
+                binding.btnMentor.setTextColor(Color.parseColor(unselectedColor))
+                binding.underbar.visibility = android.view.View.VISIBLE
+                binding.underbar2.visibility = android.view.View.INVISIBLE
+
+                // RecyclerView 표시 및 프래그먼트 숨기기
+                binding.QuestionRecyclerView.visibility = android.view.View.VISIBLE
+                binding.fragmentContainer.visibility = android.view.View.GONE
+
+                // etSearch 보이게 하기
+                binding.etSearch.visibility = android.view.View.VISIBLE
+            }
+            binding.btnMentor.id -> {
+                // 멘토 버튼 클릭 시
+                binding.btnQuestion.setTextColor(Color.parseColor(unselectedColor))
+                binding.btnMentor.setTextColor(Color.parseColor(selectedMentorColor))
+                binding.underbar.visibility = android.view.View.INVISIBLE
+                binding.underbar2.visibility = android.view.View.VISIBLE
+
+                // RecyclerView 숨기기 및 프래그먼트 표시
+                binding.QuestionRecyclerView.visibility = android.view.View.GONE
+                binding.fragmentContainer.visibility = android.view.View.VISIBLE
+
+                // etSearch 숨기기
+                binding.etSearch.visibility = android.view.View.GONE
+
+                // 프래그먼트 표시
+                val fragment = ScrapMentorBoardFragment()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
     }
 
@@ -149,5 +212,21 @@ class ScrapBoardActivity : AppCompatActivity() {
             .replace(R.id.questionViewPage, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun setupAutoRefresh() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                fetchData()
+                handler.postDelayed(this, refreshInterval)
+            }
+        }
+        handler.post(runnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(runnable) // Fragment가 파괴될 때 Runnable 제거
     }
 }

@@ -21,6 +21,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
+import android.graphics.Typeface
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -44,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         fetchQuestions()
         fetchData() //홈화면 이름 불러오기
-
+        fetchMentors()
         updateRecordCount() // 초기화 시점에서 기록 개수를 업데이트합니다.
     }
 
@@ -177,6 +181,16 @@ class MainActivity : AppCompatActivity() {
                         val name = user.name ?: ""
                         binding.tvEncourage.text = "${name}님,\n" +
                                 "오늘도 화이팅하세요!"
+                        val encourageText = SpannableStringBuilder("${name}님,\n오늘도 화이팅하세요!")
+
+                        encourageText.setSpan(
+                            StyleSpan(Typeface.BOLD),
+                            0,
+                            name.length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        binding.tvEncourage.text = encourageText
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")

@@ -5,5 +5,6 @@ data class AuthUserDTO(
     val name: String,
     val major: String,
     val studentGrade: Int,
-    val registrationStatus: RegistrationStatus
+    val registrationStatus: RegistrationStatus,
+    val nickname: String?
 )

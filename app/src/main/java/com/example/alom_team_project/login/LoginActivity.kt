@@ -10,7 +10,7 @@ import com.example.alom_team_project.MainActivity
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.mypage.MypageActivity
 import com.example.alom_team_project.mypage.ProfileActivity
-import com.example.alom_team_project.mypage.ScrapBoardActivity
+import com.example.alom_team_project.mypage.ScrapQuestionBoardActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,7 +74,8 @@ class LoginActivity : AppCompatActivity() {
             name = userData.name,
             major = userData.major,
             studentGrade = userData.grade,
-            registrationStatus = registrationStatus
+            registrationStatus = registrationStatus,
+            nickname = userData.nickname
         )
 
         // JWT 요청
@@ -89,10 +90,12 @@ class LoginActivity : AppCompatActivity() {
                         // JWT와 username 저장
                         saveUserData(token, id)
                         JwtProvider.setToken(token)
-                        navigateToMainActivity()
-                        //navigateToScrapActivity()
-                        //navigateToMypageActivity()
-                        //navigateToProfileActivity()  // 프로필 설정 페이지 이동
+                        // 닉네임이 null인지 확인
+                        navigateToProfileActivity()
+                        /*if (userData.nickname.isNullOrEmpty()) {
+                            navigateToProfileActivity() // 닉네임이 null일 때 프로필 페이지로 이동
+                        } else {
+                            navigateToMainActivity()} // 닉네임이 존재하면 메인 페이지로 이동*/
                     } else {
                         showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                     }
@@ -136,7 +139,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToScrapActivity() {
-        val intent = Intent(this@LoginActivity, ScrapBoardActivity::class.java)
+        val intent = Intent(this@LoginActivity, ScrapQuestionBoardActivity::class.java)
         startActivity(intent)
         finish()
     }

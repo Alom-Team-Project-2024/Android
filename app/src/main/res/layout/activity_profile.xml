@@ -44,19 +44,30 @@
         android:textSize="20sp"
         />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_profile"
+    <FrameLayout
+        android:id="@+id/img_profile1"
         android:layout_width="130dp"
         android:layout_height="130dp"
-        android:background="@drawable/group_256"
+        android:layout_marginTop="110dp"
+        android:layout_marginBottom="68dp"
+        android:elevation="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
-        android:layout_marginTop="110px"
-        android:elevation="20dp"
-        app:layout_constraintBottom_toTopOf="@id/rel_nickname"
-        android:layout_marginBottom="68px"
-        />
+        app:layout_constraintBottom_toTopOf="@id/rel_nickname">
+
+        <!-- 프로필 이미지 -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/img_profile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/group_256"
+            app:civ_border_color="@android:color/transparent"
+            app:civ_border_width="0dp"/>
+
+    </FrameLayout>
+
 
     <ImageButton
         android:id="@+id/btn_profile"
@@ -64,8 +75,8 @@
         android:layout_height="50dp"
         android:background="@drawable/group_167"
         android:elevation="20dp"
-        app:layout_constraintTop_toBottomOf="@id/img_profile"
-        app:layout_constraintStart_toEndOf="@id/img_profile"
+        app:layout_constraintTop_toBottomOf="@id/img_profile1"
+        app:layout_constraintStart_toEndOf="@id/img_profile1"
         android:layout_marginTop="-50dp"
         android:layout_marginStart="-50dp"
         />
@@ -97,6 +108,8 @@
             android:id="@+id/et_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:inputType="text"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="30dp"

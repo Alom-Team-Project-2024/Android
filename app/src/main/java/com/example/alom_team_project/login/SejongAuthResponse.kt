@@ -22,5 +22,6 @@ data class SejongAuthResponseResultBodyJson(
     val name: String,
     val major: String,
     val grade: Int,
-    val status: String
+    val status: String,
+    val nickname : String
 )

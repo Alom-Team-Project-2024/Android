@@ -28,7 +28,6 @@ class QuestionAdapterClass(
         filteredList = ArrayList(questionList) // 초기화 시 filteredList에 questionList를 할당
     }
 
-
     class ViewHolder(
         private val binding: QuestionBoardItemBinding,
         private val onItemClickListener: (Long) -> Unit // 클릭 리스너를 생성자에 추가

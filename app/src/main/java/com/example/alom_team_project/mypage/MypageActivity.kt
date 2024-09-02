@@ -12,9 +12,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.job_board.MentorAdapterClass
+import com.example.alom_team_project.job_board.MentorClass
+import com.example.alom_team_project.job_board.MentorPostFragment
 import com.example.alom_team_project.login.LoginActivity
+import com.example.alom_team_project.login.UserApi
+import com.example.alom_team_project.question_board.AnswerFragment
+import com.example.alom_team_project.question_board.QuestionAdapterClass
+import com.example.alom_team_project.question_board.QuestionClass
+import com.example.alom_team_project.question_board.QuestionPostFragment
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,12 +42,20 @@ class MypageActivity : AppCompatActivity() {
     private lateinit var btnLogout: Button
     private lateinit var ivProfileImage: ImageView
     private lateinit var tvProfileEdit: TextView
+    private lateinit var recyclerViewQuestion: RecyclerView
+    private lateinit var recyclerViewMentor: RecyclerView
+    private lateinit var questionAdapter: QuestionAdapterClass
+    private lateinit var mentorAdapter: MentorAdapterClass
+    private val scrapQuestionList = arrayListOf<QuestionClass>() // 질문 데이터 리스트
+    private val scrapMentorList = arrayListOf<MentorClass>() // 멘토 데이터 리스트
+
     private val editProfileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             // 정보 수정 후 돌아올 때 사용자 정보 새로고침
             getUserProfile()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mypage)
@@ -53,6 +71,8 @@ class MypageActivity : AppCompatActivity() {
         btnLogout = findViewById(R.id.btn_logout)
         ivProfileImage = findViewById(R.id.iv_profileImage)
         tvProfileEdit = findViewById(R.id.tv_profile_edit)
+        recyclerViewQuestion = findViewById(R.id.question_board_item)
+        recyclerViewMentor = findViewById(R.id.mentor_board_item)
 
         val backButton: ImageButton = findViewById(R.id.backButton)
         backButton.setOnClickListener {
@@ -66,13 +86,13 @@ class MypageActivity : AppCompatActivity() {
 
         // 버튼 클릭 시 MyPostActivity로 이동
         btnMyPosts.setOnClickListener {
-            val intent = Intent(this, MyPostsActivity::class.java)
+            val intent = Intent(this, MyPostsQuestionActivity::class.java)
             startActivity(intent)
         }
 
         // 텍스트뷰 클릭 시 ScrapBoardActivity로 이동
         tvMoreScrap.setOnClickListener {
-            val intent = Intent(this, ScrapBoardActivity::class.java)
+            val intent = Intent(this, ScrapQuestionBoardActivity::class.java)
             startActivity(intent)
         }
 
@@ -86,6 +106,10 @@ class MypageActivity : AppCompatActivity() {
         // 사용자 정보를 조회하는 함수 호출
         getUserProfile()
         progressBar.progress = 100
+
+        // 스크랩 데이터 가져오기
+        fetchScrapData()
+        fetchMentorData()
     }
 
     private fun getUserProfile() {
@@ -159,6 +183,116 @@ class MypageActivity : AppCompatActivity() {
         })
     }
 
+    private fun fetchScrapData() {
+        val token = getJwtToken()
+        Log.d("FETCH_DATA", "Fetching data with token: $token")
+
+        val api = RetrofitClient.instance.create(UserApi::class.java)
+        val username = getUsername() ?: ""
+
+        api.getScrapQuestionInfo(username, "Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
+            override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
+                if (response.isSuccessful) {
+                    Log.d("FETCH_DATA", "Data fetched successfully")
+
+                    response.body()?.let { posts ->
+                        if (posts.isNotEmpty()) {
+                            // 최신 질문 하나만 추출
+                            val latestQuestion = posts[0]
+                            scrapQuestionList.clear()
+                            scrapQuestionList.add(latestQuestion)
+                            setupQuestionRecyclerView()
+                        }
+                    }
+                } else {
+                    Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(this@MypageActivity, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<QuestionClass>>, t: Throwable) {
+                Log.e("FETCH_DATA", "Failed to fetch data", t)
+                Toast.makeText(this@MypageActivity, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun fetchMentorData() {
+        val token = getJwtToken()
+        Log.d("FETCH_DATA", "Fetching data with token: $token")
+
+        val api = RetrofitClient.instance.create(UserApi::class.java)
+        val username = getUsername() ?: ""
+        api.getScrapMentorInfo(username, "Bearer $token").enqueue(object : Callback<List<MentorClass>> {
+            override fun onResponse(call: Call<List<MentorClass>>, response: Response<List<MentorClass>>) {
+                if (response.isSuccessful) {
+                    Log.d("FETCH_DATA", "Data fetched successfully")
+                    response.body()?.let { mentors ->
+                        if (mentors.isNotEmpty()) {
+                            // 최신 멘토 하나만 추출
+                            val latestMentor = mentors[0]
+                            scrapMentorList.clear()
+                            scrapMentorList.add(latestMentor)
+                            setupMentorRecyclerView()
+                        }
+                    }
+                } else {
+                    Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(this@MypageActivity, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<MentorClass>>, t: Throwable) {
+                Log.e("FETCH_DATA", "Failed to fetch data", t)
+                Toast.makeText(this@MypageActivity, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setupQuestionRecyclerView() {
+        questionAdapter = QuestionAdapterClass(
+            scrapQuestionList,
+            onItemClickListener = { questionId ->
+                Log.d("MypageActivity", "Question clicked with ID: $questionId")
+                // AnswerFragment로 이동
+                val fragment = AnswerFragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("QUESTION_ID", questionId)
+                        Log.d("QuestionRecyclerView", "Question clicked: ID = $questionId")
+
+                    }
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)  // Fragment를 담을 컨테이너 ID 수정
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
+        recyclerViewQuestion.layoutManager = LinearLayoutManager(this)
+        recyclerViewQuestion.adapter = questionAdapter
+
+    }
+
+
+    private fun setupMentorRecyclerView() {
+        mentorAdapter = MentorAdapterClass(
+            scrapMentorList,
+            onItemClickListener = { mentorId ->
+                // 멘토 클릭 시 동작
+                Log.d("MentorRecyclerView", "Mentor clicked: ID = $mentorId")
+                val intent = Intent(this@MypageActivity, MentorPostFragment::class.java)
+                intent.putExtra("MENTOR_ID", mentorId)
+
+                startActivity(intent)
+            }
+        )
+        recyclerViewMentor.layoutManager = LinearLayoutManager(this)
+        recyclerViewMentor.adapter = mentorAdapter
+
+        // 로그캣 출력 예: 어댑터가 설정되었을 때
+        Log.d("MentorRecyclerView", "MentorRecyclerView setup complete.")
+    }
+
     private fun getJwtToken(): String? {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("jwt_token", null)
@@ -168,5 +302,4 @@ class MypageActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("username", null)
     }
-
 }

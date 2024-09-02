@@ -61,24 +61,40 @@ interface UserApi {
         @Header("Authorization") authHeader: String
     ): Call<Boolean>
 
-    @GET("/question_post") //메인페이지 질문 게시판 조회
+    @GET("/question_post/desc") //메인페이지 질문 게시판 조회
     fun getQuestions(@Header("Authorization") token: String): Call<List<QuestionPostResponse>>
 
-    @GET("/mentor_post") //메인페이지 구인 게시판 조회
+    @GET("/mentor_post/desc") //메인페이지 구인 게시판 조회
     fun getMentors(@Header("Authorization") token: String): Call<List<MentorPostResponse>>
 
-    @GET("/users/question_post/scrap/{username}") //마이페이지 스크랩 게시판 조회
-    fun getScrapInfo(
+    @GET("/mentor_post") //메인페이지 구인 게시판 조회
+    fun getMentors1(@Header("Authorization") token: String): Call<List<MentorClass>>
+
+    @GET("/users/question_post/scrap/{username}/desc") //마이페이지 스크랩 게시판 조회
+    fun getScrapQuestionInfo(
         @Path("username") questionId: String,
         @Header("Authorization") token: String
     ): Call<List<QuestionClass>>
 
-
-    // 닉네임으로 작성된 질문 게시물을 조회
-    @GET("/question_post/writer/{nickname}")
-    fun getQuestionsByNickname(
-        @Path("nickname") nickname: String,
-        @Header("Authorization") authHeader: String
+    @GET("/users/mentor_post/scrap/{username}/desc") //마이페이지 스크랩 게시판 조회
+    fun getScrapMentorInfo(
+        @Path("username") questionId: String,
+        @Header("Authorization") token: String
     ): Call<List<MentorClass>>
+
+    @GET("/question_post/username/{username}/desc") //마이페이지 내가 작성한 글 게시판 조회
+    fun getMyPostsQuestionInfo(
+        @Path("username") questionId: String,
+        @Header("Authorization") token: String
+    ): Call<List<QuestionClass>>
+
+    @GET("/mentor_post/username/{username}/desc") //마이페이지 내가 작성한 글 게시판 조회
+    fun getMyPostsMentorInfo(
+        @Path("username") questionId: String,
+        @Header("Authorization") token: String
+    ): Call<List<MentorClass>>
+
+
+
 }
 

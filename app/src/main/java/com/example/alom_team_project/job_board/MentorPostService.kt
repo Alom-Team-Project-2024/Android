@@ -39,4 +39,7 @@ interface MentorPostService {
         @Path("username") username: String,
         @Path("mentorId") mentorId: Long
     ): Call<Void>
+
+    @GET("/mentor_post") //메인페이지 구인 게시판 조회
+    fun getMentors(@Header("Authorization") token: String): Call<List<MentorClass>>
 }

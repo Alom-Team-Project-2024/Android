@@ -80,9 +80,10 @@
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/search_box"
         app:layout_constraintEnd_toEndOf="@id/search_box"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/search_icon"
         app:layout_constraintTop_toTopOf="@+id/search_box"
-        app:layout_constraintVertical_bias="0.333" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/QuestionRecyclerView"
