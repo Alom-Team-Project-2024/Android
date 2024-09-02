@@ -221,7 +221,6 @@ class MentorDetailFragment : Fragment() {
         // 질문 내용 설정
         binding.postContent.text = mentor.text
 
-
         // 좋아요 수, 댓글 수, 스크랩 수 설정
         binding.scrapCount.text = mentor.scrapCount.toString()
 

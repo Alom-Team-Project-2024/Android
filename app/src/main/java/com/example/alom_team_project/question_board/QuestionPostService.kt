@@ -32,7 +32,7 @@ interface QuestionPostService {
     ): Call<JsonArray> // 응답을 JSON으로 변경
 
     // 질문 목록 가져오기
-    @GET("question_post")
+    @GET("question_post/desc")
     fun getQuestions(
         @Header("Authorization") token: String // Authorization 헤더에 토큰 추가
     ): Call<List<QuestionClass>>

@@ -4,8 +4,10 @@
         android:topLeftRadius="15dp"
         android:topRightRadius="15dp"
         android:bottomRightRadius="15dp"
-        android:bottomLeftRadius="15dp" />
+        android:bottomLeftRadius="15dp"
+        />
     <stroke
         android:width="0.9dp"
         android:color="#4825D8" />
+    <solid android:color="#FFFFFF" />
 </shape>
