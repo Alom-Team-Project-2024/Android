@@ -5,6 +5,7 @@ data class MentorPostResponse(
     val title: String,
     val text: String,
     val writer: String,
+    val username: String,
     val major: String,
     val likes: Int,
     val createdAt: String,

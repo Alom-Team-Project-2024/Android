@@ -112,9 +112,9 @@
         android:layout_marginBottom="15dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/btm_nav_btn" />
+        app:srcCompat="@drawable/navigation_btn"/>
+    <!--SVG 파일로 다운 받으면 안에 그림자가 안보임 / PNG 파일로 하면 깨짐-->
 
     <FrameLayout
         android:id="@+id/chat_nav"

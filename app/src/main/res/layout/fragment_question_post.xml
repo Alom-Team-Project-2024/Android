@@ -9,7 +9,8 @@
     android:background="@color/white"
     tools:context=".question_board.QuestionPostFragment"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:elevation="10dp">
 
     <!-- 질문 작성 text -->
     <TextView
@@ -31,12 +32,11 @@
         android:id="@+id/imageView5"
         android:layout_width="0dp"
         android:layout_height="50dp"
-
         android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
-
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_rectangle11"
+        android:elevation="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/writeQuestionText"
@@ -51,7 +51,9 @@
 
         android:text="@string/title"
         android:textSize="13sp"
+        android:textStyle="bold"
         android:textColor="#4825D8"
+        android:elevation="7dp"
         app:layout_constraintBottom_toBottomOf="@id/imageView5"
         app:layout_constraintStart_toStartOf="@id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
@@ -73,6 +75,7 @@
         android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="13sp"
+        android:elevation="7dp"
         app:layout_constraintBottom_toBottomOf="@id/imageView5"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
         app:layout_constraintStart_toEndOf="@id/title"
@@ -90,6 +93,7 @@
 
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_rectangle11"
+        android:elevation="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,6 +111,8 @@
         android:text="@string/content"
         android:textColor="#4825D8"
         android:textSize="13sp"
+        android:textStyle="bold"
+        android:elevation="7dp"
         app:layout_constraintStart_toStartOf="@id/imageview6"
         app:layout_constraintTop_toTopOf="@+id/imageview6" />
 
@@ -126,31 +132,53 @@
         android:inputType="textMultiLine"
         android:textColor="@color/black"
         android:textSize="13sp"
+        android:elevation="7dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageview6"
         app:layout_constraintEnd_toEndOf="@+id/imageview6"
         app:layout_constraintStart_toEndOf="@id/content"
         app:layout_constraintTop_toTopOf="@+id/imageview6"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/subjectView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
 
-        app:layout_constraintTop_toBottomOf="@id/imageView5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/round_rectangle13"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        >
+        android:elevation="7dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView5"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:text="관련"
+            android:textColor="@color/black"
+            android:textSize="13dp"
+            android:elevation="7dp"
+            app:layout_constraintStart_toStartOf="@id/subjectView"
+            app:layout_constraintTop_toTopOf="@id/subjectView"
+            >
+
+        </TextView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/subjectRecyclerView"
             android:layout_width="0dp"
             android:layout_height="108dp"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:elevation="7dp"
+            android:layout_marginStart="26dp"
+            app:layout_constraintEnd_toEndOf="@id/subjectView"
+            app:layout_constraintStart_toEndOf="@id/text"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
+            tools:listitem="@layout/subject_item" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
@@ -194,6 +222,7 @@
         android:layout_marginTop="11dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_rectangle11"
+        android:elevation="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -208,7 +237,9 @@
         android:layout_marginTop="15dp"
         android:text="@string/image"
         android:textSize="13sp"
+        android:textStyle="bold"
         android:textColor="#4825D8"
+        android:elevation="7dp"
         app:layout_constraintStart_toStartOf="@+id/imageview7"
         app:layout_constraintTop_toTopOf="@+id/imageview7" />
 
@@ -221,6 +252,7 @@
 
         android:layout_marginTop="16dp"
         android:layout_marginEnd="10dp"
+        android:elevation="7dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageview7"
         app:layout_constraintEnd_toEndOf="@+id/imageview7"
         app:layout_constraintHorizontal_bias="0.0"
@@ -233,6 +265,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="33dp"
+        android:elevation="7dp"
 
         android:background="@drawable/post_button"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -97,7 +97,7 @@ class QuestionPostFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.subjectRecyclerView.visibility = View.VISIBLE
+                binding.subjectView.visibility = View.VISIBLE
                 // 텍스트가 변경될 때마다 어댑터의 필터링 메소드 호출
                 adapter.filter(s.toString())
             }
@@ -299,7 +299,7 @@ class QuestionPostFragment : Fragment() {
         // 아이템 클릭 리스너 설정
         adapter.setOnItemClickListener { subject ->
             titleEditText.setText(subject.subject)
-            binding.subjectRecyclerView.visibility = View.GONE // 선택 후 RecyclerView 숨기기
+            binding.subjectView.visibility=View.GONE
         }
     }
 

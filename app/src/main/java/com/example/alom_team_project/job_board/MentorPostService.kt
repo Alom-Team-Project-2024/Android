@@ -1,5 +1,6 @@
 package com.example.alom_team_project.job_board
 
+import com.example.alom_team_project.question_board.User
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
@@ -16,9 +17,8 @@ interface MentorPostService {
         @Body requestBody: JsonObject
     ): Call<Void>
 
-
     // Mentor 카테고리 목록 가져오기
-    @GET("mentor_post/category/{category}")
+    @GET("mentor_post/category/{category}/desc")
     fun getMentors(
         @Header("Authorization") token: String,
         @Path("category") category: String
@@ -40,6 +40,15 @@ interface MentorPostService {
         @Path("mentorId") mentorId: Long
     ): Call<Void>
 
-    @GET("/mentor_post") //메인페이지 구인 게시판 조회
+
+    @GET("/mentor_post/desc") //메인페이지 구인 게시판 조회
     fun getMentors(@Header("Authorization") token: String): Call<List<MentorClass>>
+
+    //username으로 user조회
+    @GET("users/username/{username}")
+    fun getProfile(
+        @Header("Authorization") token: String,
+        @Path("username") username: String
+    ): Call<User>
+
 }

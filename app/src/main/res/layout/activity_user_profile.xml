@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".chat.dialog.UserProfileActivity">
+    tools:context=".chat.dialog.UserProfileActivity"
+    android:clipChildren="false">
 
     <ImageView
         android:id="@+id/background"
@@ -52,13 +53,14 @@
 
     <ImageView
         android:id="@+id/user_profile_img"
-        android:layout_width="match_parent"
+        android:layout_width="165dp"
         android:layout_height="165dp"
         android:layout_marginTop="37dp"
+        android:src="@drawable/group_172"
+        android:elevation="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/background"
-        app:layout_constraintTop_toTopOf="@+id/background_board"
-        app:srcCompat="@drawable/group_172" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background_board" />
 
     <TextView
         android:id="@+id/user_info"
@@ -70,6 +72,7 @@
         android:paddingVertical="3dp"
         android:text="23학번 | 디자인이노베이션학과"
         android:textSize="13dp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_nickname" />
@@ -81,6 +84,7 @@
         android:layout_marginTop="15dp"
         android:text="이수민"
         android:textSize="17dp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_profile_img" />
@@ -106,6 +110,7 @@
         android:text="확인"
         android:textSize="13dp"
         android:textColor="@color/white"
+        android:elevation="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -117,6 +122,8 @@
         android:layout_marginStart="13dp"
         android:layout_marginTop="25dp"
         android:text="이수민님의 세통 온도"
+        android:textColor="@color/black"
+        android:textSize="15dp"
         app:layout_constraintStart_toStartOf="@+id/temperature_box"
         app:layout_constraintTop_toTopOf="@+id/temperature_box" />
 

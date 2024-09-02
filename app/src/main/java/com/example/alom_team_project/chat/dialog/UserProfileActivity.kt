@@ -88,7 +88,7 @@ class UserProfileActivity() : AppCompatActivity() {
                             }
                             else {
                                 Glide.with(binding.userProfileImg.context)
-                                    .load(R.drawable.profile_img)
+                                    .load(R.drawable.group_172)
                                     .apply(RequestOptions.circleCropTransform()) // 원형 변환
                                     .into(binding.userProfileImg)
                             }
