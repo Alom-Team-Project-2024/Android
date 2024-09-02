@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".job_board.MentorPostFragment"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:elevation="10dp">
 
     <ImageView
         android:id="@+id/background_img"

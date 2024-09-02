@@ -17,9 +17,8 @@ interface MentorPostService {
         @Body requestBody: JsonObject
     ): Call<Void>
 
-
     // Mentor 카테고리 목록 가져오기
-    @GET("mentor_post/category/{category}")
+    @GET("mentor_post/category/{category}/desc")
     fun getMentors(
         @Header("Authorization") token: String,
         @Path("category") category: String

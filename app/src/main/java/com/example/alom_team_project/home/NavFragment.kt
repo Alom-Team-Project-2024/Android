@@ -196,13 +196,38 @@ class NavigationFragment : Fragment() {
     }
 
     private fun toggleCircleMenu() {
-        if (constraintLayoutMenu.visibility == View.VISIBLE) {
-            constraintLayoutMenu.visibility = View.GONE
-            navBackground.setBackgroundColor(Color.TRANSPARENT)
-        } else {
-            constraintLayoutMenu.visibility = View.VISIBLE
-            navBackground.setBackgroundColor(Color.parseColor("#4D5F5F5F"))
+        // 현재 프래그먼트의 뷰를 사용하여 ImageButton 찾기
+        val imageButton = view?.findViewById<ImageButton>(R.id.imageButtonCenter)
+        if (imageButton != null) {
+            val params = imageButton.layoutParams as FrameLayout.LayoutParams
+
+            if (constraintLayoutMenu.visibility == View.VISIBLE) {
+                constraintLayoutMenu.visibility = View.GONE
+                navBackground.setBackgroundColor(Color.TRANSPARENT)  // 배경을 투명하게 설정
+
+                // 이미지 버튼 크기 축소
+                params.width = dpToPx(50)
+                params.height = dpToPx(50)
+            } else {
+                constraintLayoutMenu.visibility = View.VISIBLE
+                navBackground.setBackgroundColor(Color.parseColor("#4D5F5F5F"))  // 70% 투명도 회색
+
+                // 이미지 버튼 크기 확대
+                params.width = dpToPx(102)
+                params.height = dpToPx(102)
+            }
+
+            imageButton.layoutParams = params
+            imageButton.requestLayout()  // 변경 사항 적용
         }
     }
+
+
+    // dp를 px로 변환하는 함수
+    fun dpToPx(dp: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dp * density).toInt()
+    }
+
 }
 

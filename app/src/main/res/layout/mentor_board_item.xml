@@ -1,110 +1,121 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chatting_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="5dp">
 
-    <ImageView
-        android:id="@+id/item_background"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="112dp"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/rectangle_231__22_" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/nickname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="13dp"
-        android:text="이수민"
-        android:textColor="#000000"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@id/item_background"
-        app:layout_constraintTop_toTopOf="@+id/item_background" />
+        <!-- 배경 이미지 설정 -->
+        <ImageView
+            android:id="@+id/item_background"
+            android:layout_width="match_parent"
+            android:layout_height="112dp"
+            android:scaleType="fitXY"
+            android:background="@drawable/rectangle_231__22_" />
 
-    <TextView
-        android:id="@+id/post_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="19dp"
-        android:layout_marginRight="19dp"
-        android:layout_marginBottom="80dp"
-        android:text="1분 전"
-        android:textSize="8sp"
+        <!-- 다른 UI 요소들 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
-        app:layout_constraintEnd_toEndOf="@+id/item_background"
-        app:layout_constraintTop_toTopOf="@id/item_background" />
+            <TextView
+                android:id="@+id/nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginTop="2dp"
+                android:text="이수민"
+                android:textColor="#000000"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="14dp"
-        android:singleLine="true"
-        android:text="인공지능과 빅데이터"
-        android:textColor="#000000"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/post_time"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nickname" />
+            <TextView
+                android:id="@+id/post_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="19dp"
+                android:text="1분 전"
+                android:textSize="8sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:text="인지빅 8주차 과제 1-2번 풀어봤는데 오류가..."
-        android:singleLine="true"
-        android:textColor="#000000"
-        android:textSize="10sp"
-        app:layout_constraintEnd_toStartOf="@+id/post_time"
-        app:layout_constraintStart_toStartOf="@+id/item_background"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginTop="12dp"
+                android:singleLine="true"
+                android:text="인공지능과 빅데이터"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/post_time"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nickname" />
 
-    <ImageButton
-        android:id="@+id/scrap_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="12dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/scrap_button"
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:singleLine="true"
+                android:text="인지빅 8주차 과제 1-2번 풀어봤는데 오류가..."
+                android:textColor="#000000"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toStartOf="@+id/post_time"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title" />
 
-        app:layout_constraintStart_toStartOf="@id/item_background"
-        app:layout_constraintTop_toBottomOf="@+id/content" />
+            <ImageButton
+                android:id="@+id/scrap_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/scrap_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/content" />
 
-    <TextView
-        android:id="@+id/scrapNum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="15dp"
-        android:text="1"
-        android:textColor="#000000"
-        android:textSize="8sp"
-        app:layout_constraintStart_toEndOf="@id/scrap_button"
-        app:layout_constraintTop_toBottomOf="@+id/content" />
+            <TextView
+                android:id="@+id/scrapNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="15dp"
+                android:text="1"
+                android:textColor="#000000"
+                android:textSize="8sp"
+                app:layout_constraintStart_toEndOf="@id/scrap_button"
+                app:layout_constraintTop_toBottomOf="@id/content" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/chat_btn"
-        android:layout_width="48dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/chat_btn"
-        android:text="채팅하기"
-        android:textSize="7dp"
-        app:layout_constraintStart_toEndOf="@+id/scrapNum"
-        app:layout_constraintTop_toBottomOf="@+id/content" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/chat_btn"
+                android:layout_width="48dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/chat_btn"
+                android:text="채팅하기"
+                android:textSize="7dp"
+                app:layout_constraintStart_toEndOf="@+id/scrapNum"
+                app:layout_constraintTop_toBottomOf="@id/content" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>
