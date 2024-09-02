@@ -94,7 +94,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 if (token.isNotEmpty()) {
-                    stompClient.connect("Bearer $token")
+                    stompClient.connect("Bearer $token", chatRoomId)
                     Log.d("WebsocketM", "Connected to STOMP server")
                     stompClient.subscribeToChatRoom(chatRoomId)
                     Log.d("WebsocketM", "Subscribed to chat room $chatRoomId")
@@ -199,7 +199,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
                             }
                             else {
                                 Glide.with(binding.profileImg.context)
-                                    .load(R.drawable.profile_img)
+                                    .load(R.drawable.group_172)
                                     .apply(RequestOptions.circleCropTransform()) // 원형 변환
                                     .into(binding.profileImg)
                             }
@@ -300,6 +300,10 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         bottomSheetView.findViewById<AppCompatButton>(R.id.success_btn).setOnClickListener {
             bottomSheetDialog.dismiss()
             showConfirmDialog()
+        }
+
+        bottomSheetView.findViewById<AppCompatButton>(R.id.x_btn).setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
     }
 

@@ -143,7 +143,7 @@ class ChatListAdapter(private val originalList: ArrayList<ChatList>) : RecyclerV
                 .apply(RequestOptions.circleCropTransform())
                 .into(imageView)
         } else {
-            imageView.setImageResource(R.drawable.profile)
+            imageView.setImageResource(R.drawable.group_172)
         }
     }
 

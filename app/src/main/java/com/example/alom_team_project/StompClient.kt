@@ -38,7 +38,7 @@ class MyStompClient {
         messageListener = listener
     }
 
-    fun connect(token: String) = runBlocking {
+    fun connect(token: String, chatRoomId: Long) = runBlocking {
         try {
             val client = StompClient(OkHttpWebSocketClient())
             session = client.connect(
@@ -46,7 +46,7 @@ class MyStompClient {
                 customStompConnectHeaders = mapOf("Authorization" to token)
             )
             Log.d("StompC", "Connected to WebSocket server with Authorization header")
-            subscribeToChatRoom(2) // 채팅방 ID를 사용하여 구독
+            subscribeToChatRoom(chatRoomId) // 채팅방 ID를 사용하여 구독
         } catch (e: Exception) {
             Log.e("StompC", "Failed to connect", e)
         }

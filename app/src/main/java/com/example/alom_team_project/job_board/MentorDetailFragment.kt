@@ -1,6 +1,7 @@
 package com.example.alom_team_project.job_board
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +15,8 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.chat.ChatFragment
+import com.example.alom_team_project.chat.ChatListActivity
 import com.example.alom_team_project.chat.ChatRoomResponse
 import com.example.alom_team_project.chat.ChatService
 import com.example.alom_team_project.databinding.FragmentMentorDetailBinding
@@ -91,66 +94,51 @@ class MentorDetailFragment : Fragment() {
     }
 
     private fun createChatRoom() {
-        // 토큰 가져오기
         val token = getJwtToken()
-
-        // 사용자 학번 설정
-        val username = getUsername()!! // 현재 사용자 학번을 가져오는 함수
-        Log.d("MentorPostU", "$username")
-
-        // Arguments에서 멘토게시물Id 받기
+        val username = getUsername()
         val mentorId = arguments?.getLong("MENTOR_ID")
 
-        if (token != null && mentorId != null) {
+        if (token != null && username != null && mentorId != null) {
             fetchMentorDetails(mentorId) { user2nick ->
-                if (user2nick != null) {
+                if (!user2nick.isNullOrEmpty()) {
                     fetchNickname(token, username) { user1nick ->
-                        Log.d("MentorPostU", "$user1nick, $user2nick")
-                        if (user1nick != null && user1nick != user2nick) {
+                        if (!user1nick.isNullOrEmpty() && user1nick != user2nick) {
                             val chatService = RetrofitClient.instance.create(ChatService::class.java)
                             val call = chatService.chatRoom("Bearer $token", user1nick, user2nick)
-                            Log.d("MentorPostUN", "$user1nick, $user2nick")
 
                             call.enqueue(object : Callback<ChatRoomResponse> {
                                 override fun onResponse(call: Call<ChatRoomResponse>, response: Response<ChatRoomResponse>) {
                                     if (response.isSuccessful) {
-                                        val chatRoomResponse = response.body()
-
-                                        // chatRoomResponse가 null이 아닌 경우 id 가져오기
-                                        chatRoomResponse?.let {
-                                            val chatRoomId = it.id
-                                            Log.d("ChatRoom ID", "ChatRoom ID: $chatRoomId")
-
-                                            // 챗화면으로 이동
+                                        response.body()?.let {
+                                            openChatPage(it.id)
                                         } ?: run {
-                                            Log.e("API ErrorM", "ChatRoomResponse is null")
+                                            Log.e("API Error", "ChatRoomResponse is null")
                                         }
                                     } else {
-                                        // 응답 실패 처리
-                                        Log.e("API ErrorM", "Response Code: ${response.code()}, Message: ${response.message()}")
+                                        Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
                                     }
                                 }
 
                                 override fun onFailure(call: Call<ChatRoomResponse>, t: Throwable) {
-                                    // 요청 실패 처리
-                                    Log.e("API ErrorM", "Failure: ${t.message}")
+                                    Log.e("API Error", "Failure: ${t.message}")
                                 }
                             })
                         } else {
-                            // user1nick이 null이거나 user2nick과 동일한 경우 처리
                             Log.e("Nickname Error", "Failed to fetch nickname or usernames are identical.")
+                            Toast.makeText(requireContext(), "Cannot create chat room.", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
-                    // user2nick이 null인 경우 처리
                     Log.e("Mentor Error", "Failed to fetch mentor details or user2nick is null.")
+                    Toast.makeText(requireContext(), "Cannot fetch mentor details.", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
-            // 토큰이 null이거나 mentorId가 null인 경우 처리
-            Log.e("Token or MentorId Error", "Token or MentorId is null. Cannot create chat room.")
+            Log.e("Token or MentorId Error", "Token or MentorId is null.")
+            Toast.makeText(requireContext(), "Invalid token or mentor ID.", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
     private fun fetchNickname(token: String, username: String, callback: (String?) -> Unit) {
@@ -172,6 +160,25 @@ class MentorDetailFragment : Fragment() {
                     callback(null)
                 }
             })
+    }
+
+    private fun openChatPage(chatRoomId: Long) {
+        val fragment = ChatFragment()
+        val bundle = Bundle()
+        bundle.putLong("ChatRoomId", chatRoomId)
+        fragment.arguments = bundle
+        Log.d("ChatListActivity", "Opening ChatPage with ChatRoom ID: $chatRoomId")
+
+        val fragmentManager = parentFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+
+        // 프래그먼트를 전환 (replace)하거나 추가 (add)합니다.
+        fragmentTransaction.replace(R.id.mentorPostPage, fragment)
+        // 뒤로가기 스택에 추가
+        fragmentTransaction.addToBackStack(null)
+
+        // 전환 실행
+        fragmentTransaction.commit()
     }
 
     private fun getJwtToken(): String {
@@ -214,7 +221,6 @@ class MentorDetailFragment : Fragment() {
         // 질문 내용 설정
         binding.postContent.text = mentor.text
 
-
         // 좋아요 수, 댓글 수, 스크랩 수 설정
         binding.scrapCount.text = mentor.scrapCount.toString()
 
@@ -236,7 +242,7 @@ class MentorDetailFragment : Fragment() {
                         binding.postUserId.text = user.nickname
 
 
-                        if (user.profileImage.isNotEmpty()) {
+                        if (!user.profileImage.isNullOrEmpty()) {
                             val fullImageUrl = "http://15.165.213.186/" + user.profileImage
                             Glide.with(binding.root.context)
                                 .load(fullImageUrl)

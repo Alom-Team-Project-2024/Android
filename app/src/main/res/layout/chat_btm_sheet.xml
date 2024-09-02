@@ -15,7 +15,6 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/round_rectangle10"
-        android:elevation="25dp"
         android:text="세종이님 평가하기"
         android:textColor="@color/white"
         android:textSize="12dp"
