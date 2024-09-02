@@ -1,8 +1,13 @@
 package com.example.alom_team_project
 
-import QuestionPostResponse
+import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,9 +15,15 @@ import com.example.alom_team_project.databinding.ActivityMainBinding
 import com.example.alom_team_project.home.HomeRecordAdapter
 import com.example.alom_team_project.home.HomeRecordData
 import com.example.alom_team_project.home.NavigationFragment
+import com.example.alom_team_project.job_board.MentorBoardActivity
+import com.example.alom_team_project.job_board.MentorDetailFragment
 import com.example.alom_team_project.login.UserApi
 import com.example.alom_team_project.job_board.MentorPostResponse
 import com.example.alom_team_project.mypage.UserResponse
+import com.example.alom_team_project.question_board.AnswerFragment
+import com.example.alom_team_project.question_board.ImageData
+import com.example.alom_team_project.question_board.QuestionAdapterClass
+import com.example.alom_team_project.question_board.QuestionClass
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,42 +32,78 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.StyleSpan
-import android.graphics.Typeface
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var recordList: ArrayList<HomeRecordData>
     private lateinit var recordAdapter: HomeRecordAdapter
+    private lateinit var tvHomeMore: TextView
+    private var firstMentorId: Long? = null
+    private var secondMentorId: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        tvHomeMore = findViewById(R.id.tv_home_more)
+
         // 네비게이션 프래그먼트
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.navfragmentContainer, NavigationFragment())
         transaction.commit()
 
+        tvHomeMore.setOnClickListener {
+            navigateToMentorBoardActivity()
+        }
+
+        // Initialize recordList and recordAdapter
         recordList = ArrayList()
-        recordAdapter = HomeRecordAdapter(recordList)
+        recordAdapter = HomeRecordAdapter(recordList) { recordId ->
+            // 기록 아이템 클릭 시 화면 전환
+            val fragment = AnswerFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("QUESTION_ID", recordId) // recordId를 QUESTION_ID로 전달
+                }
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.mainContainer, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
         binding.rvRecord.adapter = recordAdapter
         binding.rvRecord.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        fetchQuestions()
-        fetchData() //홈화면 이름 불러오기
-        fetchMentors()
+        fetchQuestions() // 홈화면 질문 불러오기
+        fetchData() // 홈화면 이름 불러오기
+        fetchMentors() // 홈화면 구인 불러오기
+
         updateRecordCount() // 초기화 시점에서 기록 개수를 업데이트합니다.
+
+        // btn_container1 클릭 시 첫 번째 멘토 정보로 MentorDetailFragment로 이동
+        binding.btnContainer1.setOnClickListener {
+            firstMentorId?.let { mentorId ->
+                openMentorDetailFragment(mentorId)
+            }
+        }
+
+        // btn_container2 클릭 시 두 번째 멘토 정보로 MentorDetailFragment로 이동
+        binding.btnContainer2.setOnClickListener {
+            secondMentorId?.let { mentorId ->
+                openMentorDetailFragment(mentorId)
+            }
+        }
     }
 
+    private fun navigateToMentorBoardActivity() {
+        val intent = Intent(this, MentorBoardActivity::class.java)
+        startActivity(intent)
+    }
     private fun fetchQuestions() {
         val token = getJwtToken()
         if (token != null) {
-            RetrofitClient.userApi.getQuestions("Bearer $token").enqueue(object : Callback<List<QuestionPostResponse>> {
-                override fun onResponse(call: Call<List<QuestionPostResponse>>, response: Response<List<QuestionPostResponse>>) {
+            RetrofitClient.userApi.getQuestions("Bearer $token").enqueue(object : Callback<List<QuestionClass>> {
+                override fun onResponse(call: Call<List<QuestionClass>>, response: Response<List<QuestionClass>>) {
                     if (response.isSuccessful) {
                         response.body()?.let { questions ->
                             updateRecordList(questions)
@@ -66,14 +113,14 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<List<QuestionPostResponse>>, t: Throwable) {
+                override fun onFailure(call: Call<List<QuestionClass>>, t: Throwable) {
                     Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         }
     }
 
-    private fun updateRecordList(questions: List<QuestionPostResponse>) {
+    private fun updateRecordList(questions: List<QuestionClass>) {
         // 최대 항목 수를 설정합니다.
         val maxItemCount = 10
 
@@ -90,9 +137,10 @@ class MainActivity : AppCompatActivity() {
                 HomeRecordData(
                     title = question.subject,
                     commentCount = question.replyCount,
-                    imageUrl = imageUrl,
+                    images = listOf(ImageData(imageUrl)),
                     mentorName = mentorName,
-                    answer = answerText
+                    answer = answerText,
+                    id = question.id.toLong()
                 )
             )
         }
@@ -116,7 +164,6 @@ class MainActivity : AppCompatActivity() {
         // tv_home_record_count를 "currentCount/10" 형식으로 업데이트합니다.
         binding.tvHomeRecordCount.text = "$currentCount/$maxCount"
     }
-
 
     private fun fetchMentors() {
         val token = getJwtToken() ?: return
@@ -150,6 +197,9 @@ class MainActivity : AppCompatActivity() {
             binding.tvName1.text = mentor1.writer
             binding.tvContent1.text = mentor1.text
             binding.tvTime1.text = formatTime(mentor1.createdAt)
+
+            // 첫 번째 멘토 ID 저장
+            firstMentorId = mentor1.id
         }
 
         // 두 번째 아이템 업데이트
@@ -158,7 +208,38 @@ class MainActivity : AppCompatActivity() {
             binding.tvName2.text = mentor2.writer
             binding.tvContent2.text = mentor2.text
             binding.tvTime2.text = formatTime(mentor2.createdAt)
+
+            // 두 번째 멘토 ID 저장
+            secondMentorId = mentor2.id
+
         }
+
+        // 첫 번째 멘토 클릭 리스너 설정
+        binding.tvName1.setOnClickListener {
+            firstMentorId?.let { mentorId ->
+                openMentorDetailFragment(mentorId)
+            }
+        }
+
+        // 두 번째 멘토 클릭 리스너 설정
+        binding.tvName2.setOnClickListener {
+            secondMentorId?.let { mentorId ->
+                openMentorDetailFragment(mentorId)
+            }
+        }
+    }
+
+    private fun openMentorDetailFragment(mentorId: Long) {
+        val fragment = MentorDetailFragment().apply {
+            arguments = Bundle().apply {
+                putLong("MENTOR_ID", mentorId)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.mainContainer, fragment)  // 프래그먼트를 담을 컨테이너 ID에 맞게 수정하세요.
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun fetchData() {
@@ -177,7 +258,6 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val user = response.body()
                     if (user != null) {
-                        // UI에 데이터 반영
                         val name = user.name ?: ""
                         binding.tvEncourage.text = "${name}님,\n" +
                                 "오늘도 화이팅하세요!"
@@ -192,6 +272,7 @@ class MainActivity : AppCompatActivity() {
 
                         binding.tvEncourage.text = encourageText
                     }
+
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
                     Toast.makeText(this@MainActivity, "Failed to fetch user profile: ${response.message()}", Toast.LENGTH_SHORT).show()
@@ -252,5 +333,4 @@ class MainActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("username", null)
     }
-
 }

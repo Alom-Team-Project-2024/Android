@@ -62,7 +62,7 @@ interface UserApi {
     ): Call<Boolean>
 
     @GET("/question_post/desc") //메인페이지 질문 게시판 조회
-    fun getQuestions(@Header("Authorization") token: String): Call<List<QuestionPostResponse>>
+    fun getQuestions(@Header("Authorization") token: String): Call<List<QuestionClass>>
 
     @GET("/mentor_post/desc") //메인페이지 구인 게시판 조회
     fun getMentors(@Header("Authorization") token: String): Call<List<MentorPostResponse>>
@@ -82,13 +82,13 @@ interface UserApi {
         @Header("Authorization") token: String
     ): Call<List<MentorClass>>
 
-    @GET("/question_post/username/{username}/desc") //마이페이지 내가 작성한 글 게시판 조회
+    @GET("/question_post/username/{username}") //마이페이지 내가 작성한 글 게시판 조회
     fun getMyPostsQuestionInfo(
         @Path("username") questionId: String,
         @Header("Authorization") token: String
     ): Call<List<QuestionClass>>
 
-    @GET("/mentor_post/username/{username}/desc") //마이페이지 내가 작성한 글 게시판 조회
+    @GET("/mentor_post/username/{username}") //마이페이지 내가 작성한 글 게시판 조회
     fun getMyPostsMentorInfo(
         @Path("username") questionId: String,
         @Header("Authorization") token: String

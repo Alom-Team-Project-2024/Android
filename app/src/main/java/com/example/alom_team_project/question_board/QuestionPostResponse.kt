@@ -8,14 +8,29 @@ data class QuestionPostResponse(
     @SerializedName("clips") val clips: Int,
     @SerializedName("replyCount") val replyCount: Int,
     @SerializedName("replies") val replies: List<Reply>,
-    @SerializedName("images") val images: List<Image>
+    @SerializedName("images") val images: List<ImageData>
+)
+
+data class ImageData(
+    val imageUrl: String
+)
+
+data class User(
+    val nickname: String,
+    val profileImage: String
 )
 
 data class Reply(
-    @SerializedName("title") val title: String,
-    @SerializedName("text") val text: String
+    val id : Long,
+    val title: String,
+    val text: String,
+    val writer: String,
+    val username: String,
+    val likes: Int,
+    val images: List<ImageData>,
+    val createdAt: String
 )
 
-data class Image(
-    @SerializedName("imageUrl") val imageUrl: String
+data class Subject(
+    val subject : String
 )

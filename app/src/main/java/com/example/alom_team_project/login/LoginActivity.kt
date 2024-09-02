@@ -90,12 +90,15 @@ class LoginActivity : AppCompatActivity() {
                         // JWT와 username 저장
                         saveUserData(token, id)
                         JwtProvider.setToken(token)
+
+                        val jwtResponse = response.body()
+                        val nickname = jwtResponse?.nickname
+
                         // 닉네임이 null인지 확인
-                        navigateToProfileActivity()
-                        /*if (userData.nickname.isNullOrEmpty()) {
+                        if (nickname.isNullOrEmpty()) {
                             navigateToProfileActivity() // 닉네임이 null일 때 프로필 페이지로 이동
                         } else {
-                            navigateToMainActivity()} // 닉네임이 존재하면 메인 페이지로 이동*/
+                            navigateToMainActivity()} // 닉네임이 존재하면 메인 페이지로 이동
                     } else {
                         showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                     }

@@ -51,10 +51,10 @@
 
     <ImageView
         android:id="@+id/imageUrl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/rectangle_216"
         app:layout_constraintEnd_toEndOf="parent"

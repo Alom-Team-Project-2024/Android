@@ -1,6 +1,7 @@
 package com.example.alom_team_project.job_board
 
 data class MentorPostResponse(
+    val id: Long,
     val category: String,
     val title: String,
     val text: String,

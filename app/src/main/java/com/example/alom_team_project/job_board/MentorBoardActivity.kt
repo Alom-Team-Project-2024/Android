@@ -26,6 +26,9 @@ class MentorBoardActivity : AppCompatActivity() {
     private lateinit var mentorService: MentorPostService
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+    private var firstMentorId: Long? = null
+    private var secondMentorId: Long? = null
+
 
     private val refreshInterval: Long = 12000 // 1분
 

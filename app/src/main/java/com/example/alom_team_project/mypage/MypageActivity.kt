@@ -18,6 +18,7 @@ import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.job_board.MentorAdapterClass
 import com.example.alom_team_project.job_board.MentorClass
+import com.example.alom_team_project.job_board.MentorDetailFragment
 import com.example.alom_team_project.job_board.MentorPostFragment
 import com.example.alom_team_project.login.LoginActivity
 import com.example.alom_team_project.login.UserApi
@@ -263,7 +264,7 @@ class MypageActivity : AppCompatActivity() {
                     }
                 }
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)  // Fragment를 담을 컨테이너 ID 수정
+                    .replace(R.id.mypageViewPage, fragment)  // Fragment를 담을 컨테이너 ID 수정
                     .addToBackStack(null)
                     .commit()
             }
@@ -278,20 +279,28 @@ class MypageActivity : AppCompatActivity() {
         mentorAdapter = MentorAdapterClass(
             scrapMentorList,
             onItemClickListener = { mentorId ->
-                // 멘토 클릭 시 동작
-                Log.d("MentorRecyclerView", "Mentor clicked: ID = $mentorId")
-                val intent = Intent(this@MypageActivity, MentorPostFragment::class.java)
-                intent.putExtra("MENTOR_ID", mentorId)
+                Log.d("MypageActivity", "Mentor clicked with ID: $mentorId")
 
-                startActivity(intent)
+                // MentorDetailFragment로 이동
+                val fragment = MentorDetailFragment().apply {
+                    arguments = Bundle().apply {
+                        putLong("MENTOR_ID", mentorId)
+                    }
+                }
+
+                // Fragment 트랜잭션을 통해 화면 전환
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.mypageViewPage, fragment)  // fragment_container로 ID 수정
+                    .addToBackStack(null)
+                    .commit()
+
+                Log.d("FragmentTransaction", "Fragment replaced in container with ID: $mentorId")
             }
         )
         recyclerViewMentor.layoutManager = LinearLayoutManager(this)
         recyclerViewMentor.adapter = mentorAdapter
-
-        // 로그캣 출력 예: 어댑터가 설정되었을 때
-        Log.d("MentorRecyclerView", "MentorRecyclerView setup complete.")
     }
+
 
     private fun getJwtToken(): String? {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
