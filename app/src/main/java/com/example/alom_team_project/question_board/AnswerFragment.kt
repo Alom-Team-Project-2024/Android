@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -63,7 +64,16 @@ class AnswerFragment : Fragment() {
     private var selectedImageUris: MutableList<Uri> = mutableListOf()
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
 
-
+    // 권한 요청 런처
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions.all { it.value }) {
+                // 권한이 허용된 경우
+                openGallery()
+            } else {
+                Toast.makeText(context, "권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -154,6 +164,10 @@ class AnswerFragment : Fragment() {
             }
         }
 
+        binding.root.setOnClickListener {
+            hideKeyboard()
+        }
+
         // RecyclerView 초기화
         answerList = arrayListOf()
         adapter = AnswerAdapterClass(answerList){ answer, position->
@@ -193,12 +207,21 @@ class AnswerFragment : Fragment() {
     }
 
     private fun checkAndRequestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+        val permissions = if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        }
+
         if (!hasPermissions(permissions)) {
-            requestPermissions(permissions, PERMISSION_REQUEST_CODE)
+            requestPermissionLauncher.launch(permissions)
+        } else {
+            openGallery()
         }
     }
 
@@ -308,7 +331,8 @@ class AnswerFragment : Fragment() {
     }
 
     private fun bindQuestionToViews(question: QuestionClass) {
-        // 질문 내용 설정
+        // 질문 제목, 내용 설정
+        binding.title.text = question.subject
         binding.questionText.text = question.text
 
 
@@ -529,6 +553,15 @@ class AnswerFragment : Fragment() {
                 Toast.makeText(context, "Image upload failed: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    // 프래그먼트에서 키보드 숨기기
+    private fun hideKeyboard() {
+        val inputManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusedView = requireActivity().currentFocus ?: view
+        currentFocusedView?.let {
+            inputManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
     }
 
 }

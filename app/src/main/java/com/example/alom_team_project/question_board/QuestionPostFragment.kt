@@ -2,6 +2,7 @@ package com.example.alom_team_project.question_board
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
@@ -35,11 +37,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-
-private const val PERMISSION_REQUEST_CODE = 100
-
 class QuestionPostFragment : Fragment() {
-
 
     private var _binding: FragmentQuestionPostBinding? = null
     private val binding get() = _binding!!
@@ -56,11 +54,48 @@ class QuestionPostFragment : Fragment() {
 
     private val service = RetrofitClient.instance.create(QuestionPostService::class.java)
     private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
+    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
 
     private var postId: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 권한 요청을 위한 launcher 등록
+        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val allGranted = permissions.all { it.value }
+            if (allGranted) {
+                openGallery()
+            } else {
+                Toast.makeText(context, "권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 이미지 선택을 위한 launcher 등록
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val clipData = result.data?.clipData
+                val imageUris = mutableListOf<Uri>()
+
+                if (clipData != null) {
+                    // 여러 장의 이미지를 선택한 경우
+                    for (i in 0 until clipData.itemCount) {
+                        val item = clipData.getItemAt(i)
+                        imageUris.add(item.uri)
+                    }
+                } else {
+                    // 단일 이미지를 선택한 경우
+                    result.data?.data?.let { uri ->
+                        imageUris.add(uri)
+                    }
+                }
+
+                selectedImageUris = imageUris
+                // RecyclerView의 어댑터를 업데이트
+                imageAdapter = ImageAdapter(imageUris)
+                binding.recyclerViewImages.adapter = imageAdapter
+            }
+        }
     }
 
     override fun onCreateView(
@@ -112,51 +147,27 @@ class QuestionPostFragment : Fragment() {
         imageAdapter = ImageAdapter(emptyList())  // 초기에는 빈 리스트
         binding.recyclerViewImages.adapter = imageAdapter
 
-        // 이미지 선택 후 RecyclerView 업데이트
-        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val clipData = result.data?.clipData
-                val imageUris = mutableListOf<Uri>()
-
-                if (clipData != null) {
-                    // 여러 장의 이미지를 선택한 경우
-                    for (i in 0 until clipData.itemCount) {
-                        val item = clipData.getItemAt(i)
-                        imageUris.add(item.uri)
-                    }
-                } else {
-                    // 단일 이미지를 선택한 경우
-                    result.data?.data?.let { uri ->
-                        imageUris.add(uri)
-                    }
-                }
-
-                selectedImageUris = imageUris
-                // RecyclerView의 어댑터를 업데이트
-                imageAdapter = ImageAdapter(imageUris)
-                binding.recyclerViewImages.adapter = imageAdapter
-            }
-        }
-
-
-        val btnBack : ImageButton = view.findViewById(R.id.back_button)
-
-        btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
-
+        // 이미지 선택 버튼 클릭 시
         val btnPickImage: ImageButton = view.findViewById(R.id.btnPickImage)
-
         btnPickImage.setOnClickListener {
-            if (hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))) {
+            if (hasPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))) {
                 openGallery()
             } else {
-                checkAndRequestPermissions()
+                permissionLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))
             }
         }
 
         submitButton.setOnClickListener {
             sendPostRequest()
+        }
+
+        binding.root.setOnClickListener {
+            hideKeyboard()
+        }
+
+        val btnBack: ImageButton = view.findViewById(R.id.back_button)
+        btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
         }
     }
 
@@ -207,9 +218,10 @@ class QuestionPostFragment : Fragment() {
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // 여러 파일 선택 허용
+        val intent = Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // 여러 파일 선택 허용
+        }
         imagePickerLauncher.launch(intent)
     }
 
@@ -260,34 +272,9 @@ class QuestionPostFragment : Fragment() {
         return path
     }
 
-    private fun checkAndRequestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        if (!hasPermissions(permissions)) {
-            requestPermissions(permissions, PERMISSION_REQUEST_CODE)
-        }
-    }
-
     private fun hasPermissions(permissions: Array<String>): Boolean {
         return permissions.all {
             ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                // 권한이 허용된 경우
-            } else {
-                Toast.makeText(context, "권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -299,7 +286,7 @@ class QuestionPostFragment : Fragment() {
         // 아이템 클릭 리스너 설정
         adapter.setOnItemClickListener { subject ->
             titleEditText.setText(subject.subject)
-            binding.subjectView.visibility=View.GONE
+            binding.subjectView.visibility = View.GONE
         }
     }
 
@@ -332,4 +319,12 @@ class QuestionPostFragment : Fragment() {
         })
     }
 
+    // 프래그먼트에서 키보드 숨기기
+    private fun hideKeyboard() {
+        val inputManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusedView = requireActivity().currentFocus ?: view
+        currentFocusedView?.let {
+            inputManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
+    }
 }

@@ -35,7 +35,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/profile" />
+                android:src="@drawable/group_282"
+                android:elevation="10dp"
+                android:background="@drawable/img_background"/>
 
             <TextView
                 android:id="@+id/user_name"

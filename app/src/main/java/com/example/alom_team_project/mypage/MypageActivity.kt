@@ -1,10 +1,12 @@
 package com.example.alom_team_project.mypage
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -27,6 +29,7 @@ import com.example.alom_team_project.question_board.AnswerFragment
 import com.example.alom_team_project.question_board.QuestionAdapterClass
 import com.example.alom_team_project.question_board.QuestionClass
 import com.example.alom_team_project.question_board.QuestionPostFragment
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -295,6 +298,13 @@ class MypageActivity : AppCompatActivity() {
 
     }
 
+    // 화면 터치 시 키보드 내리기
+    private fun hideKeyboard() {
+        if (this != null && this.currentFocus != null) {
+            val inputManager: InputMethodManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(this.currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        }
+    }
 
     private fun setupMentorRecyclerView() {
         mentorAdapter = MentorAdapterClass(

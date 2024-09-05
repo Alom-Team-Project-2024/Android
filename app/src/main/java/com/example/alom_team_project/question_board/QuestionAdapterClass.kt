@@ -22,10 +22,12 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import android.view.inputmethod.InputMethodManager
+
 
 class QuestionAdapterClass(
     private val questionList: ArrayList<QuestionClass>,
-    private val onItemClickListener: (Long) -> Unit // 클릭 리스너 추가
+    private val onItemClickListener: (Long) -> Unit
 ) : RecyclerView.Adapter<QuestionAdapterClass.ViewHolder>() {
 
     private var filteredList: ArrayList<QuestionClass> = ArrayList(questionList)
@@ -36,7 +38,7 @@ class QuestionAdapterClass(
 
     class ViewHolder(
         private val binding: QuestionBoardItemBinding,
-        private val onItemClickListener: (Long) -> Unit // 클릭 리스너를 생성자에 추가
+        private val onItemClickListener: (Long) -> Unit, // 클릭 리스너를 생성자에 추가
     ) : RecyclerView.ViewHolder(binding.root) {
 
         @RequiresApi(Build.VERSION_CODES.O)
@@ -96,14 +98,18 @@ class QuestionAdapterClass(
 
 
             // Button 스타일 설정 (필요에 따라 조정)
-            binding.likeButton.setBackgroundResource(R.drawable.like_button)
+            binding.likeButton.setBackgroundResource(R.drawable.like_button2)
             binding.commentButton.setBackgroundResource(R.drawable.comment_button)
-            binding.scrapButton.setBackgroundResource(R.drawable.scrap_button)
+            binding.scrapButton.setBackgroundResource(R.drawable.scrap_button2)
 
 
 
             // 아이템 클릭 리스너 설정
             itemView.setOnClickListener {
+                // 키보드를 숨기기 위해 InputMethodManager 사용
+                val imm = binding.root.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(itemView.windowToken, 0)
+
                 //Log.d("QuestionAdapter", "질문글 ID: ${question.id}")
                 onItemClickListener(question.id)  // 클릭된 아이템의 ID 전달
             }
@@ -176,5 +182,4 @@ class QuestionAdapterClass(
         }
         notifyDataSetChanged()  // 데이터 변경 알림
     }
-
 }

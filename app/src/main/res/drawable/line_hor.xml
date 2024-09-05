@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size
+        android:height="1dp" /> <!-- 선의 높이를 1dp로 설정 -->
+    <solid android:color="#000000" /> <!-- 선의 색상을 검정색으로 설정 -->
+</shape>

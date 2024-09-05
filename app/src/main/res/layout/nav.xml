@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_background"
+    android:focusable="true"
     >
 
     <FrameLayout
@@ -19,7 +20,7 @@
             android:layout_width="298dp"
             android:layout_height="294dp"
             android:elevation="5dp"
-            android:background="@drawable/nav_background"
+            android:background="@drawable/nav_back"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true"

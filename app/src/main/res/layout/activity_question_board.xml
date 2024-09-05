@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/questionViewPage"
     android:background="@color/white"
+    android:focusableInTouchMode="true"
     >
 
 
@@ -80,7 +81,7 @@
         android:background="@android:color/transparent"
         android:hint="검색하기"
         android:imeOptions="actionDone"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColorHint="#9D9D9D"
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/search_box"

@@ -1,5 +1,6 @@
 package com.example.alom_team_project.job_board
 
+import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -89,12 +92,22 @@ class MentorBoardActivity : AppCompatActivity() {
         }
 
         setupAutoRefresh()
+
+        // 화면 클릭 시 키보드 내리기
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            true
+        }
     }
 
     private fun setupRecyclerView() {
             adapter = MentorAdapterClass(
                 mentorList = mentorList,
                 onItemClickListener = { mentorId ->
+                    binding.etSearch.setText("")
+
                     // MentorDetailFragment로 이동
                     val fragment = MentorDetailFragment().apply {
                         arguments = Bundle().apply {
@@ -193,6 +206,9 @@ class MentorBoardActivity : AppCompatActivity() {
 
 
     private fun openPostMentorFragment() {
+        hideKeyboard()
+        binding.etSearch.setText("")
+
         val fragment = MentorPostFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.mentorViewPage, fragment)
@@ -200,5 +216,9 @@ class MentorBoardActivity : AppCompatActivity() {
             .commit()
     }
 
+    private fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+    }
 }
 

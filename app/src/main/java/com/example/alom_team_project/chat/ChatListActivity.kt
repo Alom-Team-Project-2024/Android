@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.getSystemService
@@ -51,6 +53,7 @@ class ChatListActivity : AppCompatActivity() {
             override fun onItemClick(chatRoomId: Long) {
                 hideKeyboard()
                 openChatPage(chatRoomId)
+                binding.etSearch.setText("")
                 Log.d("ChatList", "$chatRoomId")
             }
         })
@@ -58,6 +61,7 @@ class ChatListActivity : AppCompatActivity() {
         // 네비게이션 프래그먼트
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.chat_nav, NavigationFragment())
+        transaction.addToBackStack(null)
         transaction.commit()
 
 
@@ -153,8 +157,8 @@ class ChatListActivity : AppCompatActivity() {
                                 chatData?.let { (message, timestamp) ->
                                     Log.d("Last Message", "Message: $message, Time: $timestamp")
 
-                                    // 메시지나 타임스탬프가 비어있는 경우는 가장 최신 메시지로 간주
-                                    val effectiveTimestamp = if (timestamp.isNotEmpty()) timestamp else "9999-12-31T23:59:59" // 가상의 미래 타임스탬프
+                                    // 메시지나 타임스탬프가 비어있는 경우는 가장 오래된 메시지로 간주
+                                    val effectiveTimestamp = if (timestamp.isNotEmpty()) timestamp else "0000-01-01T00:00:01" // 가상의 미래 타임스탬프
 
                                     chatList.add(
                                         ChatList(
@@ -176,7 +180,7 @@ class ChatListActivity : AppCompatActivity() {
                                             profile = profileImg,
                                             name = chatTitle ?: "",
                                             content = "",
-                                            time = "9999-12-31T23:59:59" // 가상의 미래 타임스탬프
+                                            time = "0000-01-01T00:00:01" // 가상의 미래 타임스탬프
                                         )
                                     )
                                 }

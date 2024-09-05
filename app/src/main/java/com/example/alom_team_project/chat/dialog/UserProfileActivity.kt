@@ -1,9 +1,14 @@
 package com.example.alom_team_project.chat.dialog
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.R
@@ -47,7 +52,6 @@ class UserProfileActivity() : AppCompatActivity() {
             .commit()
     }
 
-    // 상대방의 닉네임(채팅방의 이름) 받아와서 상대방 정보 보여주기
     fun setUserInfo(nickname: String) {
         val token = getJwtToken()
 
@@ -61,19 +65,32 @@ class UserProfileActivity() : AppCompatActivity() {
                     response: Response<UserResponse>
                 ) {
                     if (response.isSuccessful) {
-                        var user = response.body()
+                        val user = response.body()
                         Log.d("UserProfile", "$user")
                         if (user != null) {
                             binding.userNickname.text = user.nickname
                             val studentCodeFormatted = "${user.studentCode.toString().takeLast(2)}학번"
+                            val major = user.major
+                            val pipeSymbol = " | "
 
-                            binding.userInfo.text = "$studentCodeFormatted | ${user.major}"
+                            // SpannableString 생성
+                            val spannable = SpannableString(" $studentCodeFormatted$pipeSymbol$major ")
+
+                            // 파이프 문자의 시작 위치와 끝 위치 계산
+                            val pipeStart = studentCodeFormatted.length
+                            val pipeEnd = pipeStart + pipeSymbol.length
+
+                            // 색상 설정
+                            val color = Color.parseColor("#4825D8") // Hex 색상 코드로 색상을 설정
+                            spannable.setSpan(ForegroundColorSpan(color), pipeStart + 1, pipeEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            // 텍스트 뷰에 적용
+                            binding.userInfo.text = spannable
 
                             binding.userTem.text = "${user.nickname}님의 세통 온도"
                             binding.temNum.text = user.point.toString()
 
                             binding.progressBar.max = 100
-                            binding.progressBar.setProgress(user.point.toInt())
+                            binding.progressBar.progress = user.point.toInt()
 
                             Log.d("ProfileImage", "${user.profileImage}")
 
@@ -85,16 +102,14 @@ class UserProfileActivity() : AppCompatActivity() {
                                     .load(imageUrl)
                                     .apply(RequestOptions.circleCropTransform()) // 원형 변환
                                     .into(binding.userProfileImg)
-                            }
-                            else {
+                            } else {
                                 Glide.with(binding.userProfileImg.context)
-                                    .load(R.drawable.group_172)
+                                    .load(R.drawable.group_282)
                                     .apply(RequestOptions.circleCropTransform()) // 원형 변환
                                     .into(binding.userProfileImg)
                             }
                         }
-                    }
-                    else {
+                    } else {
                         Log.e("UserProfile", "User Error")
                     }
                 }
@@ -104,8 +119,8 @@ class UserProfileActivity() : AppCompatActivity() {
                 }
             })
         }
-
     }
+
 
     private fun getJwtToken(): String? {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
