@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -104,11 +105,28 @@ class MypageActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        progressBar.visibility = View.VISIBLE
+
+
         // 사용자 정보를 조회하는 함수 호출
         getUserProfile()
         progressBar.progress = 100
 
         // 스크랩 데이터 가져오기
+        fetchScrapData()
+        fetchMentorData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // ProgressBar를 다시 보이게 함
+        progressBar.visibility = View.VISIBLE
+
+        // 사용자 프로필 다시 가져오기 (새로고침)
+        getUserProfile()
+
+        // 스크랩 데이터 다시 가져오기
         fetchScrapData()
         fetchMentorData()
     }
@@ -255,6 +273,7 @@ class MypageActivity : AppCompatActivity() {
             scrapQuestionList,
             onItemClickListener = { questionId ->
                 Log.d("MypageActivity", "Question clicked with ID: $questionId")
+
                 // AnswerFragment로 이동
                 val fragment = AnswerFragment().apply {
                     arguments = Bundle().apply {
@@ -267,6 +286,8 @@ class MypageActivity : AppCompatActivity() {
                     .replace(R.id.mypageViewPage, fragment)  // Fragment를 담을 컨테이너 ID 수정
                     .addToBackStack(null)
                     .commit()
+
+
             }
         )
         recyclerViewQuestion.layoutManager = LinearLayoutManager(this)
@@ -293,6 +314,7 @@ class MypageActivity : AppCompatActivity() {
                     .replace(R.id.mypageViewPage, fragment)  // fragment_container로 ID 수정
                     .addToBackStack(null)
                     .commit()
+
 
                 Log.d("FragmentTransaction", "Fragment replaced in container with ID: $mentorId")
             }

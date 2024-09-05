@@ -3,6 +3,8 @@ package com.example.alom_team_project
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
@@ -27,6 +29,7 @@ import com.example.alom_team_project.question_board.QuestionClass
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvHomeMore: TextView
     private var firstMentorId: Long? = null
     private var secondMentorId: Long? = null
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
+
+    private val refreshInterval: Long = 12000 // 1분
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +100,9 @@ class MainActivity : AppCompatActivity() {
                 openMentorDetailFragment(mentorId)
             }
         }
+
+        setupAutoRefresh()
+
     }
 
     private fun navigateToMentorBoardActivity() {
@@ -120,6 +130,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun fetchnickname(username:String) {
+
+      /*  val token = getJwtToken()
+        RetrofitClient.userApi.getUserProfile(username, "Bearer $token").enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                if (response.isSuccessful) {
+                    val user = response.body()
+                    if (user != null) {
+                        val nickname = user?.nickname ?: "No nickname"
+                        return nickname
+                    }
+
+                }
+
+            }
+        }*/
+    }
     private fun updateRecordList(questions: List<QuestionClass>) {
         // 최대 항목 수를 설정합니다.
         val maxItemCount = 10
@@ -129,9 +156,11 @@ class MainActivity : AppCompatActivity() {
         questions.forEach { question ->
             val replies = question.replies ?: emptyList()
             val images = question.images ?: emptyList()
-            val mentorName = if (replies.isNotEmpty()) replies[0].title else "No replies"
-            val answerText = if (replies.isNotEmpty()) replies[0].text else "No answer"
+            // replies가 비어있으면 mentorName과 answerText를 null로 설정
+            val mentorName = if (replies.isNotEmpty()) replies[0].writer else null
+            val answer = if (replies.isNotEmpty()) replies[0].text else null
             val imageUrl = if (images.isNotEmpty()) images[0].imageUrl else ""
+            val username = if (replies.isNotEmpty()) replies[0].username?.toString() else ""
 
             recordList.add(
                 HomeRecordData(
@@ -139,8 +168,10 @@ class MainActivity : AppCompatActivity() {
                     commentCount = question.replyCount,
                     images = listOf(ImageData(imageUrl)),
                     mentorName = mentorName,
-                    answer = answerText,
-                    id = question.id.toLong()
+                    answer = answer,
+                    id = question.id.toLong(),
+                    text = question.text,
+                    username = username
                 )
             )
         }
@@ -156,6 +187,7 @@ class MainActivity : AppCompatActivity() {
         // 기록 개수를 업데이트합니다.
         updateRecordCount()
     }
+
 
     private fun updateRecordCount() {
         val maxCount = 10 // 최대 표시 가능한 아이템 수
@@ -332,5 +364,21 @@ class MainActivity : AppCompatActivity() {
     private fun getUsername(): String? {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
         return sharedPref.getString("username", null)
+    }
+
+    private fun setupAutoRefresh() {
+        handler = Handler(Looper.getMainLooper())
+        runnable = object : Runnable {
+            override fun run() {
+                fetchData()
+                handler.postDelayed(this, refreshInterval)
+            }
+        }
+        handler.post(runnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(runnable) // Activity가 파괴될 때 Runnable 제거
     }
 }

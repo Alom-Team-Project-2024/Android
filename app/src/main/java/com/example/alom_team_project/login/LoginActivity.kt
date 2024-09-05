@@ -1,12 +1,14 @@
 package com.example.alom_team_project.login
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.alom_team_project.databinding.ActivityLoginBinding
 import com.example.alom_team_project.MainActivity
+import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.mypage.MypageActivity
 import com.example.alom_team_project.mypage.ProfileActivity
@@ -18,11 +20,13 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var joinQuestionTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        joinQuestionTextView = findViewById(R.id.joinQuestionTextView)
 
         binding.btnLogin.setOnClickListener {
             val id = binding.etId.text.toString()
@@ -93,12 +97,12 @@ class LoginActivity : AppCompatActivity() {
 
                         val jwtResponse = response.body()
                         val nickname = jwtResponse?.nickname
-
                         // 닉네임이 null인지 확인
                         if (nickname.isNullOrEmpty()) {
                             navigateToProfileActivity() // 닉네임이 null일 때 프로필 페이지로 이동
                         } else {
-                            navigateToMainActivity()} // 닉네임이 존재하면 메인 페이지로 이동
+                            navigateToMainActivity() // 닉네임이 존재하면 메인 페이지로 이동
+                        }
                     } else {
                         showError("네트워크 문제로 로그인하지 못했습니다. 다시 시도하시겠습니까?")
                     }
@@ -147,12 +151,14 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
+    // 에러 메시지를 joinQuestionTextView에 표시
     private fun showError(message: String) {
-        Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
+        joinQuestionTextView.setTextColor(Color.parseColor("#FF0000"))
+        joinQuestionTextView.text = message
     }
 
+    // 성공 메시지를 joinQuestionTextView에 표시
     private fun showSuccess(message: String) {
-        Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
+        joinQuestionTextView.text = message
     }
 }
-

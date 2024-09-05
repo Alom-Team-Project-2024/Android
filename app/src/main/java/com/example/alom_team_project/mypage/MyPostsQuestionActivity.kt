@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.databinding.ActivityMyPostsQuestionBinding
 import com.example.alom_team_project.databinding.ActivityScrapQuestionBoardBinding
 import com.example.alom_team_project.login.UserApi
 import com.example.alom_team_project.question_board.AnswerFragment
@@ -25,9 +26,9 @@ import retrofit2.Response
 
 class MyPostsQuestionActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityScrapQuestionBoardBinding
+    private lateinit var binding: ActivityMyPostsQuestionBinding
     private lateinit var adapter: QuestionAdapterClass
-    private lateinit var scrapQuestionList: ArrayList<QuestionClass>
+    private lateinit var mypostsQuestionList: ArrayList<QuestionClass>
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
@@ -35,7 +36,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityScrapQuestionBoardBinding.inflate(layoutInflater)
+        binding = ActivityMyPostsQuestionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.backButton.setOnClickListener {
@@ -43,7 +44,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
         }
 
         // scrapQuestionList 초기화
-        scrapQuestionList = arrayListOf()
+        mypostsQuestionList = arrayListOf()
 
         // RecyclerView 어댑터 및 레이아웃 매니저 설정
         setupRecyclerView()
@@ -84,7 +85,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = QuestionAdapterClass(
-            questionList = scrapQuestionList,
+            questionList = mypostsQuestionList,
             onItemClickListener = { questionId ->
                 // AnswerFragment로 이동
                 val fragment = AnswerFragment().apply {
@@ -139,8 +140,8 @@ class MyPostsQuestionActivity : AppCompatActivity() {
                     Log.d("FETCH_DATA", "Data fetched successfully")
 
                     response.body()?.let { posts ->
-                        scrapQuestionList.clear()
-                        scrapQuestionList.addAll(posts) // 리스트에 여러 항목을 추가
+                        mypostsQuestionList.clear()
+                        mypostsQuestionList.addAll(posts) // 리스트에 여러 항목을 추가
                         adapter.filter(binding.etSearch.text.toString())  // 현재 검색어로 필터링
                     }
                 } else {

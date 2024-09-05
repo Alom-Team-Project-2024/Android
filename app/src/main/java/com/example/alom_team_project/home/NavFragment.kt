@@ -4,10 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AnticipateOvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -43,7 +40,7 @@ class NavigationFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.nav, container, false)
         findView(view)
-        setListener()
+        setListener(view)
         return view
     }
 
@@ -75,7 +72,7 @@ class NavigationFragment : Fragment() {
         menuTitleList.add("알림")
     }
 
-    private fun setListener() {
+    private fun setListener(view: View) {
         imageButtonCenter.setOnClickListener {
             toggleCircleMenu()
         }
@@ -83,9 +80,28 @@ class NavigationFragment : Fragment() {
         val listener = createTouchListener()
         constraintLayoutMenu.setOnTouchListener(listener)
 
-        for (view in viewList) {
-            view.setOnTouchListener(listener)
+        for (menuView in viewList) {
+            menuView.setOnTouchListener(listener)
         }
+
+        // View의 루트 레이아웃에 터치 리스너를 추가하여 외부 터치 이벤트를 감지
+        view.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                if (constraintLayoutMenu.visibility == View.VISIBLE && !isTouchInsideView(event, constraintLayoutMenu)) {
+                    toggleCircleMenu()
+                }
+            }
+            false
+        }
+    }
+
+    private fun isTouchInsideView(event: MotionEvent, view: View): Boolean {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        val x = location[0]
+        val y = location[1]
+        return event.rawX >= x && event.rawX <= (x + view.width) &&
+                event.rawY >= y && event.rawY <= (y + view.height)
     }
 
     private fun createTouchListener(): View.OnTouchListener {
@@ -146,29 +162,12 @@ class NavigationFragment : Fragment() {
             if (currentView.id == viewList[i].id) {
                 Toast.makeText(activity, "click menu ${menuTitleList[i]}", Toast.LENGTH_SHORT).show()
 
-                if (menuTitleList[i] == "질문") {
-                    val intent = Intent(activity, QuestionBoardActivity::class.java)
-                    startActivity(intent)
-                }
-
-                if (menuTitleList[i] == "홈") {
-                    val intent = Intent(activity, MainActivity::class.java)
-                    startActivity(intent)
-                }
-
-                if (menuTitleList[i] == "my") {
-                    val intent = Intent(activity, MypageActivity::class.java)
-                    startActivity(intent)
-                }
-
-                if (menuTitleList[i] == "채팅") {
-                    val intent = Intent(activity, ChatListActivity::class.java)
-                    startActivity(intent)
-                }
-
-                if (menuTitleList[i] == "구인") {
-                    val intent = Intent(activity, MentorBoardActivity::class.java)
-                    startActivity(intent)
+                when (menuTitleList[i]) {
+                    "질문" -> startActivity(Intent(activity, QuestionBoardActivity::class.java))
+                    "홈" -> startActivity(Intent(activity, MainActivity::class.java))
+                    "my" -> startActivity(Intent(activity, MypageActivity::class.java))
+                    "채팅" -> startActivity(Intent(activity, ChatListActivity::class.java))
+                    "구인" -> startActivity(Intent(activity, MentorBoardActivity::class.java))
                 }
             }
         }
@@ -196,10 +195,9 @@ class NavigationFragment : Fragment() {
     }
 
     private fun toggleCircleMenu() {
-        // 현재 프래그먼트의 뷰를 사용하여 ImageButton 찾기
         val imageButton = view?.findViewById<ImageButton>(R.id.imageButtonCenter)
-        if (imageButton != null) {
-            val params = imageButton.layoutParams as FrameLayout.LayoutParams
+        imageButton?.let {
+            val params = it.layoutParams as FrameLayout.LayoutParams
 
             if (constraintLayoutMenu.visibility == View.VISIBLE) {
                 constraintLayoutMenu.visibility = View.GONE
@@ -217,17 +215,14 @@ class NavigationFragment : Fragment() {
                 params.height = dpToPx(102)
             }
 
-            imageButton.layoutParams = params
-            imageButton.requestLayout()  // 변경 사항 적용
+            it.layoutParams = params
+            it.requestLayout()  // 변경 사항 적용
         }
     }
-
 
     // dp를 px로 변환하는 함수
     fun dpToPx(dp: Int): Int {
         val density = resources.displayMetrics.density
         return (dp * density).toInt()
     }
-
 }
-

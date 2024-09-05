@@ -7,8 +7,11 @@ data class HomeRecordData(
     val commentCount: Int,
     val images: List<ImageData>,
     val mentorName: String?,  // Nullable 타입으로 변경
-    val answer: String,
-    val id: Long  )
+    val answer: String?,
+    val id: Long,
+    val text:String?,
+    val username:String?
+    )
 
 
 data class ImageData(

@@ -20,7 +20,7 @@
         android:id="@+id/imageView7"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="137dp"
+        android:layout_marginTop="108dp"
         android:background="@drawable/up_round_rectangle"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -68,32 +68,41 @@
         />
 
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/iv_profileImage"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+    <FrameLayout
+        android:id="@+id/iv_profileImage1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
-        android:elevation="5dp"
-        android:src="@drawable/group_172"
+        android:layout_marginTop="26dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView7" />
+        app:layout_constraintTop_toTopOf="@+id/imageView7">  <!-- 배경을 흰색으로 설정 -->
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_profileImage"
+            android:layout_width="52dp"
+            android:background="@android:color/white"
+            android:layout_height="52dp"
+            android:src="@drawable/group_172"
+            android:elevation="5dp"
+ />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="26dp"
         android:text="이수민"
         android:textColor="#000000"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/tv_code_major"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.006"
-        app:layout_constraintStart_toEndOf="@+id/iv_profileImage"
+        app:layout_constraintStart_toEndOf="@+id/iv_profileImage1"
         app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
     <TextView
@@ -102,21 +111,20 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="3dp"
-        android:layout_marginBottom="16dp"
         android:text="23학번\n디자인이노베이션 학과"
         android:textColor="#000000"
         android:textSize="10sp"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.009"
-        app:layout_constraintStart_toEndOf="@+id/iv_profileImage"
+        app:layout_constraintStart_toEndOf="@+id/iv_profileImage1"
         app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
     <TextView
         android:id="@+id/tv_profile_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="26dp"
         android:layout_marginEnd="25dp"
         android:text="정보 수정"
         android:textColor="#000000"
@@ -128,7 +136,8 @@
     <Button
         android:id="@+id/button2"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="14dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/round_rectangle9"
@@ -148,7 +157,7 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="31dp"
         android:layout_marginEnd="15dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
@@ -185,7 +194,7 @@
         android:progressBackgroundTint="#F0F0F0"
         android:progressDrawable="@drawable/progress_drawable"
         android:progressTint="#4825D8"
-        android:elevation="20dp"
+        android:elevation="5dp"
         app:layout_constraintEnd_toStartOf="@id/tv_point"
         app:layout_constraintStart_toStartOf="@id/imageView9"
         app:layout_constraintTop_toBottomOf="@id/tv_name_point"
@@ -210,7 +219,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="62dp"
         android:text="스크랩한 게시물"
         android:textColor="#000000"
         android:textSize="15sp"
@@ -221,7 +230,7 @@
         android:id="@+id/tv_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="33dp"
+        android:layout_marginTop="62dp"
         android:layout_marginEnd="30dp"
         android:text="더보기"
         android:textColor="#000000"
@@ -234,7 +243,7 @@
         android:id="@+id/question_board_item"
         tools:listitem="@layout/question_board_item"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="120dp"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:layout_marginTop="5dp"
@@ -248,7 +257,7 @@
         android:id="@+id/mentor_board_item"
         tools:listitem="@layout/mentor_board_item"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="120dp"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:layout_marginTop="5dp"
@@ -268,7 +277,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="18dp"
         android:paddingBottom="5dp"
         />
 
