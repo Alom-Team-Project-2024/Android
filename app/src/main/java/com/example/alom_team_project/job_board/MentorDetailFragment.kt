@@ -1,7 +1,6 @@
 package com.example.alom_team_project.job_board
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,14 +8,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.chat.ChatFragment
-import com.example.alom_team_project.chat.ChatListActivity
 import com.example.alom_team_project.chat.ChatRoomResponse
 import com.example.alom_team_project.chat.ChatService
 import com.example.alom_team_project.databinding.FragmentMentorDetailBinding
@@ -88,49 +85,80 @@ class MentorDetailFragment : Fragment() {
 
         // 구인 정보 가져오기
         if (mentorId != null) {
-            fetchMentorDetails(mentorId) { writer ->
+            fetchMentorDetails(mentorId) {
             }
         }
     }
 
     private fun createChatRoom() {
         val token = getJwtToken()
-        val username = getUsername()
+        val user1name = getUsername()
         val mentorId = arguments?.getLong("MENTOR_ID")
 
-        if (token != null && username != null && mentorId != null) {
-            fetchMentorDetails(mentorId) { user2nick ->
-                if (!user2nick.isNullOrEmpty()) {
-                    fetchNickname(token, username) { user1nick ->
-                        if (!user1nick.isNullOrEmpty() && user1nick != user2nick) {
-                            val chatService = RetrofitClient.instance.create(ChatService::class.java)
-                            val call = chatService.chatRoom("Bearer $token", user1nick, user2nick)
+        if (token != null && user1name != null && mentorId != null) {
+            fetchMentorDetails(mentorId) { user2name ->
+                Log.d("MentorPost", "$user1name/$user2name")
+                if (user2name != null) {
+                    fetchNickname(token, user2name) { user2nick ->
+                        if (!user2nick.isNullOrEmpty()) {
+                            fetchNickname(token, user1name) { user1nick ->
+                                Log.d("Mentorpost", "$user1nick, $user2nick")
+                                if (!user1nick.isNullOrEmpty() && user1nick != user2nick) {
+                                    val chatService =
+                                        RetrofitClient.instance.create(ChatService::class.java)
+                                    val call =
+                                        chatService.chatRoom("Bearer $token", user1nick, user2nick)
 
-                            call.enqueue(object : Callback<ChatRoomResponse> {
-                                override fun onResponse(call: Call<ChatRoomResponse>, response: Response<ChatRoomResponse>) {
-                                    if (response.isSuccessful) {
-                                        response.body()?.let {
-                                            openChatPage(it.id)
-                                        } ?: run {
-                                            Log.e("API Error", "ChatRoomResponse is null")
+                                    call.enqueue(object : Callback<ChatRoomResponse> {
+                                        override fun onResponse(
+                                            call: Call<ChatRoomResponse>,
+                                            response: Response<ChatRoomResponse>
+                                        ) {
+                                            if (response.isSuccessful) {
+                                                response.body()?.let {
+                                                    openChatPage(it.id)
+                                                } ?: run {
+                                                    Log.e("API Error", "ChatRoomResponse is null")
+                                                }
+                                            } else {
+                                                Log.e(
+                                                    "API Error",
+                                                    "Response Code: ${response.code()}, Message: ${response.message()}"
+                                                )
+                                            }
                                         }
-                                    } else {
-                                        Log.e("API Error", "Response Code: ${response.code()}, Message: ${response.message()}")
-                                    }
-                                }
 
-                                override fun onFailure(call: Call<ChatRoomResponse>, t: Throwable) {
-                                    Log.e("API Error", "Failure: ${t.message}")
+                                        override fun onFailure(
+                                            call: Call<ChatRoomResponse>,
+                                            t: Throwable
+                                        ) {
+                                            Log.e("API Error", "Failure: ${t.message}")
+                                        }
+                                    })
+                                } else {
+                                    Log.e(
+                                        "Nickname Error",
+                                        "Failed to fetch nickname or usernames are identical."
+                                    )
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Cannot create chat room.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                            })
+                            }
                         } else {
-                            Log.e("Nickname Error", "Failed to fetch nickname or usernames are identical.")
-                            Toast.makeText(requireContext(), "Cannot create chat room.", Toast.LENGTH_SHORT).show()
+                            Log.e(
+                                "Mentor Error",
+                                "Failed to fetch mentor details or user2nick is null."
+                            )
+                            Toast.makeText(
+                                requireContext(),
+                                "Cannot fetch mentor details.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
-                } else {
-                    Log.e("Mentor Error", "Failed to fetch mentor details or user2nick is null.")
-                    Toast.makeText(requireContext(), "Cannot fetch mentor details.", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
@@ -199,7 +227,8 @@ class MentorDetailFragment : Fragment() {
                 if (response.isSuccessful) {
                     response.body()?.let { mentor ->
                         bindMentorToViews(mentor)
-                        callback(mentor.writer) // 콜백을 통해 mentor.writer 전달
+                        Log.d("MentorPost", "${mentor.writer}")
+                        callback(mentor.username) // 콜백을 통해 mentor.writer 전달
                     } ?: run {
                         callback(null) // mentor가 null인 경우
                     }
@@ -315,7 +344,7 @@ class MentorDetailFragment : Fragment() {
             override fun run() {
                 val mentorId = arguments?.getLong("MENTOR_ID")
                 if (mentorId != null) {
-                    fetchMentorDetails(mentorId) { writer ->
+                    fetchMentorDetails(mentorId) {
                     }
                 }
                 handler.postDelayed(this, refreshInterval)

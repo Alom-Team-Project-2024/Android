@@ -198,7 +198,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
                             }
                             else {
                                 Glide.with(binding.profileImg.context)
-                                    .load(R.drawable.group_172)
+                                    .load(R.drawable.group_282)
                                     .apply(RequestOptions.circleCropTransform()) // 원형 변환
                                     .into(binding.profileImg)
                             }
