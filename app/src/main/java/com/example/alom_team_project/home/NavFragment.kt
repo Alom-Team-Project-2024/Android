@@ -73,6 +73,18 @@ class NavigationFragment : Fragment() {
         menuTitleList.add("my")
         menuTitleList.add("채팅")
         menuTitleList.add("알림")
+
+        navBackground.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    toggleCircleMenu()
+                    false
+                }
+                else -> false
+            }
+        }
+
+
     }
 
     private fun setListener() {
@@ -149,26 +161,31 @@ class NavigationFragment : Fragment() {
                 if (menuTitleList[i] == "질문") {
                     val intent = Intent(activity, QuestionBoardActivity::class.java)
                     startActivity(intent)
+                    toggleCircleMenu()
                 }
 
                 if (menuTitleList[i] == "홈") {
                     val intent = Intent(activity, MainActivity::class.java)
                     startActivity(intent)
+                    toggleCircleMenu()
                 }
 
                 if (menuTitleList[i] == "my") {
                     val intent = Intent(activity, MypageActivity::class.java)
                     startActivity(intent)
+                    toggleCircleMenu()
                 }
 
                 if (menuTitleList[i] == "채팅") {
                     val intent = Intent(activity, ChatListActivity::class.java)
                     startActivity(intent)
+                    toggleCircleMenu()
                 }
 
                 if (menuTitleList[i] == "구인") {
                     val intent = Intent(activity, MentorBoardActivity::class.java)
                     startActivity(intent)
+                    toggleCircleMenu()
                 }
             }
         }

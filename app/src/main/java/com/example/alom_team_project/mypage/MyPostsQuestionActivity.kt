@@ -1,5 +1,6 @@
 package com.example.alom_team_project.mypage
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +8,8 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +22,7 @@ import com.example.alom_team_project.question_board.AnswerFragment
 import com.example.alom_team_project.question_board.QuestionAdapterClass
 import com.example.alom_team_project.question_board.QuestionClass
 import com.example.alom_team_project.question_board.QuestionPostFragment
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,12 +84,22 @@ class MyPostsQuestionActivity : AppCompatActivity() {
         selectButton(binding.btnQuestion)
 
         setupAutoRefresh()
+
+        // 화면 클릭 시 키보드 내리기
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            true
+        }
     }
 
     private fun setupRecyclerView() {
         adapter = QuestionAdapterClass(
             questionList = scrapQuestionList,
             onItemClickListener = { questionId ->
+                binding.etSearch.setText("")
+
                 // AnswerFragment로 이동
                 val fragment = AnswerFragment().apply {
                     arguments = Bundle().apply {
@@ -207,6 +221,8 @@ class MyPostsQuestionActivity : AppCompatActivity() {
     }
 
     private fun openPostQuestionFragment() {
+        hideKeyboard()
+        binding.etSearch.setText("")
         val fragment = QuestionPostFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.questionViewPage, fragment)
@@ -228,5 +244,10 @@ class MyPostsQuestionActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(runnable) // Fragment가 파괴될 때 Runnable 제거
+    }
+
+    private fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 }

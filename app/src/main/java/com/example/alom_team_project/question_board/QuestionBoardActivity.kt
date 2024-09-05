@@ -2,12 +2,15 @@ package com.example.alom_team_project.question_board
 
 
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +31,7 @@ class QuestionBoardActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
-    private val refreshInterval: Long = 12000 // 1분
+    private val refreshInterval: Long = 12000 // 12초
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +56,7 @@ class QuestionBoardActivity : AppCompatActivity() {
         // 데이터 가져오기
         fetchData()
 
+
         binding.writingButton.setOnClickListener {
             openPostQuestionFragment()
         }
@@ -72,13 +76,25 @@ class QuestionBoardActivity : AppCompatActivity() {
                 // 텍스트 변화 후의 행동을 정의
             }
         })
+
         setupAutoRefresh()
+
+        // 화면 클릭 시 키보드 내리기
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            true
+        }
     }
 
     private fun setupRecyclerView() {
         adapter = QuestionAdapterClass(
             questionList = questionList,
             onItemClickListener = { questionId ->
+
+                binding.etSearch.setText("")
+
                 // AnswerFragment로 이동
                 val fragment = AnswerFragment().apply {
                     arguments = Bundle().apply {
@@ -146,13 +162,18 @@ class QuestionBoardActivity : AppCompatActivity() {
         handler.removeCallbacks(runnable) // Activity가 파괴될 때 Runnable 제거
     }
 
-
-
     private fun openPostQuestionFragment() {
+        hideKeyboard()
+        binding.etSearch.setText("")
         val fragment = QuestionPostFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.questionViewPage, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 }

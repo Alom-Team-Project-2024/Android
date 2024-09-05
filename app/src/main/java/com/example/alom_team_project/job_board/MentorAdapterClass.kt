@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alom_team_project.R
@@ -74,10 +75,14 @@ class MentorAdapterClass(
 
 
             binding.scrapNum.text = mentor.scrapCount.toString()
-            binding.scrapButton.setBackgroundResource(R.drawable.scrap_button)
+            binding.scrapButton.setBackgroundResource(R.drawable.scrap_button2)
 
             // 아이템 클릭 리스너 설정
             itemView.setOnClickListener {
+                // 키보드를 숨기기 위해 InputMethodManager 사용
+                val imm = binding.root.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(itemView.windowToken, 0)
+
                 onItemClickListener(mentor.id)  // 클릭된 아이템의 ID 전달
             }
 
