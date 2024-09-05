@@ -17,8 +17,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.databinding.ActivityMypageBinding
 import com.example.alom_team_project.job_board.MentorAdapterClass
 import com.example.alom_team_project.job_board.MentorClass
 import com.example.alom_team_project.job_board.MentorDetailFragment
@@ -36,7 +39,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MypageActivity : AppCompatActivity() {
-
+    private lateinit var binding: ActivityMypageBinding
     private lateinit var tvName: TextView
     private lateinit var tvCodeMajor: TextView
     private lateinit var tvNamePoint: TextView
@@ -63,7 +66,8 @@ class MypageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mypage)
+        binding = ActivityMypageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // UI 요소 초기화
         tvName = findViewById(R.id.tv_name)
@@ -184,25 +188,51 @@ class MypageActivity : AppCompatActivity() {
 
     private fun getProfileImage(username: String, token: String) {
         val api = RetrofitClient.userApi
-        api.getProfileImage(username, "Bearer $token").enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+        api.getUserProfile(username, "Bearer $token").enqueue(object : Callback<UserResponse> { // UserResponse 사용
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    responseBody?.byteStream()?.let { inputStream ->
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        ivProfileImage.setImageBitmap(bitmap)
+                    val user = response.body()
+                    if (user != null && user.profileImage != null) {
+                        // profileImage URL을 사용
+                        val imageUrl = getAbsoluteUrl(user.profileImage)
+                        Log.d("ProfileImage", "$imageUrl")
+
+                        // Glide로 이미지 로드 및 원형 변환 적용
+                        Glide.with(binding.ivProfileImage.context)
+                            .load(imageUrl)
+                            .apply(RequestOptions.circleCropTransform()) // 원형 변환 적용
+                            .into(binding.ivProfileImage)
+                    } else {
+                        // 프로필 이미지가 없으면 기본 이미지 로드
+                        Glide.with(binding.ivProfileImage.context)
+                            .load(R.drawable.group_282)
+                            .apply(RequestOptions.circleCropTransform()) // 원형 변환 적용
+                            .into(binding.ivProfileImage)
                     }
                 } else {
                     Log.e("ProfileImage", "Error: ${response.code()} - ${response.message()}")
                     Toast.makeText(this@MypageActivity, "Failed to fetch profile image", Toast.LENGTH_SHORT).show()
+
+                    // 실패 시 기본 이미지 로드
+                    Glide.with(binding.ivProfileImage.context)
+                        .load(R.drawable.group_282)
+                        .apply(RequestOptions.circleCropTransform()) // 원형 변환 적용
+                        .into(binding.ivProfileImage)
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
                 Log.e("ProfileImage", "Failed to fetch profile image", t)
                 Toast.makeText(this@MypageActivity, "Failed to fetch profile image: ${t.message}", Toast.LENGTH_SHORT).show()
+
             }
         })
+    }
+
+
+    private fun getAbsoluteUrl(relativeUrl: String): String {
+        val baseUrl = "http://15.165.213.186/" // 서버의 기본 URL
+        return baseUrl + relativeUrl
     }
 
     private fun fetchScrapData() {

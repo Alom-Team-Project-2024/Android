@@ -68,27 +68,19 @@
         />
 
 
-    <FrameLayout
-        android:id="@+id/iv_profileImage1"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <ImageView
+        android:id="@+id/iv_profileImage"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:src="@drawable/group_282"
+        android:elevation="7dp"
+        android:background="@drawable/img_background"
         android:layout_marginStart="15dp"
         android:layout_marginTop="26dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView7">  <!-- 배경을 흰색으로 설정 -->
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_profileImage"
-            android:layout_width="52dp"
-            android:background="@android:color/white"
-            android:layout_height="52dp"
-            android:src="@drawable/group_282"
-            android:elevation="5dp"
- />
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
     <TextView
         android:id="@+id/tv_name"
@@ -102,7 +94,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tv_code_major"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.006"
-        app:layout_constraintStart_toEndOf="@+id/iv_profileImage1"
+        app:layout_constraintStart_toEndOf="@+id/iv_profileImage"
         app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
     <TextView
@@ -117,7 +109,7 @@
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.009"
-        app:layout_constraintStart_toEndOf="@+id/iv_profileImage1"
+        app:layout_constraintStart_toEndOf="@+id/iv_profileImage"
         app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
     <TextView
