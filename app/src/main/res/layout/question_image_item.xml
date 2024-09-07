@@ -1,12 +1,21 @@
-<!-- item_image.xml -->
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
     </data>
 
-    <ImageView
-        android:id="@+id/imageView"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"/>
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        android:layout_margin="8dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"/>
+    </androidx.cardview.widget.CardView>
 </layout>

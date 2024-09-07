@@ -196,6 +196,7 @@ class AnswerFragment : Fragment() {
             if (questionId != null) {
                 sendPostAnswer(questionId)
             }
+            binding.imagePreview.visibility=View.GONE
         }
     }
 
@@ -372,8 +373,10 @@ class AnswerFragment : Fragment() {
                         binding.questionerName.text = user.nickname
 
 
-                        if (user.profileImage.isNotEmpty()) {
-                            val fullImageUrl = "http://15.165.213.186/" + user.profileImage
+                        // profileImage가 null인지 먼저 체크
+                        val profileImage = user.profileImage
+                        if (!profileImage.isNullOrEmpty()) {
+                            val fullImageUrl = "http://15.165.213.186/$profileImage"
                             Glide.with(binding.root.context)
                                 .load(fullImageUrl)
                                 .into(binding.questionerProfile)

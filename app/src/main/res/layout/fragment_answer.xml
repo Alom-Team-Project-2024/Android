@@ -92,13 +92,15 @@
         <!-- 질문 내용 -->
         <TextView
             android:id="@+id/question_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+
             android:text="@string/questionText"
             android:textColor="@color/black"
-
             android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/questioner_profile"
             app:layout_constraintTop_toBottomOf="@id/questioner_profile" />
 
@@ -175,8 +177,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewImages"
+            android:orientation="horizontal"
             android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_height="240dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="10dp"

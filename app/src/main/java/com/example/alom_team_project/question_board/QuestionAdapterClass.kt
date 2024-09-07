@@ -23,6 +23,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import android.view.inputmethod.InputMethodManager
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 
 class QuestionAdapterClass(
@@ -84,6 +86,7 @@ class QuestionAdapterClass(
                 //android.util.Log.d("ImageURL", "Loading image from URL: $fullImageUrl")
                 Glide.with(binding.questionImage.context)
                     .load(fullImageUrl)
+                    .transform(CenterCrop(), RoundedCorners(15))
                     .placeholder(R.drawable.ex_image)  // 이미지 로딩 전까지 보여줄 플레이스홀더
                     .error(R.drawable.ex_image)  // 이미지 로딩 실패 시 보여줄 이미지
                     .into(binding.questionImage)
