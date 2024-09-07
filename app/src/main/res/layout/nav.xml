@@ -11,14 +11,14 @@
     <FrameLayout
         android:layout_marginBottom="-110dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_width="292dp"
-        android:layout_height="292dp">
+        android:layout_width="298dp"
+        android:layout_height="294dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayoutMenu"
             android:layout_gravity="center"
-            android:layout_width="282dp"
-            android:layout_height="282dp"
+            android:layout_width="298dp"
+            android:layout_height="294dp"
             android:elevation="5dp"
             android:background="@drawable/nav_back"
             android:clickable="true"

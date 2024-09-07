@@ -47,6 +47,7 @@
         android:text="프로필"
         android:textSize="20dp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background" />
@@ -56,8 +57,9 @@
         android:layout_width="165dp"
         android:layout_height="165dp"
         android:layout_marginTop="37dp"
-        android:src="@drawable/group_172"
-        android:elevation="20dp"
+        android:src="@drawable/group_282"
+        android:elevation="7dp"
+        android:background="@drawable/img_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background_board" />
@@ -129,16 +131,17 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="13dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="28dp"
-        android:max="100"
-        android:progressBackgroundTint="#D2D2D2"
-        android:progressTint="#4825D8"
         android:indeterminate="false"
+        android:max="100"
+        android:background="@drawable/bar_background1"
+        android:elevation="3dp"
+        android:progressDrawable="@drawable/bar_background1"
         app:layout_constraintBottom_toBottomOf="@+id/temperature_box"
         app:layout_constraintEnd_toStartOf="@id/tem_num"
         app:layout_constraintStart_toStartOf="@+id/temperature_box"
@@ -149,12 +152,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="25dp"
         android:text="100"
+        android:textColor="#4825D8"
+        android:textSize="13dp"
         app:layout_constraintBottom_toBottomOf="@+id/temperature_box"
         app:layout_constraintEnd_toEndOf="@+id/temperature_box"
         app:layout_constraintStart_toEndOf="@+id/progressBar" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

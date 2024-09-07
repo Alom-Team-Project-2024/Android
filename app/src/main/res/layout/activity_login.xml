@@ -59,8 +59,7 @@
         android:layout_height="wrap_content"
         android:text="아이디"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="13.5dp"
         app:layout_constraintBottom_toTopOf="@id/et_id"
         app:layout_constraintStart_toStartOf="@id/et_id"
 
@@ -95,8 +94,7 @@
         android:layout_height="wrap_content"
         android:text="비밀번호"
         android:textColor="#000000"
-        android:textStyle="bold"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="13.5dp"
         app:layout_constraintBottom_toTopOf="@id/et_password"
         app:layout_constraintStart_toStartOf="@id/et_password"
         />
@@ -129,10 +127,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="로그인"
+        android:textColor="#FFFFFF"
+        android:paddingBottom="10dp"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintWidth_percent="0.7"
-        android:background="@drawable/rectangle_202__1_"
+        android:background="@drawable/rectangle_202__2_"
         app:layout_constraintTop_toBottomOf="@id/et_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -153,8 +153,8 @@
         app:layout_constraintTop_toBottomOf="@id/et_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginTop="-2dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
