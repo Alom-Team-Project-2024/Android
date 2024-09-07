@@ -77,7 +77,7 @@ class NavigationFragment : Fragment() {
         navBackground.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    toggleCircleMenu()
+                    toggleCircleMenu2()
                     false
                 }
                 else -> false
@@ -239,6 +239,24 @@ class NavigationFragment : Fragment() {
         }
     }
 
+    private fun toggleCircleMenu2() {
+        // 현재 프래그먼트의 뷰를 사용하여 ImageButton 찾기
+        val imageButton = view?.findViewById<ImageButton>(R.id.imageButtonCenter)
+        if (imageButton != null) {
+            val params = imageButton.layoutParams as FrameLayout.LayoutParams
+
+            if (constraintLayoutMenu.visibility == View.VISIBLE) {
+                constraintLayoutMenu.visibility = View.GONE
+                navBackground.setBackgroundColor(Color.TRANSPARENT)  // 배경을 투명하게 설정
+
+                // 이미지 버튼 크기 축소
+                params.width = dpToPx(50)
+                params.height = dpToPx(50)
+            }
+            imageButton.layoutParams = params
+            imageButton.requestLayout()  // 변경 사항 적용
+        }
+    }
 
     // dp를 px로 변환하는 함수
     fun dpToPx(dp: Int): Int {
