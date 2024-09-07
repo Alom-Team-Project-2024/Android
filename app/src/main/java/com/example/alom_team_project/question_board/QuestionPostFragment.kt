@@ -147,13 +147,24 @@ class QuestionPostFragment : Fragment() {
         imageAdapter = ImageAdapter(emptyList())  // 초기에는 빈 리스트
         binding.recyclerViewImages.adapter = imageAdapter
 
+
+
         // 이미지 선택 버튼 클릭 시
         val btnPickImage: ImageButton = view.findViewById(R.id.btnPickImage)
+        val requiredPermissions = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+
         btnPickImage.setOnClickListener {
-            if (hasPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))) {
+            if (hasPermissions(requiredPermissions)) {
                 openGallery()
             } else {
-                permissionLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))
+                permissionLauncher.launch(requiredPermissions)
             }
         }
 
@@ -277,6 +288,7 @@ class QuestionPostFragment : Fragment() {
             ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
         }
     }
+
 
     private fun setupRecyclerView() {
         adapter = SubjectAdapter(subjectList)
