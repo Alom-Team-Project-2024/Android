@@ -122,17 +122,18 @@
         />
 
     <!--로그인 버튼-->
-    <android.widget.Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="310dp"
+        android:layout_height="50dp"
         android:text="로그인"
         android:textColor="#FFFFFF"
-        android:paddingBottom="10dp"
+        android:paddingBottom="7dp"
         android:textSize="17sp"
         android:textStyle="bold"
+        android:elevation="30dp"
         app:layout_constraintWidth_percent="0.7"
-        android:background="@drawable/rectangle_202__2_"
+        android:background="@drawable/round_rectangle2"
         app:layout_constraintTop_toBottomOf="@id/et_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,6 +142,10 @@
         android:layout_marginTop="50dp"
 
         />
+
+
+
+
 
     <!-- 회원가입 text -->
     <TextView
