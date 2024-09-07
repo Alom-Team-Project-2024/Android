@@ -2,6 +2,7 @@ package com.example.alom_team_project.home
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.text.Html
 import android.util.Log
 
 import android.util.TypedValue
@@ -43,7 +44,9 @@ class HomeRecordViewHolder(
             fetchUpdateUserInfo(usernameToFetch) { user ->
                 if (user != null) {
                     Log.d("DEBUG", "Fetched user nickname: ${user.nickname}")
-                    binding.mentorName.text = user.nickname
+                    // 멘토 이름을 볼드 처리하고 '멘토'를 붙입니다
+                    val formattedName = "<b>${user.nickname}</b> 멘토"
+                    binding.mentorName.text = Html.fromHtml(formattedName)
                 } else {
                     Log.d("DEBUG", "User not found or error occurred")
                     binding.mentorName.text = "null"

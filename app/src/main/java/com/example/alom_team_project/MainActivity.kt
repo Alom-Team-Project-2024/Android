@@ -130,62 +130,117 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchnickname(username:String) {
+    private fun fetchnickname(username: String, callback: (String) -> Unit) {
+        val token = getJwtToken() ?: return
 
-      /*  val token = getJwtToken()
         RetrofitClient.userApi.getUserProfile(username, "Bearer $token").enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
                     val user = response.body()
-                    if (user != null) {
-                        val nickname = user?.nickname ?: "No nickname"
-                        return nickname
-                    }
-
+                    val nickname = user?.nickname ?: "No nickname"
+                    callback(nickname) // 콜백을 통해 nickname 전달
+                } else {
+                    callback("No nickname") // 실패한 경우 기본 값 전달
                 }
-
             }
-        }*/
-    }
-    private fun updateRecordList(questions: List<QuestionClass>) {
-        // 최대 항목 수를 설정합니다.
-        val maxItemCount = 10
 
-        // 새로운 데이터로 기존 데이터를 업데이트합니다.
-        recordList.clear()
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                callback("Error") // 실패 시 기본 값 설정
+            }
+        })
+    }
+
+    private fun updateRecordList(questions: List<QuestionClass>) {
+        val maxItemCount = 10
+        val tempList = mutableListOf<HomeRecordData>()
+        val pendingRequests = mutableListOf<(String) -> Unit>()
+
         questions.forEach { question ->
             val replies = question.replies ?: emptyList()
             val images = question.images ?: emptyList()
-            // replies가 비어있으면 mentorName과 answerText를 null로 설정
             val mentorName = if (replies.isNotEmpty()) replies[0].writer else null
-            val answer = if (replies.isNotEmpty()) replies[0].text else null
+            var answer = if (replies.isNotEmpty()) replies[0].text else null
             val imageUrl = if (images.isNotEmpty()) images[0].imageUrl else ""
             val username = if (replies.isNotEmpty()) replies[0].username?.toString() else ""
 
-            recordList.add(
-                HomeRecordData(
-                    title = question.subject,
-                    commentCount = question.replyCount,
-                    images = listOf(ImageData(imageUrl)),
-                    mentorName = mentorName,
-                    answer = answer,
-                    id = question.id.toLong(),
-                    text = question.text,
-                    username = username
+            answer = answer?.let { insertSpacesEveryTwentyChars(it) }
+            val text = insertSpacesEveryTwentyChars(question.text)
+
+            if (username.isNotBlank() && replies.isEmpty()) {
+                // fetchnickname 호출 후 데이터 추가
+                pendingRequests.add { nickname ->
+                    tempList.add(
+                        HomeRecordData(
+                            title = question.subject,
+                            commentCount = question.replyCount,
+                            images = listOf(ImageData(imageUrl)),
+                            mentorName = nickname,
+                            answer = answer,
+                            id = question.id.toLong(),
+                            text = text,
+                            username = username
+                        )
+                    )
+                    if (pendingRequests.isEmpty()) {
+                        finalizeListUpdate(tempList, maxItemCount)
+                    }
+                }
+                fetchnickname(username) { nickname ->
+                    pendingRequests.forEach { it(nickname) }
+                    pendingRequests.clear()
+                }
+            } else {
+                val formattedMentorName = mentorName?.let {
+                    "<b>$it</b> 멘토" // 멘토의 이름을 볼드 처리하고 뒤에 "멘토" 추가
+                }
+
+                tempList.add(
+                    HomeRecordData(
+                        title = question.subject,
+                        commentCount = question.replyCount,
+                        images = listOf(ImageData(imageUrl)),
+                        mentorName = formattedMentorName,
+                        answer = answer,
+                        id = question.id.toLong(),
+                        text = text,
+                        username = username
+                    )
                 )
-            )
+            }
         }
 
-        // 리스트가 최대 항목 수를 초과하는 경우 초과된 항목을 제거합니다.
-        if (recordList.size > maxItemCount) {
-            recordList.subList(maxItemCount, recordList.size).clear()
+        // 모든 비동기 요청이 완료된 경우 어댑터 업데이트
+        if (pendingRequests.isEmpty()) {
+            finalizeListUpdate(tempList, maxItemCount)
         }
+    }
+
+    private fun finalizeListUpdate(tempList: MutableList<HomeRecordData>, maxItemCount: Int) {
+        // 리스트가 최대 항목 수를 초과하는 경우 초과된 항목을 제거합니다.
+        if (tempList.size > maxItemCount) {
+            tempList.subList(maxItemCount, tempList.size).clear()
+        }
+
+        recordList.clear()
+        recordList.addAll(tempList)
 
         // 어댑터에 데이터 변경 사항을 알립니다.
         recordAdapter.notifyDataSetChanged()
 
         // 기록 개수를 업데이트합니다.
         updateRecordCount()
+    }
+
+
+
+    private fun insertSpacesEveryTwentyChars(text: String, interval: Int = 20): String {
+        val stringBuilder = StringBuilder(text)
+        var index = interval
+        while (index < stringBuilder.length) {
+            stringBuilder.insert(index, "\n") // 20글자마다 줄바꿈 삽입
+            index += interval + 1 // 줄바꿈 삽입 후 index 보정
+        }
+        return stringBuilder.toString()
     }
 
 
@@ -226,9 +281,11 @@ class MainActivity : AppCompatActivity() {
         // 첫 번째 아이템 업데이트
         if (sortedMentors.size > 0) {
             val mentor1 = sortedMentors[0]
-            binding.tvName1.text = mentor1.writer
-            binding.tvContent1.text = mentor1.text
-            binding.tvTime1.text = formatTime(mentor1.createdAt)
+            fetchnickname(mentor1.username) { nickname ->
+                binding.tvName1.text = nickname
+                binding.tvContent1.text = mentor1.text
+                binding.tvTime1.text = formatTime(mentor1.createdAt)
+            }
 
             // 첫 번째 멘토 ID 저장
             firstMentorId = mentor1.id
@@ -237,9 +294,11 @@ class MainActivity : AppCompatActivity() {
         // 두 번째 아이템 업데이트
         if (sortedMentors.size > 1) {
             val mentor2 = sortedMentors[1]
-            binding.tvName2.text = mentor2.writer
-            binding.tvContent2.text = mentor2.text
-            binding.tvTime2.text = formatTime(mentor2.createdAt)
+            fetchnickname(mentor2.username) { nickname ->
+                binding.tvName1.text = nickname
+                binding.tvContent1.text = mentor2.text
+                binding.tvTime1.text = formatTime(mentor2.createdAt)
+            }
 
             // 두 번째 멘토 ID 저장
             secondMentorId = mentor2.id

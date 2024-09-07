@@ -21,6 +21,8 @@ import java.io.File
 import android.provider.MediaStore
 import android.util.Base64
 import androidx.activity.result.PickVisualMediaRequest
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import okhttp3.ResponseBody
 import java.io.ByteArrayOutputStream
 
@@ -42,7 +44,12 @@ class ProfileActivity : AppCompatActivity() {
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             selectedImageUri = uri
-            imgProfile.setImageURI(uri)
+
+            // Glide를 사용하여 이미지 로드 및 원형으로 변환
+            Glide.with(this)
+                .load(uri)
+                .apply(RequestOptions.circleCropTransform()) // 원형 변환 적용
+                .into(imgProfile)
         } else {
             Log.d("PhotoPicker", "No media selected")
         }

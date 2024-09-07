@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.databinding.FragmentMyPostsMentorBinding
 import com.example.alom_team_project.databinding.FragmentScrapMentorBoardBinding
 import com.example.alom_team_project.job_board.MentorAdapterClass
 import com.example.alom_team_project.job_board.MentorClass
@@ -25,7 +26,7 @@ import retrofit2.Response
 
 class MyPostsMentorFragment : Fragment() {
 
-    private lateinit var binding: FragmentScrapMentorBoardBinding
+    private lateinit var binding: FragmentMyPostsMentorBinding
     private lateinit var adapter: MentorAdapterClass
     private lateinit var mentorList: ArrayList<MentorClass>
     private lateinit var mentorService: MentorPostService
@@ -39,7 +40,7 @@ class MyPostsMentorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentScrapMentorBoardBinding.inflate(inflater, container, false)
+        binding = FragmentMyPostsMentorBinding.inflate(inflater, container, false)
         return binding.root
     }
 
