@@ -234,6 +234,7 @@ class ProfileEditActivity : AppCompatActivity() {
             })
     }
 
+
     private fun updateProfile(nickname: String, username: String, token: String) {
         val profileData = mapOf("username" to username, "nickname" to nickname)
         val authHeader = "Bearer $token"
@@ -243,37 +244,20 @@ class ProfileEditActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
                         val updateMessage = response.body()
-                        if (updateMessage == null) {
+                        if (updateMessage == "1") {
                             Toast.makeText(
                                 this@ProfileEditActivity,
-                                "응답을 불러올 수 없습니다.",
+                                "프로필 수정 성공",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            // 프로필 업데이트 후 최신 프로필 다시 불러오기
+                            getUserProfile()
                         } else {
-                            when (updateMessage) {
-                                "1" -> {
-                                    Toast.makeText(
-                                        this@ProfileEditActivity,
-                                        "프로필 수정 성공",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    finish()
-                                }
-                                "0" -> {
-                                    Toast.makeText(
-                                        this@ProfileEditActivity,
-                                        "닉네임이 이미 존재합니다. 다른 닉네임을 선택하세요.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                                else -> {
-                                    Toast.makeText(
-                                        this@ProfileEditActivity,
-                                        "알 수 없는 응답: $updateMessage",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
+                            Toast.makeText(
+                                this@ProfileEditActivity,
+                                "닉네임이 이미 존재합니다. 다른 닉네임을 선택하세요.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
                         Toast.makeText(
@@ -299,20 +283,17 @@ class ProfileEditActivity : AppCompatActivity() {
         val authHeader = "Bearer $token"
         val file = File(getRealPathFromURI(imageUri) ?: return)
 
-        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull()) // MIME type should be set to "image/jpeg" or "image/png"
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
         RetrofitClient.userApi.uploadProfileImage(username, authHeader, body)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
-                        val responseBody = response.body()?.string()  // Read response as a string
-                        Log.d("ProfileEditActivity", "Response: $responseBody")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 성공", Toast.LENGTH_SHORT).show()
-                        finish()
+                        // 이미지 업로드 성공 후 최신 프로필 다시 불러오기
+                        getUserProfile()
                     } else {
-                        val errorBody = response.errorBody()?.string()  // Read error body
-                        Log.e("ProfileEditActivity", "응답 오류: $errorBody")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 실패: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -323,6 +304,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 }
             })
     }
+
 
     private fun getRealPathFromURI(uri: Uri): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
