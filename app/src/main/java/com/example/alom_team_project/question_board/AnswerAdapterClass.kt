@@ -4,16 +4,19 @@ package com.example.alom_team_project.question_board
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
@@ -77,6 +80,13 @@ class AnswerAdapterClass(
 
             val isLiked = sharedPreferences.getBoolean("liked_${answer.id}", false)
 
+            val displayMetrics = binding.root.context.resources.displayMetrics
+            val density = displayMetrics.density
+
+// CardView 크기 및 여백 설정 (375dp x 222dp)
+            val cardWidth = (375 * density).toInt()
+            val cardHeight = (222 * density).toInt()
+
             if (answer.images.isNotEmpty()) {
                 binding.imageContainer.visibility = View.VISIBLE
                 binding.imageContainer.removeAllViews()
@@ -85,33 +95,50 @@ class AnswerAdapterClass(
                     val imageUrl = image.imageUrl
                     val fullImageUrl = "http://15.165.213.186/uploads/" + imageUrl
 
-                    // URL 로그 출력
                     Log.d("GlideImageURL", "Loading image URL: $fullImageUrl")
 
-                    val imageView = ImageView(binding.root.context)
-                    val layoutParams = LinearLayout.LayoutParams(
-                        360, // 너비를 150px로 설정
-                        360  // 높이를 150px로 설정
-                    ).apply {
-                        setMargins(4, 4, 4, 4) // 여백 설정
+                    // 1. CardView 생성
+                    val cardView = CardView(binding.root.context).apply {
+                        radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, displayMetrics)
+                        cardElevation = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, displayMetrics)
+                        layoutParams = LinearLayout.LayoutParams(cardWidth, cardHeight).apply {
+                            setMargins(
+                                (8 * density).toInt(), // 좌우 여백 설정 (밀도 적용)
+                                (8 * density).toInt(),
+                                (8 * density).toInt(),
+                                (8 * density).toInt()
+                            )
+                        }
                     }
-                    imageView.layoutParams = layoutParams
-                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP // 이미지 중앙을 기준으로 자르기
 
+                    // 2. ImageView 생성
+                    val imageView = ImageView(binding.root.context).apply {
+                        layoutParams = LinearLayout.LayoutParams(cardWidth, cardHeight)
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                    }
+
+                    // 3. Glide로 이미지 로드
                     Glide.with(binding.root.context)
                         .load(fullImageUrl)
                         .apply(
                             RequestOptions()
-                            .override(150, 150)  // Glide에서 로드할 이미지의 크기를 150x150 픽셀로 설정
-                            .centerCrop()  // 중앙을 기준으로 자르기
+                                .override(cardWidth, cardHeight)  // 밀도를 고려한 크기 설정
+                                .transform(RoundedCorners(70))
+                                .centerCrop()
                         )
                         .into(imageView)
 
-                    binding.imageContainer.addView(imageView)
+                    // 4. ImageView를 CardView에 추가
+                    cardView.addView(imageView)
+
+                    // 5. CardView를 imageContainer에 추가
+                    binding.imageContainer.addView(cardView)
                 }
             } else {
                 binding.imageContainer.visibility = View.GONE
             }
+
+
 
 
             // 좋아요 버튼 이미지 설정
@@ -143,9 +170,10 @@ class AnswerAdapterClass(
                     // 사용자 닉네임과 프로필 이미지를 UI에 설정
                     binding.answererName.text = user.nickname
 
-                    if (user.profileImage.isNotEmpty()) {
-                        val fullImageUrl = "http://15.165.213.186/" + user.profileImage
-                        Log.d("fullImageUrl", fullImageUrl)
+                    // profileImage가 null인지 먼저 체크
+                    val profileImage = user.profileImage
+                    if (!profileImage.isNullOrEmpty()) {
+                        val fullImageUrl = "http://15.165.213.186/$profileImage"
                         Glide.with(binding.root.context)
                             .load(fullImageUrl)
                             .into(binding.answererProfile)

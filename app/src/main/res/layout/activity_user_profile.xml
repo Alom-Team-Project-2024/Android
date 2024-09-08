@@ -58,7 +58,7 @@
         android:layout_height="165dp"
         android:layout_marginTop="37dp"
         android:src="@drawable/group_282"
-        android:elevation="7dp"
+        android:elevation="10dp"
         android:background="@drawable/img_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
