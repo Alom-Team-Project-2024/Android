@@ -39,8 +39,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-private const val PERMISSION_REQUEST_CODE = 100
-
 class AnswerFragment : Fragment() {
 
     private var isRecyclerViewInitialized = false
@@ -208,15 +206,19 @@ class AnswerFragment : Fragment() {
     }
 
     private fun checkAndRequestPermissions() {
-        val permissions = if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
-            arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        } else {
-            arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
+        val permissions = when {
+            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU -> {
+                arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q -> {
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            else -> {
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            }
         }
 
         if (!hasPermissions(permissions)) {
@@ -231,6 +233,7 @@ class AnswerFragment : Fragment() {
             ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
         }
     }
+
 
     private fun getJwtToken(): String {
         val sharedPref = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
