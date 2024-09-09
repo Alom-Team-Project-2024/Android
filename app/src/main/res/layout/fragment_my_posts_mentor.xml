@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/mypostsmentor"
+    >
 
     <ImageView
         android:id="@+id/search_box"
@@ -14,13 +16,15 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/round_rectangle1" />
+        android:elevation="11dp"
+        android:background="@drawable/round_rectangle9" />
 
     <ImageView
         android:id="@+id/search_icon"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginStart="10dp"
+        android:elevation="11dp"
         app:layout_constraintBottom_toBottomOf="@+id/search_box"
         app:layout_constraintStart_toStartOf="@+id/search_box"
         app:layout_constraintTop_toTopOf="@+id/search_box"
@@ -34,6 +38,7 @@
         android:layout_marginStart="7dp"
         android:layout_marginTop="9dp"
         android:layout_marginBottom="9dp"
+        android:elevation="11dp"
         android:background="@android:color/transparent"
         android:hint="검색하기"
         android:imeOptions="actionDone"
@@ -46,7 +51,7 @@
         app:layout_constraintVertical_bias="0.333" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/MentorRecyclerView"
+        android:id="@+id/MentorRecyclerView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="12dp"

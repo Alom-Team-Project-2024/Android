@@ -108,7 +108,7 @@ class ScrapQuestionBoardActivity : AppCompatActivity() {
                     }
                 }
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.questionViewPage, fragment)
+                    .replace(R.id.scrapquestion, fragment)
                     .addToBackStack(null)
                     .commit()
             }
@@ -124,19 +124,6 @@ class ScrapQuestionBoardActivity : AppCompatActivity() {
 
     private fun getSearchText(): String {
         return binding.etSearch.text.toString()
-    }
-
-    private fun openScrapMyPostsBoardFragment() {
-        val fragment = ScrapMentorBoardFragment().apply {
-            // Arguments 전달 (검색 텍스트와 같은 데이터)
-            arguments = Bundle().apply {
-                putString("SEARCH_TEXT", getSearchText())
-            }
-        }
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
     }
 
     private fun fetchData() {

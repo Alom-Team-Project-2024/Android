@@ -73,13 +73,13 @@
             android:theme="@style/Theme.Alom_Team_Project" /> <!-- 내가 작성한 글 조회를 위한 액티비티 추가 -->
         <activity
             android:name=".mypage.ProfileActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"
             android:exported="true"
             android:label="profile_page_label"
             android:theme="@style/Theme.Alom_Team_Project" />
         <activity
             android:name=".mypage.ProfileEditActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"
             android:exported="true"
             android:label="profile_page_label"
             android:theme="@style/Theme.Alom_Team_Project" /> <!-- QuestionBoardActivity -->

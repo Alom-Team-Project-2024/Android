@@ -75,15 +75,15 @@ class ScrapMentorBoardFragment : Fragment() {
                 // 텍스트 변화 후의 행동을 정의
             }
         })
-
         setupAutoRefresh()
-
     }
 
     private fun setupRecyclerView() {
         adapter = MentorAdapterClass(
             mentorList = mentorList,
             onItemClickListener = { mentorId ->
+                binding.etSearch.setText("")
+
                 // MentorDetailFragment로 이동
                 val fragment = MentorDetailFragment().apply {
                     arguments = Bundle().apply {
@@ -91,14 +91,14 @@ class ScrapMentorBoardFragment : Fragment() {
                     }
                 }
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.mentorViewPage, fragment)
+                    .replace(R.id.scrapquestion, fragment)
                     .addToBackStack(null)
                     .commit()
             }
         )
 
-        binding.MentorRecyclerView.adapter = adapter
-        binding.MentorRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.MentorRecyclerView1.adapter = adapter
+        binding.MentorRecyclerView1.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun getJwtToken(): String {

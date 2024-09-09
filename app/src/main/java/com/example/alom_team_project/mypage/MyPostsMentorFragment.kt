@@ -3,6 +3,8 @@ package com.example.alom_team_project.mypage
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -59,6 +61,22 @@ class MyPostsMentorFragment : Fragment() {
         // 데이터 초기 로딩
         fetchData()
 
+        // 검색 텍스트 변화 감지
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 텍스트 변화 전의 행동을 정의
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 텍스트가 변경될 때마다 어댑터의 필터링 메소드 호출
+                adapter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // 텍스트 변화 후의 행동을 정의
+            }
+        })
+
         setupAutoRefresh()
     }
 
@@ -66,6 +84,8 @@ class MyPostsMentorFragment : Fragment() {
         adapter = MentorAdapterClass(
             mentorList = mentorList,
             onItemClickListener = { mentorId ->
+                binding.etSearch.setText("")
+
                 // MentorDetailFragment로 이동
                 val fragment = MentorDetailFragment().apply {
                     arguments = Bundle().apply {
@@ -73,14 +93,14 @@ class MyPostsMentorFragment : Fragment() {
                     }
                 }
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.mentorViewPage, fragment)
+                    .replace(R.id.mypostsquestion, fragment)
                     .addToBackStack(null)
                     .commit()
             }
         )
 
-        binding.MentorRecyclerView.adapter = adapter
-        binding.MentorRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.MentorRecyclerView2.adapter = adapter
+        binding.MentorRecyclerView2.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun getJwtToken(): String {
