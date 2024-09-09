@@ -54,7 +54,6 @@
             android:numStars="5"
             android:progressBackgroundTint="#ACACAC"
             android:progressTint="#4825D8"
-            android:background="@color/white"
             android:rating="0"
             android:stepSize="1"
             app:layout_constraintEnd_toEndOf="parent"

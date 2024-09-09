@@ -295,9 +295,9 @@ class MainActivity : AppCompatActivity() {
         if (sortedMentors.size > 1) {
             val mentor2 = sortedMentors[1]
             fetchnickname(mentor2.username) { nickname ->
-                binding.tvName1.text = nickname
-                binding.tvContent1.text = mentor2.text
-                binding.tvTime1.text = formatTime(mentor2.createdAt)
+                binding.tvName2.text = nickname
+                binding.tvContent2.text = mentor2.text
+                binding.tvTime2.text = formatTime(mentor2.createdAt)
             }
 
             // 두 번째 멘토 ID 저장

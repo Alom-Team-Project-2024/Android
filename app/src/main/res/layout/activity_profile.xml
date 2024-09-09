@@ -9,12 +9,13 @@
     <ImageView
         android:id="@+id/img_back"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/group_255"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
     <!-- 뒤로가기 버튼 -->
@@ -108,7 +109,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
-
+            android:elevation="10dp"
             android:paddingBottom="12dp"
             android:paddingStart="15dp"
             android:layout_marginBottom="8dp"

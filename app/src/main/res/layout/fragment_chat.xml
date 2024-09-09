@@ -54,7 +54,7 @@
         android:layout_marginBottom="15dp"
         android:src="@drawable/profile"
         android:background="@drawable/img_background"
-        android:elevation="10dp"
+        android:elevation="3dp"
         app:layout_constraintBottom_toBottomOf="@+id/chatting_profile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background" />

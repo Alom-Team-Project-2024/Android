@@ -234,7 +234,6 @@ class ProfileEditActivity : AppCompatActivity() {
             })
     }
 
-
     private fun updateProfile(nickname: String, username: String, token: String) {
         val profileData = mapOf("username" to username, "nickname" to nickname)
         val authHeader = "Bearer $token"
