@@ -84,7 +84,8 @@ class ChatListActivity : AppCompatActivity() {
                         apply()
                     }
 
-                    fetchChatRooms(token, nickname)
+                    fetchChatRooms(token, username, nickname)
+                    Log.d("ChatList", "$username, $nickname")
                 } else {
                     Log.e("ChatList", "Failed to fetch nickname.")
                 }
@@ -115,9 +116,9 @@ class ChatListActivity : AppCompatActivity() {
             })
     }
 
-    private fun fetchChatRooms(token: String, nickname: String) {
+    private fun fetchChatRooms(token: String, username: String, nickname: String) {
         val chatService = RetrofitClient.instance.create(ChatService::class.java)
-        val call = chatService.getChatList("Bearer $token", nickname)
+        val call = chatService.getChatList("Bearer $token", username)
 
         call.enqueue(object : Callback<List<ChatRoomResponse>> {
             override fun onResponse(call: Call<List<ChatRoomResponse>>, response: Response<List<ChatRoomResponse>>) {

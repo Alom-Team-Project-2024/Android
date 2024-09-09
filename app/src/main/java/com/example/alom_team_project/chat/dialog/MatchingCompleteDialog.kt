@@ -10,16 +10,15 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
-import androidx.core.content.ContentProviderCompat.requireContext
-import com.example.alom_team_project.databinding.ConfirmDialogBinding
+import com.example.alom_team_project.databinding.ConfirmSuccessDialogBinding
 
-class CustomDialogC(context: Context): Dialog(context) {
+class MatchingCompleteDialog(context: Context): Dialog(context) {
     private lateinit var itemClickListener: ItemClickListener
-    private lateinit var binding: ConfirmDialogBinding
+    private lateinit var binding: ConfirmSuccessDialogBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ConfirmDialogBinding.inflate(LayoutInflater.from(context))
+        binding = ConfirmSuccessDialogBinding.inflate(LayoutInflater.from(context))
         setContentView(binding.root)
 
         // 배경을 투명하게 설정
@@ -33,17 +32,8 @@ class CustomDialogC(context: Context): Dialog(context) {
         // 취소 가능 여부
         setCancelable(true)
 
-        binding.noBtn.setOnClickListener {
-            dismiss() // 다이얼로그 닫기
-        }
-
-        binding.yesBtn.setOnClickListener {
-            dismiss()
-            MatchingCompleteDialog(context).show()
-        }
-
         binding.xBtn.setOnClickListener {
-            dismiss()
+            dismiss() // 다이얼로그 닫기
         }
     }
 
