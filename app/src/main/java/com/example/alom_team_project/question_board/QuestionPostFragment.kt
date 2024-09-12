@@ -26,7 +26,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
+import com.example.alom_team_project.chat.dialog.CustomDialogC
 import com.example.alom_team_project.databinding.FragmentQuestionPostBinding
+import com.example.alom_team_project.question_board.dialog.CustomDialogPost
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -169,7 +171,7 @@ class QuestionPostFragment : Fragment() {
         }
 
         submitButton.setOnClickListener {
-            sendPostRequest()
+            showConfirmDialog()
         }
 
         binding.root.setOnClickListener {
@@ -226,6 +228,21 @@ class QuestionPostFragment : Fragment() {
                 Toast.makeText(context, "Request failed: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun showConfirmDialog() {
+        val dialogC = CustomDialogPost(requireContext())
+
+        // 콜백 설정
+        dialogC.setItemClickListener(object : CustomDialogPost.ItemClickListener {
+            override fun onClick(message: String) {
+                if (message == "yes") {
+                    sendPostRequest()  // "Yes" 버튼을 눌렀을 때 요청 보내기
+                }
+            }
+        })
+
+        dialogC.show()
     }
 
     private fun openGallery() {

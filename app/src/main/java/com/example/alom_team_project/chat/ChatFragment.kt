@@ -42,6 +42,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ChatFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class ChatFragment : Fragment(), MyStompClient.MessageListener {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var assessDialog: AssessDialogBinding

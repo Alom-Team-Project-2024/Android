@@ -114,7 +114,7 @@
         android:elevation="7dp"
         android:hint="제목을 입력하세요"
         android:textColor="@color/black"
-        android:maxLength="20"
+        android:maxLength="50"
         android:singleLine="true"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/imageView5"

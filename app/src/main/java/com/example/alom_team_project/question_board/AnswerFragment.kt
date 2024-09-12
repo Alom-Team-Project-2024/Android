@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.FragmentAnswerBinding
@@ -195,6 +196,7 @@ class AnswerFragment : Fragment() {
                 sendPostAnswer(questionId)
             }
             binding.imagePreview.visibility=View.GONE
+            hideKeyboard()
         }
     }
 
@@ -382,6 +384,7 @@ class AnswerFragment : Fragment() {
                             val fullImageUrl = "http://15.165.213.186/$profileImage"
                             Glide.with(binding.root.context)
                                 .load(fullImageUrl)
+                                .apply(RequestOptions.circleCropTransform())
                                 .into(binding.questionerProfile)
                         } else {
                             // 프로필 이미지가 없을 경우 기본 이미지 설정

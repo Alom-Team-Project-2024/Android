@@ -76,7 +76,6 @@
         android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="13sp"
-        android:maxLength="30"
         app:layout_constraintBottom_toBottomOf="@id/imageView5"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
         app:layout_constraintHorizontal_bias="1.0"
