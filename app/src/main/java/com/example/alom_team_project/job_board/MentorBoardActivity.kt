@@ -54,6 +54,8 @@ class MentorBoardActivity : AppCompatActivity() {
         // RecyclerView 어댑터 및 레이아웃 매니저 설정
         setupRecyclerView()
 
+        fetchData(status)
+
 
         // 검색 텍스트 변화 감지
         binding.etSearch.addTextChangedListener(object : TextWatcher {
@@ -131,7 +133,7 @@ class MentorBoardActivity : AppCompatActivity() {
     }
 
 
-    private fun fetchData(status:String) {
+    fun fetchData(status:String) {
         var category: String
 
         if(status=="mentor"){

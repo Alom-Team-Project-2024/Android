@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.example.alom_team_project.R
 import com.example.alom_team_project.RetrofitClient
 import com.example.alom_team_project.databinding.FragmentMentorPostBinding
+import com.example.alom_team_project.question_board.dialog.CustomDialogPost
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -78,7 +79,7 @@ class MentorPostFragment : Fragment() {
         selectButton(binding.btnMentor)
 
         submitButton.setOnClickListener {
-            sendPostRequest(status)
+            showConfirmDialog(status)
         }
 
         binding.root.setOnClickListener {
@@ -153,6 +154,21 @@ class MentorPostFragment : Fragment() {
         })
     }
 
+    private fun showConfirmDialog(status: String) {
+        val dialogC = CustomDialogPost(requireContext())
+
+        // 콜백 설정
+        dialogC.setItemClickListener(object : CustomDialogPost.ItemClickListener {
+            override fun onClick(message: String) {
+                if (message == "yes") {
+                    sendPostRequest(status)  // "Yes" 버튼을 눌렀을 때 요청 보내기
+                }
+            }
+        })
+
+        dialogC.show()
+    }
+
     // 프래그먼트에서 키보드 숨기기
     private fun hideKeyboard() {
         val inputManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -161,4 +177,13 @@ class MentorPostFragment : Fragment() {
             inputManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Activity의 fetchData 호출
+        val activity = activity as? MentorBoardActivity
+        activity?.fetchData(status)
+    }
+
 }

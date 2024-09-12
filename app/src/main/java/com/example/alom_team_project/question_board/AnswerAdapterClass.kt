@@ -176,6 +176,7 @@ class AnswerAdapterClass(
                         val fullImageUrl = "http://15.165.213.186/$profileImage"
                         Glide.with(binding.root.context)
                             .load(fullImageUrl)
+                            .apply(RequestOptions.circleCropTransform())
                             .into(binding.answererProfile)
                     } else {
                         // 프로필 이미지가 없을 경우 기본 이미지 설정

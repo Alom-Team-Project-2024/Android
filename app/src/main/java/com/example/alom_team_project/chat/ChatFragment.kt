@@ -42,6 +42,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ChatFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class ChatFragment : Fragment(), MyStompClient.MessageListener {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var assessDialog: AssessDialogBinding
@@ -64,11 +65,11 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
     }
 
     override fun onMessageReceived(chatMessage: ChatMessage) {
-        // 수신된 메시지를 채팅 리스트에 추가하고 UI를 갱신합니다.
+        // 수신된 메시지를 채팅 리스트에 추가하고 UI 업데이트
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-            val nickname = getUsernick()
+            val username = getUsername()
             val viewType: Int
-            if (chatMessage.sender == nickname) // 내가 보낸 메시지라면 뷰타입 1
+            if (chatMessage.sender == username) // 내가 보낸 메시지라면 뷰타입 1
                 viewType = 1
             else
                 viewType = 0
@@ -87,7 +88,8 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         val token = getJwtToken()
         val chatRoomId = arguments?.getLong("ChatRoomId") ?: 0L
         val myNick = getUsernick()!!
-        Log.d("MyNick", "$myNick")
+        val myUsername = getUsername()!!
+        Log.d("MyNick", "$myNick/$myUsername")
 
         Log.d("ChatFragment", "Received ChatRoom ID: $chatRoomId")
 
@@ -129,7 +131,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
             false  // 여기서 false를 반환하면 RecyclerView의 기본 터치 이벤트 처리가 계속 진행됨
         }
 
-        fetchChatHistory(token, chatRoomId, myNick)
+        fetchChatHistory(token, chatRoomId, myUsername)
 
         binding.sendBtn.setOnClickListener {
             val messageContent = binding.etMessage.text.toString()
@@ -141,7 +143,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
 
                 viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                     try {
-                        stompClient.sendMessage(chatRoomId, myNick, messageContent)
+                        stompClient.sendMessage(chatRoomId, myUsername, messageContent)
                         Log.d("WebsocketM", "Sent message: $messageContent")
                     } catch (e: Exception) {
                         Log.e("WebsocketM", "Error sending message", e)
@@ -231,7 +233,7 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
         binding.rcvChatting.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun fetchChatHistory(token: String, chatRoomId: Long, nickname: String) {
+    private fun fetchChatHistory(token: String, chatRoomId: Long, username: String) {
         if (token.isNotEmpty()) {
             val chatHistory = RetrofitClient.instance.create(ChatService::class.java)
             val call = chatHistory.getChatHistory("Bearer $token", chatRoomId)
@@ -246,9 +248,9 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
                             chatMessages.forEach { chatHistoryResponse ->
                                 val chatSender = chatHistoryResponse.sender
                                 val message = chatHistoryResponse.message
-                                Log.d("msg", "$message")
+                                Log.d("ChatMessage", "$chatSender/$message")
 
-                                if (chatSender != nickname) {
+                                if (chatSender != username) {
                                     chattingList.add(
                                         ChatData(
                                             chat = message,
@@ -332,6 +334,11 @@ class ChatFragment : Fragment(), MyStompClient.MessageListener {
     private fun getJwtToken(): String {
         val sharedPref = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
         return sharedPref.getString("jwt_token", "") ?: ""
+    }
+
+    private fun getUsername(): String? {
+        val sharedPref = requireContext().getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
+        return sharedPref.getString("username", null)
     }
 
     private fun getUsernick(): String? {

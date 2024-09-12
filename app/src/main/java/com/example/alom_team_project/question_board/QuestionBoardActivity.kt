@@ -165,6 +165,7 @@ class QuestionBoardActivity : AppCompatActivity() {
     private fun openPostQuestionFragment() {
         hideKeyboard()
         binding.etSearch.setText("")
+
         val fragment = QuestionPostFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.questionViewPage, fragment)

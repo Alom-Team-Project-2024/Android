@@ -17,10 +17,10 @@ interface ChatService {
         @Query("nickname2") nickname2: String
     ): Call<ChatRoomResponse> // 응답으로 ChatRoomResponse 클래스를 사용
 
-    @GET("chats/rooms/{nickname}")
+    @GET("chats/rooms/{username}")
     fun getChatList( // 특정 유저가 참가 중인 채팅 목록 조회
         @Header("Authorization") token: String,
-        @Path("nickname") nickname: String
+        @Path("username") username: String
     ): Call<List<ChatRoomResponse>>
 
     @GET("chats/id/{chat_id}")

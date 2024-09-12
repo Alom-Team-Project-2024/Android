@@ -98,8 +98,9 @@
             android:exported="true" />
         <activity
             android:name=".question_board.QuestionBoardActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
+
     </application>
 
 </manifest>

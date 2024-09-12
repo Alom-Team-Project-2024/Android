@@ -1,4 +1,4 @@
-package com.example.alom_team_project.chat.dialog
+package com.example.alom_team_project.question_board.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -10,16 +10,15 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
-import androidx.core.content.ContentProviderCompat.requireContext
-import com.example.alom_team_project.databinding.ConfirmDialogBinding
+import com.example.alom_team_project.databinding.PostConfirmDialogBinding
 
-class CustomDialogC(context: Context): Dialog(context) {
+class CustomDialogPost(context: Context): Dialog(context) {
     private lateinit var itemClickListener: ItemClickListener
-    private lateinit var binding: ConfirmDialogBinding
+    private lateinit var binding: PostConfirmDialogBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ConfirmDialogBinding.inflate(LayoutInflater.from(context))
+        binding = PostConfirmDialogBinding.inflate(LayoutInflater.from(context))
         setContentView(binding.root)
 
         // 배경을 투명하게 설정
@@ -39,13 +38,15 @@ class CustomDialogC(context: Context): Dialog(context) {
 
         binding.yesBtn.setOnClickListener {
             dismiss()
-            MatchingCompleteDialog(context).show()
+            itemClickListener.onClick("yes")  // 콜백 호출
+            PostCompleteDialog(context).show()
         }
 
         binding.xBtn.setOnClickListener {
             dismiss()
         }
     }
+
 
     // 다이얼로그 위치 조정 메서드
     private fun setDialogPosition(dpFromTop: Int) {
