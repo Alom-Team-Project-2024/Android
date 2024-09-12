@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,6 +30,7 @@ import com.example.alom_team_project.job_board.MentorDetailFragment
 import com.example.alom_team_project.job_board.MentorPostFragment
 import com.example.alom_team_project.login.LoginActivity
 import com.example.alom_team_project.login.UserApi
+import com.example.alom_team_project.mypage.ConfirmLogout.CustomDialogPost
 import com.example.alom_team_project.question_board.AnswerFragment
 import com.example.alom_team_project.question_board.QuestionAdapterClass
 import com.example.alom_team_project.question_board.QuestionClass
@@ -108,9 +110,7 @@ class MypageActivity : AppCompatActivity() {
 
         // 로그아웃 버튼 클릭 시 로그인 페이지로 이동
         btnLogout.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            showConfirmDialog()
         }
 
         progressBar.visibility = View.VISIBLE
@@ -141,6 +141,24 @@ class MypageActivity : AppCompatActivity() {
         fetchScrapData()
         fetchMentorData()
     }
+
+    private fun showConfirmDialog() {
+        val dialogC = CustomDialogPost(this)
+
+        dialogC.setItemClickListener(object : CustomDialogPost.ItemClickListener {
+            override fun onClick(message: String) {
+                if (message == "yes") {
+                    val intent = Intent(this@MypageActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+            }
+        })
+
+        dialogC.show()
+    }
+
+
 
     private fun adjustLayout() {
         val layoutParams = binding.mentorBoardItem.layoutParams as ConstraintLayout.LayoutParams

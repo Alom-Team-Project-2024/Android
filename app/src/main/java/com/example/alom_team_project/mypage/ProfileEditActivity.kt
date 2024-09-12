@@ -20,6 +20,8 @@ import retrofit2.Response
 import java.io.File
 import android.provider.MediaStore
 import androidx.activity.result.PickVisualMediaRequest
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import okhttp3.ResponseBody
 
 class ProfileEditActivity : AppCompatActivity() {
@@ -41,11 +43,16 @@ class ProfileEditActivity : AppCompatActivity() {
         finish()
     }
 
+    // 이미지 선택 및 바로 표시
     private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             selectedImageUri = uri
-            imgProfile.setImageURI(uri)
+            // 선택한 이미지를 Glide로 로드하고 원형 크롭 후 표시
+            Glide.with(this)
+                .load(uri)
+                .apply(RequestOptions.circleCropTransform()) // 원형 크롭 적용
+                .into(imgProfile) // imgProfile에 이미지 표시
         } else {
             Log.d("PhotoPicker", "No media selected")
         }
@@ -89,33 +96,29 @@ class ProfileEditActivity : AppCompatActivity() {
             val token = getJwtToken()
             val username = getUsername()
 
+            Log.d("ProfileEditActivity", "New nickname: $newNickname, Token: $token, Username: $username")
+
             if (newNickname.isNotEmpty() && token != null && username != null) {
-                if (newNickname == originalNickname) {
-                    // No change to nickname
-                    if (selectedImageUri != null) {
-                        // Upload profile image if selected
-                        uploadProfileImage(selectedImageUri!!, username, token)
-                    } else {
-                        // No change to nickname and no image selected
-                        Toast.makeText(this, "변경 사항이 없습니다.", Toast.LENGTH_SHORT).show()
-                        finishWithResult() // Notify that the result is OK
-                    }
+                if (newNickname == originalNickname && selectedImageUri != null) {
+                    // 이미지 변경만 있을 때 서버로 요청
+                    Log.d("ProfileEditActivity", "Only profile image changed, uploading image...")
+                    uploadProfileImage(selectedImageUri!!, username, token)
+                    Log.d("ProfileEditActivity", "${selectedImageUri}")
+
                 } else {
-                    // Nickname changed, check for duplication
-                    if (isNicknameChecked) {
-                        if (isNicknameAvailable) {
-                            updateProfile(newNickname, username, token)
-                            if (selectedImageUri != null) {
-                                uploadProfileImage(selectedImageUri!!, username, token)
-                            }
-                        } else {
-                            Toast.makeText(this, "닉네임 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show()
+                    if (isNicknameChecked && isNicknameAvailable) {
+                        Log.d("ProfileEditActivity", "Profile update and image upload started...")
+                        updateProfile(newNickname, username, token)
+                        if (selectedImageUri != null) {
+                            uploadProfileImage(selectedImageUri!!, username, token)
                         }
                     } else {
-                        checkNicknameDuplication(newNickname, token)
+                        Log.d("ProfileEditActivity", "Nickname check needed or nickname duplication found")
+                        Toast.makeText(this, "닉네임 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
+                Log.d("ProfileEditActivity", "Nickname, token or username missing")
                 Toast.makeText(this, "닉네임, 학번 또는 토큰을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -139,7 +142,24 @@ class ProfileEditActivity : AppCompatActivity() {
                         originalNickname = user.nickname
                         etNickname.setText(originalNickname)
 
-                        getProfileImage(username, token)
+                        Log.d("ProfileEditActivity", "${user.profileImage}")
+
+                        if (user.profileImage != null) {
+                            val imageUrl = getAbsoluteUrl(user.profileImage)
+                            Log.d("ProfileEditActivity", "$imageUrl")
+
+                            Glide.with(this@ProfileEditActivity)
+                                .load(imageUrl)
+                                .apply(RequestOptions.circleCropTransform()) // 원형 변환
+                                .into(imgProfile)
+                        } else {
+                            Glide.with(this@ProfileEditActivity)
+                                .load(R.drawable.group_282)
+                                .apply(RequestOptions.circleCropTransform()) // 원형 변환
+                                .into(imgProfile)
+                        }
+
+
                     }
                 } else {
                     Toast.makeText(this@ProfileEditActivity, "사용자 정보를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
@@ -155,14 +175,17 @@ class ProfileEditActivity : AppCompatActivity() {
 
     private fun getProfileImage(username: String, token: String) {
         val api = RetrofitClient.userApi
+
         api.getProfileImage(username, "Bearer $token").enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    responseBody?.byteStream()?.let { inputStream ->
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        imgProfile.setImageBitmap(bitmap)
-                    }
+                    val imageUrl = response.body()
+                    Glide.with(this@ProfileEditActivity)
+                        .load(imageUrl)
+                        .apply(RequestOptions.circleCropTransform()) // 원형 크롭 적용
+                        .into(imgProfile)
+
+                    Log.d("ProfileEditActivity", "Profile image loaded and cropped successfully")
                 } else {
                     Log.e("ProfileImage", "Error: ${response.code()} - ${response.message()}")
                     Toast.makeText(this@ProfileEditActivity, "프로필 이미지를 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -175,6 +198,7 @@ class ProfileEditActivity : AppCompatActivity() {
             }
         })
     }
+
 
     private fun getJwtToken(): String? {
         val sharedPref = getSharedPreferences("auth", MODE_PRIVATE)
@@ -280,7 +304,10 @@ class ProfileEditActivity : AppCompatActivity() {
 
     private fun uploadProfileImage(imageUri: Uri, username: String, token: String) {
         val authHeader = "Bearer $token"
-        val file = File(getRealPathFromURI(imageUri) ?: return)
+        val filePath = getRealPathFromURI(imageUri)
+        val file = File(filePath ?: return)
+
+        Log.d("ProfileEditActivity", "Uploading file: $filePath")
 
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
@@ -289,20 +316,25 @@ class ProfileEditActivity : AppCompatActivity() {
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
+                        Log.d("ProfileEditActivity", "Response code: ${response.code()}")
+                        Log.d("ProfileEditActivity", "Response body: ${response.body()?.string()}")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 성공", Toast.LENGTH_SHORT).show()
                         // 이미지 업로드 성공 후 최신 프로필 다시 불러오기
                         getUserProfile()
                     } else {
+                        Log.e("ProfileEditActivity", "Upload failed with code: ${response.code()}")
+                        Log.e("ProfileEditActivity", "Upload failed with message: ${response.message()}")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 실패: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("ProfileEditActivity", "네트워크 오류: ${t.message}", t)
+                    Log.e("ProfileEditActivity", "Network error: ${t.message}", t)
                     Toast.makeText(this@ProfileEditActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }
+
 
 
     private fun getRealPathFromURI(uri: Uri): String? {
@@ -320,5 +352,10 @@ class ProfileEditActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    fun getAbsoluteUrl(relativeUrl: String): String {
+        val baseUrl = "http://15.165.213.186/" // 서버의 기본 URL
+        return baseUrl + relativeUrl
     }
 }
