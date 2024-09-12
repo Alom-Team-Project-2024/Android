@@ -47,7 +47,7 @@
 
         <ImageView
             android:id="@+id/line"
-            android:layout_width="1dp"
+            android:layout_width="1.5dp"
             android:layout_height="35dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
