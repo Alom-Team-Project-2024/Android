@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -122,6 +123,9 @@ class MypageActivity : AppCompatActivity() {
         // 스크랩 데이터 가져오기
         fetchScrapData()
         fetchMentorData()
+
+        //스크랩한 글 위치 조정
+        adjustLayout()
     }
 
     override fun onResume() {
@@ -137,6 +141,21 @@ class MypageActivity : AppCompatActivity() {
         fetchScrapData()
         fetchMentorData()
     }
+
+    private fun adjustLayout() {
+        val layoutParams = binding.mentorBoardItem.layoutParams as ConstraintLayout.LayoutParams
+        Log.d("adjustLayout", "scrapQuestionList size: ${scrapQuestionList.size}")
+
+        if (scrapQuestionList.isEmpty()) {
+            // 질문이 없을 때 mentor_board_item을 textView9 아래로 이동
+            layoutParams.topToBottom = R.id.textView9
+        } else {
+            // 질문이 있을 때 mentor_board_item을 원래 위치로 이동
+            layoutParams.topToBottom = R.id.question_board_item
+        }
+        binding.mentorBoardItem.layoutParams = layoutParams
+    }
+
 
     private fun getUserProfile() {
         val api = RetrofitClient.userApi // RetrofitClient 사용
@@ -255,6 +274,8 @@ class MypageActivity : AppCompatActivity() {
                             scrapQuestionList.add(latestQuestion)
                             setupQuestionRecyclerView()
                         }
+
+                        adjustLayout()
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")

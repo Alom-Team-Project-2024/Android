@@ -43,7 +43,7 @@
             android:exported="false" /> <!-- network 코드 추가 -->
         <!-- 로그인을 첫페이지로 -->
         <activity
-            android:name=".login.LoginActivity"
+            android:name=".login.InitActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Alom_Team_Project">
@@ -53,6 +53,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- 메인페이지를 위한 액티비티 추가 -->
+        <activity
+            android:name=".login.LoginActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Alom_Team_Project" /> <!-- 마이페이지를 위한 액티비티 추가 -->
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
