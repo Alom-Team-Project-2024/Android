@@ -75,7 +75,7 @@ class HomeRecordViewHolder(
 
             Glide.with(itemView.context)
                 .load(fullImageUrl)
-                .transform(CenterCrop(), RoundedCorners(20))
+                .transform(CenterCrop(), RoundedCorners(50))
                 .into(binding.imageUrl)
             binding.imageUrl.visibility = View.VISIBLE
             binding.text.visibility = View.GONE

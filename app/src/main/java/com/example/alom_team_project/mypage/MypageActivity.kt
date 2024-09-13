@@ -191,7 +191,7 @@ class MypageActivity : AppCompatActivity() {
                     val user = response.body()
                     if (user != null) {
                         // UI에 데이터 반영
-                        tvName.text = user.name
+                        tvName.text = user.nickname
 
                         // studentCode를 23학번 형태로 변환
                         val studentCodeFormatted = "${user.studentCode.toString().takeLast(2)}학번"

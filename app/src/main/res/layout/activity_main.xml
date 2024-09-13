@@ -162,9 +162,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:maxLines="1"
                 android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:text="인공지능과 빅데이터 과외해 주실 분 구합니다."
                 android:textColor="#000000"
                 android:textSize="10dp" />
@@ -228,9 +229,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:maxLines="1"
                 android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:text="인공지능과 빅데이터 과외해 주실 분 구합니다."
                 android:textColor="#000000"
                 android:textSize="10dp" />
