@@ -49,7 +49,7 @@ interface AnswerPostService {
     fun likeReply(
         @Header("Authorization") token: String,
         @Path("replyId") replyId: Long
-    ): Call<Void>
+    ): Call<Int>
 
     // 스크랩 요청
     @POST("question_post/scrap/{username}/{postId}")

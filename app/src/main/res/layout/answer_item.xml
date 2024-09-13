@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/response_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="12dp">
 
     <!-- 답변자 프로필 -->
     <ImageView
@@ -119,6 +120,12 @@
         <!-- 이미지가 여러 개일 경우를 대비하여 추가적인 ImageView를 여기에 추가할 수 있습니다. -->
     </LinearLayout>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:src="@drawable/line_iden"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
