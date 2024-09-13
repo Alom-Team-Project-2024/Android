@@ -19,16 +19,18 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import androidx.activity.result.PickVisualMediaRequest
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import okhttp3.ResponseBody
+import java.io.FileOutputStream
 
 class ProfileEditActivity : AppCompatActivity() {
 
     private lateinit var etNickname: EditText
     private lateinit var btnSubmit: Button
-    private lateinit var btnCheckDouble: Button
+    private lateinit var btnCheckDouble: ImageView
     private lateinit var tvCheckDouble: TextView
     private lateinit var imgProfile: ImageView
     private lateinit var btnProfile: ImageButton
@@ -113,7 +115,7 @@ class ProfileEditActivity : AppCompatActivity() {
                             uploadProfileImage(selectedImageUri!!, username, token)
                         }
                     } else {
-                        Log.d("ProfileEditActivity", "Nickname check needed or nickname duplication found")
+                        Log.d("ProfileEditActivity", "닉네임 중복 확인을 해주세요.")
                         Toast.makeText(this, "닉네임 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -220,30 +222,16 @@ class ProfileEditActivity : AppCompatActivity() {
                         if (isAvailable) {
                             tvCheckDouble.text = "사용 가능한 닉네임입니다."
                             tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#006917"))
-                            Toast.makeText(
-                                this@ProfileEditActivity,
-                                "사용 가능한 닉네임입니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             isNicknameAvailable = true
                             isNicknameChecked = true // Mark as checked
                         } else {
                             tvCheckDouble.text = "사용 불가능한 닉네임입니다."
                             tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
-                            Toast.makeText(
-                                this@ProfileEditActivity,
-                                "사용 불가능한 닉네임입니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             isNicknameAvailable = false
                             isNicknameChecked = true // Mark as checked
                         }
                     } else {
-                        Toast.makeText(
-                            this@ProfileEditActivity,
-                            "닉네임 중복 체크에 실패했습니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        tvCheckDouble.text = "닉네임 중복 체크에 실패했습니다."
                     }
                 }
 
@@ -268,6 +256,7 @@ class ProfileEditActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val updateMessage = response.body()
                         if (updateMessage == "1") {
+                            tvCheckDouble.text = "프로필 수정 성공"
                             Toast.makeText(
                                 this@ProfileEditActivity,
                                 "프로필 수정 성공",
@@ -275,12 +264,9 @@ class ProfileEditActivity : AppCompatActivity() {
                             ).show()
                             // 프로필 업데이트 후 최신 프로필 다시 불러오기
                             getUserProfile()
+                            navigateToMypageActivity()
                         } else {
-                            Toast.makeText(
-                                this@ProfileEditActivity,
-                                "닉네임이 이미 존재합니다. 다른 닉네임을 선택하세요.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            tvCheckDouble.text = "닉네임이 이미 존재합니다. 다른 닉네임을 선택하세요."
                         }
                     } else {
                         Toast.makeText(
@@ -305,51 +291,75 @@ class ProfileEditActivity : AppCompatActivity() {
     private fun uploadProfileImage(imageUri: Uri, username: String, token: String) {
         val authHeader = "Bearer $token"
         val filePath = getRealPathFromURI(imageUri)
-        val file = File(filePath ?: return)
 
-        Log.d("ProfileEditActivity", "Uploading file: $filePath")
+        // 파일 경로가 유효한지 확인
+        if (filePath == null) {
+            Log.e("ProfileEditActivity", "유효하지 않은 파일 경로입니다.")
+            Toast.makeText(this, "이미지 경로를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        val file = File(filePath)
+
+        Log.d("ProfileEditActivity", "업로드할 파일 경로: $filePath")
+
+        // 이미지 파일을 RequestBody로 변환
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        // MultipartBody.Part로 업로드할 파일 준비
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
+        // Retrofit API 호출
         RetrofitClient.userApi.uploadProfileImage(username, authHeader, body)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
-                        Log.d("ProfileEditActivity", "Response code: ${response.code()}")
-                        Log.d("ProfileEditActivity", "Response body: ${response.body()?.string()}")
+                        Log.d("ProfileEditActivity", "응답 코드: ${response.code()}")
+                        Log.d("ProfileEditActivity", "응답 본문: ${response.body()?.string()}")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 성공", Toast.LENGTH_SHORT).show()
-                        // 이미지 업로드 성공 후 최신 프로필 다시 불러오기
+                        // 업로드 후 최신 프로필 불러오기
                         getUserProfile()
+                        navigateToMypageActivity()
                     } else {
-                        Log.e("ProfileEditActivity", "Upload failed with code: ${response.code()}")
-                        Log.e("ProfileEditActivity", "Upload failed with message: ${response.message()}")
+                        Log.e("ProfileEditActivity", "업로드 실패, 코드: ${response.code()}")
+                        Log.e("ProfileEditActivity", "실패 메시지: ${response.message()}")
                         Toast.makeText(this@ProfileEditActivity, "프로필 이미지 업로드 실패: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("ProfileEditActivity", "Network error: ${t.message}", t)
+                    Log.e("ProfileEditActivity", "네트워크 오류: ${t.message}", t)
                     Toast.makeText(this@ProfileEditActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }
 
-
-
+    // getRealPathFromURI 수정 버전
     private fun getRealPathFromURI(uri: Uri): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            if (cursor.moveToFirst()) {
-                return cursor.getString(columnIndex)
+        val returnCursor = contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            it.moveToFirst()
+
+            val fileName = it.getString(nameIndex)
+            val inputStream = contentResolver.openInputStream(uri)
+            val file = File(cacheDir, fileName)
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
             }
+            return file.absolutePath
         }
         return null
     }
 
     private fun navigateToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToMypageActivity() {
+        val intent = Intent(this, MypageActivity::class.java)
         startActivity(intent)
         finish()
     }

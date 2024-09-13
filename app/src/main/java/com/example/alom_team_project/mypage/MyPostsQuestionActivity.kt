@@ -195,7 +195,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
                 binding.etSearch.visibility = android.view.View.GONE
 
                 // 프래그먼트 표시
-                val fragment = ScrapMentorBoardFragment()
+                val fragment = MyPostsMentorFragment()
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
