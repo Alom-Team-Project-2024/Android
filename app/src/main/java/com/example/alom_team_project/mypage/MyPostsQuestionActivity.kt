@@ -108,7 +108,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
                     }
                 }
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.questionViewPage, fragment)
+                    .replace(R.id.mypostsquestion, fragment)
                     .addToBackStack(null)
                     .commit()
             }
@@ -126,18 +126,6 @@ class MyPostsQuestionActivity : AppCompatActivity() {
         return binding.etSearch.text.toString()
     }
 
-    private fun openScrapMyPostsBoardFragment() {
-        val fragment = ScrapMentorBoardFragment().apply {
-            // Arguments 전달 (검색 텍스트와 같은 데이터)
-            arguments = Bundle().apply {
-                putString("SEARCH_TEXT", getSearchText())
-            }
-        }
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
 
     private fun fetchData() {
         val token = getJwtToken()
@@ -207,7 +195,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
                 binding.etSearch.visibility = android.view.View.GONE
 
                 // 프래그먼트 표시
-                val fragment = ScrapMentorBoardFragment()
+                val fragment = MyPostsMentorFragment()
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
@@ -226,7 +214,7 @@ class MyPostsQuestionActivity : AppCompatActivity() {
         binding.etSearch.setText("")
         val fragment = QuestionPostFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.questionViewPage, fragment)
+            .replace(R.id.mypostsquestion, fragment)
             .addToBackStack(null)
             .commit()
     }

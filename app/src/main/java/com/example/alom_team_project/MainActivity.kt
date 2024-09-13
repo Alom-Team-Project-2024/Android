@@ -26,6 +26,7 @@ import com.example.alom_team_project.question_board.AnswerFragment
 import com.example.alom_team_project.question_board.ImageData
 import com.example.alom_team_project.question_board.QuestionAdapterClass
 import com.example.alom_team_project.question_board.QuestionClass
+import com.example.alom_team_project.question_board.QuestionPostService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +38,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var recordList: ArrayList<HomeRecordData>
     private lateinit var recordAdapter: HomeRecordAdapter
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private var secondMentorId: Long? = null
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+
 
     private val refreshInterval: Long = 12000 // 1분
 
@@ -66,20 +69,8 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize recordList and recordAdapter
         recordList = ArrayList()
-        recordAdapter = HomeRecordAdapter(recordList) { recordId ->
-            // 기록 아이템 클릭 시 화면 전환
-            val fragment = AnswerFragment().apply {
-                arguments = Bundle().apply {
-                    putLong("QUESTION_ID", recordId) // recordId를 QUESTION_ID로 전달
-                }
-            }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.mainContainer, fragment)
-                .addToBackStack(null)
-                .commit()
-        }
-        binding.rvRecord.adapter = recordAdapter
-        binding.rvRecord.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        setupRecyclerView()
+
 
         fetchQuestions() // 홈화면 질문 불러오기
         fetchData() // 홈화면 이름 불러오기
@@ -103,6 +94,27 @@ class MainActivity : AppCompatActivity() {
 
         setupAutoRefresh()
 
+    }
+    private fun setupRecyclerView() {
+        recordAdapter = HomeRecordAdapter(
+            recordList = recordList,
+            onItemClickListener = { recordId ->
+                Log.d("ClickCheck", "Item clicked! Record ID: $recordId") // 클릭 이벤트 발생 확인 로그
+
+                val fragment = AnswerFragment().apply {
+                    arguments = Bundle().apply {
+                        Log.d("main", "QUESTION_ID: $recordId") // 기존 로그
+                        putLong("QUESTION_ID", recordId) // recordId를 QUESTION_ID로 전달
+                    }
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.mainContainer, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
+        binding.rvRecord.adapter = recordAdapter
+        binding.rvRecord.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun navigateToMentorBoardActivity() {
@@ -349,15 +361,15 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val user = response.body()
                     if (user != null) {
-                        val name = user.name ?: ""
-                        binding.tvEncourage.text = "${name}님,\n" +
+                        val nickname = user.nickname ?: ""
+                        binding.tvEncourage.text = "${nickname}님,\n" +
                                 "오늘도 화이팅하세요!"
-                        val encourageText = SpannableStringBuilder("${name}님,\n오늘도 화이팅하세요!")
+                        val encourageText = SpannableStringBuilder("${nickname}님,\n오늘도 화이팅하세요!")
 
                         encourageText.setSpan(
                             StyleSpan(Typeface.BOLD),
                             0,
-                            name.length,
+                            nickname.length,
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 

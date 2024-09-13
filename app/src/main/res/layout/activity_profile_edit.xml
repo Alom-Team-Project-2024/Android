@@ -5,19 +5,26 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- back ImageView -->
     <ImageView
-        android:id="@+id/img_back"
+        android:id="@+id/background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/group_255"
-        android:scaleType="centerCrop"
+        android:layout_height="165dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/rectangle2"/>
 
-        />
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="137dp"
+        android:background="@drawable/up_round_rectangle"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/background" />
 
     <!-- 뒤로가기 버튼 -->
     <ImageButton
@@ -61,18 +68,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
-        app:layout_constraintBottom_toTopOf="@id/rel_nickname"/>
+        app:layout_constraintBottom_toTopOf="@id/editbox"/>
 
     <ImageButton
         android:id="@+id/btn_profile"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@drawable/group_167"
-        android:elevation="15dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:paddingTop="8dp"
+        android:src="@drawable/group_167"
+        android:background="@drawable/img_background2"
+        android:elevation="8dp"
         app:layout_constraintTop_toBottomOf="@id/img_profile"
         app:layout_constraintStart_toEndOf="@id/img_profile"
-        android:layout_marginTop="-30dp"
-        android:layout_marginStart="-50dp"
+        android:layout_marginTop="-35dp"
+        android:layout_marginStart="-40dp"
         />
 
     <TextView
@@ -80,7 +89,7 @@
         android:text="닉네임"
         android:textColor="#000000"
         android:textSize="15dp"
-        app:layout_constraintBottom_toTopOf="@id/rel_nickname"
+        app:layout_constraintBottom_toTopOf="@id/editbox"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="40dp"
         android:layout_width="wrap_content"
@@ -88,49 +97,65 @@
         android:layout_marginBottom="5dp"
         />
 
-    <RelativeLayout
-        android:id="@+id/rel_nickname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/editbox"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:elevation="10dp"
+        android:background="@drawable/round_rectangle9"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/img_profile"
         android:layout_marginTop="68dp"
-        >
 
-        <!-- Nickname EditText -->
-        <EditText
-            android:id="@+id/et_nickname"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:maxLines="1"
-            android:inputType="text"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:paddingBottom="12dp"
-            android:paddingStart="15dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rectangle_201__1_"
-            android:hint="닉네임을 입력하세요"
-            android:textColor="#000000"
-            android:textSize="13sp"
-            />
+        />
 
-        <Button
-            android:id="@+id/btn_check_double"
-            android:layout_width="55dp"
-            android:layout_height="25dp"
-            android:text="중복확인"
-            android:layout_alignTop="@id/et_nickname"
-            android:layout_alignEnd="@+id/et_nickname"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:textSize="10sp"
-            android:background="@drawable/rectangle_273__1_" />
-    </RelativeLayout>
+    <ImageView
+        android:id="@+id/btn_check_double"
+        android:layout_width="55dp"
+        android:layout_height="25dp"
+        android:elevation="20dp"
+        app:layout_constraintEnd_toEndOf="@id/editbox"
+        app:layout_constraintBottom_toBottomOf="@id/editbox"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="10sp"
+        android:background="@drawable/rectangle_273__1_" />
+
+    <TextView
+        android:id="@+id/tv_check_double_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="중복확인"
+        android:textColor="#000000"
+        android:elevation="30dp"
+        android:textSize="10sp"
+        android:layout_marginTop="4.7dp"
+        android:layout_marginStart="9dp"
+        app:layout_constraintTop_toTopOf="@id/btn_check_double"
+        app:layout_constraintStart_toStartOf="@id/btn_check_double"
+        />
+
+    <EditText
+        android:id="@+id/et_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:maxLines="1"
+        android:inputType="text"
+        android:elevation="10dp"
+        app:layout_constraintTop_toTopOf="@id/editbox"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:paddingBottom="12dp"
+        android:paddingStart="15dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rectangle_201__1_"
+        android:hint="닉네임을 입력하세요"
+        android:textColor="#000000"
+        android:textSize="13sp"
+        />
 
     <TextView
         android:id="@+id/tv_check_double"
@@ -139,10 +164,10 @@
         android:textColor="#000000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/rel_nickname"
+        app:layout_constraintTop_toBottomOf="@id/editbox"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="35dp"
-        android:layout_marginTop="-15dp"
+        android:layout_marginTop="11dp"
         />
 
     <androidx.appcompat.widget.AppCompatButton

@@ -19,18 +19,20 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Base64
 import androidx.activity.result.PickVisualMediaRequest
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import okhttp3.ResponseBody
 import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var etNickname: EditText
     private lateinit var btnSubmit: Button
-    private lateinit var btnCheckDouble: Button
+    private lateinit var btnCheckDouble: ImageView
     private lateinit var tvCheckDouble: TextView
     private lateinit var imgProfile: ImageView
     private lateinit var btnProfile: ImageButton
@@ -39,21 +41,22 @@ class ProfileActivity : AppCompatActivity() {
     private var selectedImageUri: Uri? = null
     private var isNicknameAvailable = false
 
-    // Register for ActivityResult to pick a single image or video
     private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             selectedImageUri = uri
 
-            // Glide를 사용하여 이미지 로드 및 원형으로 변환
+            // 이미지 선택 시 Glide로 원형 적용
             Glide.with(this)
                 .load(uri)
                 .apply(RequestOptions.circleCropTransform()) // 원형 변환 적용
                 .into(imgProfile)
         } else {
-            Log.d("PhotoPicker", "No media selected")
+            Log.d("PhotoPicker", "No media selected. Applying default image.")
+            imgProfile.setBackgroundResource(R.drawable.group_256)
         }
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,10 +104,14 @@ class ProfileActivity : AppCompatActivity() {
                         uploadProfileImage(selectedImageUri!!, username, token)
                     }
                 } else {
-                    Toast.makeText(this, "닉네임 중복을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                    tvCheckDouble.text = "닉네임 중복을 확인해주세요."
+                    tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
+
                 }
             } else {
-                Toast.makeText(this, "닉네임, 학번 또는 토큰을 확인해주세요.", Toast.LENGTH_SHORT).show()
+                tvCheckDouble.text = "닉네임을 입력해주세요."
+                tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
+
             }
         }
     }
@@ -129,20 +136,10 @@ class ProfileActivity : AppCompatActivity() {
                         if (isAvailable) {
                             tvCheckDouble.text = "사용 가능한 닉네임입니다."
                             tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#006917"))
-                            Toast.makeText(
-                                this@ProfileActivity,
-                                "사용 가능한 닉네임입니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             isNicknameAvailable = true
                         } else {
                             tvCheckDouble.text = "사용 불가능한 닉네임입니다."
                             tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
-                            Toast.makeText(
-                                this@ProfileActivity,
-                                "사용 불가능한 닉네임입니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             isNicknameAvailable = false
                         }
                     } else {
@@ -230,42 +227,61 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun uploadProfileImage(imageUri: Uri, username: String, token: String) {
         val authHeader = "Bearer $token"
-        val file = File(getRealPathFromURI(imageUri) ?: return)
+        val filePath = getRealPathFromURI(imageUri)
 
-        val requestFile = file.asRequestBody("image/svg+xml".toMediaTypeOrNull())
+        // 파일 경로가 유효한지 확인
+        if (filePath == null) {
+            Log.e("ProfileEditActivity", "유효하지 않은 파일 경로입니다.")
+            Toast.makeText(this, "이미지 경로를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val file = File(filePath)
+
+        Log.d("ProfileEditActivity", "업로드할 파일 경로: $filePath")
+
+        // 이미지 파일을 RequestBody로 변환
+        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        // MultipartBody.Part로 업로드할 파일 준비
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
+        // Retrofit API 호출
         RetrofitClient.userApi.uploadProfileImage(username, authHeader, body)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
-                        // 이미지를 SharedPreferences에 저장
-                        saveProfileImageToPreferences(imageUri)
-                        val responseBody = response.body()?.string()  // Read response as a string
-                        Log.d("ProfileActivity", "Response: $responseBody")
+                        Log.d("ProfileEditActivity", "응답 코드: ${response.code()}")
+                        Log.d("ProfileEditActivity", "응답 본문: ${response.body()?.string()}")
                         Toast.makeText(this@ProfileActivity, "프로필 이미지 업로드 성공", Toast.LENGTH_SHORT).show()
                     } else {
-                        val errorBody = response.errorBody()?.string()  // Read error body
-                        Log.e("ProfileActivity", "응답 오류: $errorBody")
+                        Log.e("ProfileEditActivity", "업로드 실패, 코드: ${response.code()}")
+                        Log.e("ProfileEditActivity", "실패 메시지: ${response.message()}")
                         Toast.makeText(this@ProfileActivity, "프로필 이미지 업로드 실패: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("ProfileActivity", "네트워크 오류: ${t.message}", t)
+                    Log.e("ProfileEditActivity", "네트워크 오류: ${t.message}", t)
                     Toast.makeText(this@ProfileActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }
 
-
+    // getRealPathFromURI 수정 버전
     private fun getRealPathFromURI(uri: Uri): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            if (cursor.moveToFirst()) {
-                return cursor.getString(columnIndex)
+        val returnCursor = contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            it.moveToFirst()
+
+            val fileName = it.getString(nameIndex)
+            val inputStream = contentResolver.openInputStream(uri)
+            val file = File(cacheDir, fileName)
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
             }
+            return file.absolutePath
         }
         return null
     }
