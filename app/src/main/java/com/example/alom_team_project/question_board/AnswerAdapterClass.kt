@@ -83,7 +83,7 @@ class AnswerAdapterClass(
             val displayMetrics = binding.root.context.resources.displayMetrics
             val density = displayMetrics.density
 
-// CardView 크기 및 여백 설정 (375dp x 222dp)
+            // CardView 크기 및 여백 설정 (375dp x 222dp)
             val cardWidth = (375 * density).toInt()
             val cardHeight = (222 * density).toInt()
 
@@ -161,7 +161,7 @@ class AnswerAdapterClass(
                 editor.putBoolean("liked_${answer.id}", newIsLiked)
                 editor.apply()
 
-                binding.likeButton.isEnabled = true
+                binding.likeButton.isEnabled = false
             }
 
             // 질문자 프로필 설정
@@ -219,19 +219,24 @@ class AnswerAdapterClass(
             val token = getJwtToken()
             val service = RetrofitClient.service
 
-            service.likeReply("Bearer $token", replyId).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+            service.likeReply("Bearer $token", replyId).enqueue(object : Callback<Int> {
+                override fun onResponse(call: Call<Int>, response: Response<Int>) {
                     if (response.isSuccessful) {
-                        //Log.d("LIKE", "Successfully liked the post")
+                        val likeCount = response.body() ?: 0
+                        //Log.d("LIKE", "Successfully liked the post, total likes: $likeCount")
+
+                        // 좋아요 수를 UI에 업데이트
+                        binding.likeNum.text = likeCount.toString()
                     } else {
                         //Log.e("LIKE", "Failed to like the post: ${response.code()}")
                     }
                 }
 
-                override fun onFailure(call: Call<Void>, t: Throwable) {
+                override fun onFailure(call: Call<Int>, t: Throwable) {
                     Log.e("LIKE", "Error occurred while liking the post", t)
                 }
             })
+
         }
 
         private fun getJwtToken(): String {

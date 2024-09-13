@@ -194,6 +194,7 @@ class AnswerFragment : Fragment() {
         binding.sendBtn.setOnClickListener {
             if (questionId != null) {
                 sendPostAnswer(questionId)
+                fetchReply(questionId)
             }
             binding.imagePreview.visibility=View.GONE
             hideKeyboard()
@@ -502,8 +503,6 @@ class AnswerFragment : Fragment() {
                 if (questionId != null) {
                     // 좋아요, 스크랩 상태 업데이트
                     fetchQuestionDetails(questionId)
-                    // 댓글 목록 업데이트
-                    fetchReply(questionId)
                 }
                 handler.postDelayed(this, refreshInterval)
             }
