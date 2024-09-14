@@ -225,7 +225,7 @@ class MentorDetailFragment : Fragment() {
 
         mentorService.getMentorFromId("Bearer $token", mentorId).enqueue(object : Callback<MentorClass> {
             override fun onResponse(call: Call<MentorClass>, response: Response<MentorClass>) {
-                if (response.isSuccessful) {
+                if (response.isSuccessful && isAdded) { // Fragment가 현재 Activity에 연결되어 있는지 확인
                     response.body()?.let { mentor ->
                         bindMentorToViews(mentor)
                         Log.d("MentorPost", "${mentor.writer}")
@@ -247,17 +247,22 @@ class MentorDetailFragment : Fragment() {
     }
 
 
+
     private fun bindMentorToViews(mentor: MentorClass) {
-        // 질문 내용 설정
-        binding.postContent.text = mentor.text
+        // _binding이 null이 아닌 경우에만 실행
+        _binding?.let { binding ->
+            // 질문 내용 설정
+            binding.postContent.text = mentor.text
 
-        // 좋아요 수, 댓글 수, 스크랩 수 설정
-        binding.scrapCount.text = mentor.scrapCount.toString()
+            // 좋아요 수, 댓글 수, 스크랩 수 설정
+            binding.scrapCount.text = mentor.scrapCount.toString()
 
-        val username = mentor.username
-        //질문자 프로필 설정
-        fetchUpdateUserInfo(username)
+            val username = mentor.username
+            // 질문자 프로필 설정
+            fetchUpdateUserInfo(username)
+        }
     }
+
 
     private fun fetchUpdateUserInfo(username: String) {
         val token = getJwtToken()

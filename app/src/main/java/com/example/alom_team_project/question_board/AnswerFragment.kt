@@ -322,7 +322,7 @@ class AnswerFragment : Fragment() {
 
         answerService.getQuestionFromId("Bearer $token", questionId).enqueue(object : Callback<QuestionClass> {
             override fun onResponse(call: Call<QuestionClass>, response: Response<QuestionClass>) {
-                if (response.isSuccessful) {
+                if (response.isSuccessful && isAdded) { // isAdded로 Fragment가 현재 Activity에 연결되어 있는지 확인
                     response.body()?.let { question ->
                         bindQuestionToViews(question)
                     }
@@ -338,33 +338,35 @@ class AnswerFragment : Fragment() {
     }
 
     private fun bindQuestionToViews(question: QuestionClass) {
-        // 질문 제목, 내용 설정
-        binding.title.text = question.subject
-        binding.questionText.text = question.text
+        // 바인딩이 null인지 확인하고 null이 아닐 때만 실행
+        _binding?.let { binding ->
+            // 질문 제목, 내용 설정
+            binding.title.text = question.subject
+            binding.questionText.text = question.text
 
+            // 좋아요 수, 댓글 수, 스크랩 수 설정
+            binding.likeNum.text = question.likes.toString()
+            binding.commentNum.text = question.replyCount.toString()
+            binding.scrapNum.text = question.scrapCount.toString()
 
-        // 좋아요 수, 댓글 수, 스크랩 수 설정
-        binding.likeNum.text = question.likes.toString()
-        binding.commentNum.text = question.replyCount.toString()
-        binding.scrapNum.text = question.scrapCount.toString()
+            val username = question.username
+            // 질문자 프로필 설정
+            fetchUpdateUserInfo(username)
 
-        val username = question.username
-        //질문자 프로필 설정
-        fetchUpdateUserInfo(username)
-
-        // RecyclerView 초기화 및 어댑터 설정
-        if (!isRecyclerViewInitialized) {
-            binding.recyclerViewImages.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                adapter = QuestionImageAdapter(question.images) // ImageData 리스트를 직접 전달
-            }
-            isRecyclerViewInitialized = true
-            if(question.images.isNotEmpty()){
-                binding.recyclerViewImages.visibility = View.VISIBLE
+            // RecyclerView 초기화 및 어댑터 설정
+            if (!isRecyclerViewInitialized) {
+                binding.recyclerViewImages.apply {
+                    layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    adapter = QuestionImageAdapter(question.images) // ImageData 리스트를 직접 전달
+                }
+                isRecyclerViewInitialized = true
+                if(question.images.isNotEmpty()){
+                    binding.recyclerViewImages.visibility = View.VISIBLE
+                }
             }
         }
-
     }
+
 
     private fun fetchUpdateUserInfo(username: String) {
         val token = getJwtToken()
