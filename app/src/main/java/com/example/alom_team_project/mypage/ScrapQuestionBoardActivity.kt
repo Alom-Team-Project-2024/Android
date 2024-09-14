@@ -175,9 +175,10 @@ class ScrapQuestionBoardActivity : AppCompatActivity() {
                 // RecyclerView 표시 및 프래그먼트 숨기기
                 binding.QuestionRecyclerView.visibility = android.view.View.VISIBLE
                 binding.fragmentContainer.visibility = android.view.View.GONE
-
                 // etSearch 보이게 하기
                 binding.etSearch.visibility = android.view.View.VISIBLE
+                binding.searchBox.visibility = android.view.View.VISIBLE
+
             }
             binding.btnMentor.id -> {
                 // 멘토 버튼 클릭 시
@@ -189,9 +190,10 @@ class ScrapQuestionBoardActivity : AppCompatActivity() {
                 // RecyclerView 숨기기 및 프래그먼트 표시
                 binding.QuestionRecyclerView.visibility = android.view.View.GONE
                 binding.fragmentContainer.visibility = android.view.View.VISIBLE
-
                 // etSearch 숨기기
                 binding.etSearch.visibility = android.view.View.GONE
+                binding.searchBox.visibility = android.view.View.GONE
+
 
                 // 프래그먼트 표시
                 val fragment = ScrapMentorBoardFragment()

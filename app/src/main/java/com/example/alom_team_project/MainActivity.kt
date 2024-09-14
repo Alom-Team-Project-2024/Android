@@ -361,15 +361,15 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val user = response.body()
                     if (user != null) {
-                        val nickname = user.nickname ?: ""
-                        binding.tvEncourage.text = "${nickname}님,\n" +
+                        val name = user.name ?: ""
+                        binding.tvEncourage.text = "${name}님,\n" +
                                 "오늘도 화이팅하세요!"
-                        val encourageText = SpannableStringBuilder("${nickname}님,\n오늘도 화이팅하세요!")
+                        val encourageText = SpannableStringBuilder("${name}님,\n오늘도 화이팅하세요!")
 
                         encourageText.setSpan(
                             StyleSpan(Typeface.BOLD),
                             0,
-                            nickname.length,
+                            name.length,
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 
