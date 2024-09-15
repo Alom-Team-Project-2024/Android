@@ -104,7 +104,6 @@ class ProfileEditActivity : AppCompatActivity() {
                 // 변경사항이 없는 경우
                 tvCheckDouble.text = "변경사항이 없습니다."
                 tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#000000")) // 검은색으로 설정
-                return
             }
 
             if (newNickname.isNotEmpty() && token != null && username != null) {
