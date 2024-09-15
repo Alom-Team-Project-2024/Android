@@ -100,6 +100,13 @@ class ProfileEditActivity : AppCompatActivity() {
 
             Log.d("ProfileEditActivity", "New nickname: $newNickname, Token: $token, Username: $username")
 
+            if (newNickname == originalNickname && selectedImageUri == null) {
+                // 변경사항이 없는 경우
+                tvCheckDouble.text = "변경사항이 없습니다."
+                tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#000000")) // 검은색으로 설정
+                return
+            }
+
             if (newNickname.isNotEmpty() && token != null && username != null) {
                 if (newNickname == originalNickname && selectedImageUri != null) {
                     // 이미지 변경만 있을 때 서버로 요청
