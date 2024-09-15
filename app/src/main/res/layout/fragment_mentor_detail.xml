@@ -14,7 +14,7 @@
         android:id="@+id/background_img"
         android:layout_width="0dp"
         android:layout_height="179dp"
-        android:background="#74BDD2"
+        android:background="#90D2E7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,17 +47,15 @@
         android:id="@+id/mentor_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/bold"
         android:text="구인 게시판"
         android:textColor="@color/black"
         android:textSize="20dp"
-        android:fontFamily="@font/bold"
-        app:layout_constraintBottom_toBottomOf="@+id/background_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/background_img"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@id/back_icon" />
 
     <ImageView
         android:id="@+id/post_profile"
@@ -78,7 +76,7 @@
         android:layout_marginLeft="3dp"
         android:layout_marginTop="10dp"
         android:text="이수민"
-        android:textSize="11dp"
+        android:textSize="13.5dp"
         android:textStyle="bold"
         android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/post_profile"
@@ -94,7 +92,7 @@
         android:layout_marginEnd="21dp"
         android:layout_marginRight="21dp"
         android:text="인공지능과 빅데이터 과외해 주실 분 구합니다."
-        android:textSize="12dp"
+        android:textSize="13.5dp"
         android:textStyle="bold"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
