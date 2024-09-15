@@ -13,6 +13,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -174,8 +175,12 @@ class QuestionPostFragment : Fragment() {
             showConfirmDialog()
         }
 
-        binding.root.setOnClickListener {
-            hideKeyboard()
+        // 화면 클릭 시 키보드 내리기
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            true
         }
 
         val btnBack: ImageButton = view.findViewById(R.id.back_button)
@@ -219,13 +224,13 @@ class QuestionPostFragment : Fragment() {
                     parentFragmentManager.popBackStack()
                 } else {
                     Log.e("POST_REQUEST", "Error: ${response.code()}")
-                    Toast.makeText(context, "Request failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "글 등록에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Long>, t: Throwable) {
                 Log.e("POST_REQUEST", "Failed to send request", t)
-                Toast.makeText(context, "Request failed: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "글 등록에 실패하였습니다.", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -265,7 +270,6 @@ class QuestionPostFragment : Fragment() {
         }
 
         if (fileParts.isEmpty()) {
-            Toast.makeText(context, "No valid images to upload", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -275,13 +279,13 @@ class QuestionPostFragment : Fragment() {
                     Toast.makeText(context, "사진을 정상적으로 업로드하였습니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("UPLOAD_IMAGES", "Error: ${response.code()} - ${response.message()}")
-                    Toast.makeText(context, "Image upload failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "사진 업로드에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<JsonArray>, t: Throwable) {
                 Log.e("UPLOAD_IMAGES", "Failed to upload images", t)
-                Toast.makeText(context, "Image upload failed: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "사진 업로드에 실패하였습니다.", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -337,13 +341,13 @@ class QuestionPostFragment : Fragment() {
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
-                    Toast.makeText(context, "Failed to fetch data: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "과목명을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Subject>>, t: Throwable) {
                 Log.e("FETCH_DATA", "Failed to fetch data", t)
-                Toast.makeText(context, "Failed to fetch data: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "과목명을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
         })
     }

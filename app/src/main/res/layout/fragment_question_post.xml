@@ -19,10 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="70dp"
         android:text="@string/writeQuestionText"
-        android:fontFamily="@font/bold"
+        android:fontFamily="@font/medium"
         android:textColor="@color/black"
         android:textSize="25sp"
-
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -263,25 +262,24 @@
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"
-        app:cardElevation="4dp"
+        android:layout_marginTop="70dp"
         app:cardCornerRadius="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageview7"
         app:layout_constraintWidth_percent="0.4">
 
 
+        <ImageButton
+            android:id="@+id/submitButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/post_button"
+            android:scaleType="centerInside" />
 
-    <ImageButton
-        android:id="@+id/submitButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/post_button"
-        android:scaleType="centerInside" />
-
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
