@@ -267,39 +267,37 @@ class MentorDetailFragment : Fragment() {
     private fun fetchUpdateUserInfo(username: String) {
         val token = getJwtToken()
 
-        // 프로필 정보 가져오기 요청
         mentorService.getProfile("Bearer $token", username).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
-                    // 성공적으로 사용자 프로필 정보를 받았을 때 처리
+                if (response.isSuccessful && _binding != null) {  // _binding이 null이 아닌지 확인
                     response.body()?.let { user ->
                         // 사용자 닉네임을 UI에 설정
-                        binding.postUserId.text = user.nickname
-
+                        _binding?.postUserId?.text = user.nickname
 
                         if (!user.profileImage.isNullOrEmpty()) {
                             val fullImageUrl = "http://15.165.213.186/" + user.profileImage
-                            Glide.with(binding.root.context)
-                                .load(fullImageUrl)
-                                .apply(RequestOptions.circleCropTransform())
-                                .into(binding.postProfile)
+                            _binding?.let { binding ->
+                                Glide.with(binding.root.context)
+                                    .load(fullImageUrl)
+                                    .apply(RequestOptions.circleCropTransform())
+                                    .into(binding.postProfile)
+                            }
                         } else {
                             // 프로필 이미지가 없을 경우 기본 이미지 설정
-                            binding.postProfile.setImageResource(R.drawable.group_172)
+                            _binding?.postProfile?.setImageResource(R.drawable.group_172)
                         }
                     }
                 } else {
-                    // 요청이 실패했을 때 처리 (예: 에러 메시지 출력)
                     Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
-                // 네트워크 오류나 다른 문제가 발생했을 때 처리
                 Log.e("UserProfile", "Request failed", t)
             }
         })
     }
+
 
     private fun postScrap(username: String, mentorId: Long) {
         val token = getJwtToken()
