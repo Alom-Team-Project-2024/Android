@@ -222,5 +222,11 @@ class MentorBoardActivity : AppCompatActivity() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Activity가 다시 포그라운드에 올 때마다 데이터를 새로고침
+        fetchData(status)
+    }
 }
 

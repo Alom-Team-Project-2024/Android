@@ -118,7 +118,7 @@ class QuestionBoardActivity : AppCompatActivity() {
     }
 
 
-    private fun fetchData() {
+    fun fetchData() {
         val token = getJwtToken()
         //Log.d("FETCH_DATA", "Fetching data with token: $token")
 
@@ -132,6 +132,8 @@ class QuestionBoardActivity : AppCompatActivity() {
                         questionList.clear()
                         questionList.addAll(questions)
                         adapter.filter(binding.etSearch.text.toString())  // 현재 검색어로 필터링
+                        // 어댑터에 데이터 변경을 알림
+                        adapter.notifyDataSetChanged()
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
@@ -177,4 +179,11 @@ class QuestionBoardActivity : AppCompatActivity() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Activity가 다시 포그라운드에 올 때마다 데이터를 새로고침
+        fetchData()
+    }
+
 }

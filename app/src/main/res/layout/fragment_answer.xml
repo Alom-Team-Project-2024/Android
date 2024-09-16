@@ -59,7 +59,8 @@
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/main_view">
+        app:layout_constraintTop_toTopOf="@id/main_view"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/question_container"

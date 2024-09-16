@@ -27,8 +27,6 @@ class CustomDialogPost(context: Context): Dialog(context) {
         // 다이얼로그 바깥쪽 클릭시 닫기
         setCanceledOnTouchOutside(true)
 
-        // 다이얼로그 위치 조정
-        setDialogPosition(108)
         // 취소 가능 여부
         setCancelable(true)
 
@@ -47,27 +45,6 @@ class CustomDialogPost(context: Context): Dialog(context) {
         }
     }
 
-
-    // 다이얼로그 위치 조정 메서드
-    private fun setDialogPosition(dpFromTop: Int) {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = windowManager.defaultDisplay
-        val size = Point()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val metrics = windowManager.currentWindowMetrics
-            size.x = metrics.bounds.width()
-            size.y = metrics.bounds.height()
-        } else {
-            @Suppress("DEPRECATION")
-            display.getSize(size)
-        }
-
-        val layoutParams = window?.attributes
-        layoutParams?.gravity = Gravity.TOP
-        layoutParams?.y = dpToPx(dpFromTop.toFloat())
-        window?.attributes = layoutParams
-    }
 
     // dp를 px로 변환하는 메서드
     private fun dpToPx(dp: Float): Int {

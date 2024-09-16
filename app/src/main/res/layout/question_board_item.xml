@@ -60,12 +60,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
                 android:layout_marginTop="13dp"
+                android:layout_marginEnd="35dp"
                 android:singleLine="true"
+
                 android:text="인공지능과 빅데이터"
                 android:textColor="#000000"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/content"
+                app:layout_constraintEnd_toStartOf="@id/post_time"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/nickname" />
 
@@ -74,11 +76,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
+                android:layout_marginEnd="35dp"
                 android:singleLine="true"
                 android:text="인지빅 8주차 과제 1-2번 풀어봤는데 오류가..."
                 android:textColor="#000000"
                 android:textSize="10sp"
-                app:layout_constraintEnd_toStartOf="@+id/question_image"
+                app:layout_constraintEnd_toStartOf="@+id/post_time"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/subjectName" />
 

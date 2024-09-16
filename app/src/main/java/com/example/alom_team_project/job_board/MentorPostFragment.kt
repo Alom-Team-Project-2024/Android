@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -82,8 +83,12 @@ class MentorPostFragment : Fragment() {
             showConfirmDialog(status)
         }
 
-        binding.root.setOnClickListener {
-            hideKeyboard()
+        // 화면 클릭 시 키보드 내리기
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            true
         }
     }
 

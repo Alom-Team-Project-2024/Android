@@ -15,6 +15,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -163,8 +164,12 @@ class AnswerFragment : Fragment() {
             }
         }
 
-        binding.root.setOnClickListener {
-            hideKeyboard()
+        // 화면 클릭 시 키보드 내리기
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            true
         }
 
         // RecyclerView 초기화
@@ -254,7 +259,7 @@ class AnswerFragment : Fragment() {
 
         // 내용을 확인하고 비어 있지 않도록 체크
         if (text.isBlank()) {
-            Toast.makeText(context, "Please fill in both fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "답변글을 쓰세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -268,14 +273,24 @@ class AnswerFragment : Fragment() {
                     var answerId = response.body()!!
 
                     // 이미지 업로드는 포스트 ID를 받은 후 처리
-                    selectedImageUris?.let { uris ->
-                        uploadImages(answerId ?: return, uris)
+                    if (selectedImageUris.isNotEmpty()) {
+                        uploadImages(answerId, selectedImageUris) {
+                            // 업로드가 완료되면 UI 업데이트
+                            resetImageSelection() // 선택된 이미지 초기화
+                            fetchReply(questionId)
+                        }
+                    } else {
+                        // 이미지가 없으면 바로 답변 리스트를 업데이트
+                        fetchReply(questionId)
                     }
 
                     binding.etMessage.apply {
                         setText("")  // 텍스트를 지웁니다.
                         hint = "답변 작성하기"  // 힌트를 설정합니다.
                     }
+
+                    // 답변을 전송한 후 답변 리스트를 업데이트
+                    fetchReply(questionId)
                 } else {
                     Log.e("POST_REQUEST", "Error: ${response.code()}")
                     Toast.makeText(context, "Request failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
@@ -300,9 +315,11 @@ class AnswerFragment : Fragment() {
                     response.body()?.let { replies ->
                         answerList.clear()
                         answerList.addAll(replies)
-                        adapter.notifyDataSetChanged()
 
-
+                        // UI 스레드에서 어댑터를 업데이트
+                        requireActivity().runOnUiThread {
+                            adapter.notifyDataSetChanged()
+                        }
                     }
                 } else {
                     Log.e("FETCH_DATA", "Error: ${response.code()} - ${response.message()}")
@@ -327,15 +344,20 @@ class AnswerFragment : Fragment() {
                         bindQuestionToViews(question)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "불러오기 실패", Toast.LENGTH_SHORT).show()
+                    if (isAdded) { // 추가
+                        Toast.makeText(requireContext(), "불러오기 실패", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
             override fun onFailure(call: Call<QuestionClass>, t: Throwable) {
-                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                if (isAdded) { // 추가
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
+
 
     private fun bindQuestionToViews(question: QuestionClass) {
         // 바인딩이 null인지 확인하고 null이 아닐 때만 실행
@@ -472,6 +494,7 @@ class AnswerFragment : Fragment() {
     }
 
     private fun saveLikeStatus(postId: Long, isLiked: Boolean) {
+        if (!isAdded) return
         val sharedPref = requireContext().getSharedPreferences("likes", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putBoolean("post_$postId", isLiked)
@@ -480,6 +503,7 @@ class AnswerFragment : Fragment() {
     }
 
     private fun saveScrapStatus(postId: Long, isScrapped: Boolean) {
+        if (!isAdded) return
         val sharedPref = requireContext().getSharedPreferences("scraps", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             putBoolean("post_$postId", isScrapped)
@@ -532,7 +556,7 @@ class AnswerFragment : Fragment() {
         return path
     }
 
-    private fun uploadImages(postId: Long, imageUris: List<Uri>) {
+    private fun uploadImages(postId: Long, imageUris: List<Uri>, onUploadComplete: () -> Unit) {
         val token = getJwtToken()
         val fileParts = imageUris.mapNotNull { uri ->
             val filePath = getRealPathFromURI(uri)
@@ -545,6 +569,7 @@ class AnswerFragment : Fragment() {
 
         if (fileParts.isEmpty()) {
             Toast.makeText(context, "No valid images to upload", Toast.LENGTH_SHORT).show()
+            onUploadComplete() // 업로드 완료 콜백 호출
             return
         }
 
@@ -554,16 +579,26 @@ class AnswerFragment : Fragment() {
                     Toast.makeText(context, "사진을 정상적으로 업로드하였습니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("UPLOAD_IMAGES", "Error: ${response.code()} - ${response.message()}")
-                    Toast.makeText(context, "Image upload failed with status code: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "사진 업로드에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                 }
+                onUploadComplete() // 업로드 완료 콜백 호출
             }
 
             override fun onFailure(call: Call<JsonArray>, t: Throwable) {
                 Log.e("UPLOAD_IMAGES", "Failed to upload images", t)
-                Toast.makeText(context, "Image upload failed: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "사진 업로드에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+                onUploadComplete() // 업로드 완료 콜백 호출
             }
         })
     }
+
+    private fun resetImageSelection() {
+        selectedImageUris.clear()
+        imagePreviewAdapter = ImagePreviewAdapter(emptyList())
+        binding.imagePreview.adapter = imagePreviewAdapter
+        binding.imagePreview.visibility = View.GONE
+    }
+
 
     // 프래그먼트에서 키보드 숨기기
     private fun hideKeyboard() {
@@ -573,5 +608,4 @@ class AnswerFragment : Fragment() {
             inputManager.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
         }
     }
-
 }
