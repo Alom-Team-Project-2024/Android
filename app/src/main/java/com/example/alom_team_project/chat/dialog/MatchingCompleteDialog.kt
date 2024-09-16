@@ -27,8 +27,6 @@ class MatchingCompleteDialog(context: Context): Dialog(context) {
         // 다이얼로그 바깥쪽 클릭시 닫기
         setCanceledOnTouchOutside(true)
 
-        // 다이얼로그 위치 조정
-        setDialogPosition(108)
         // 취소 가능 여부
         setCancelable(true)
 

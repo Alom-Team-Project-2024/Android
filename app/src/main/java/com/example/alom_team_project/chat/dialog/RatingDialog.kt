@@ -47,14 +47,21 @@ class CustomDialogR(context: Context, chatRoomId: Long, nickname: String) : Dial
         // 다이얼로그 바깥쪽 클릭시 닫기
         setCanceledOnTouchOutside(true)
 
-        // 다이얼로그 위치 조정
-        setDialogPosition(108)
 
         // 취소 가능 여부
         setCancelable(true)
 
-        binding.textView.text = "${nickname}님을 평가하시겠습니까?"
-        binding.textView3.text = "${nickname}님에게 하고 싶은 말을 전해보세요!"
+        val maxNicknameLength = 5
+
+        val displayNickname = if (nickname.length > maxNicknameLength) {
+            nickname.substring(0, 4) + "..."
+        } else {
+            nickname
+        }
+
+        binding.textView.text = "${displayNickname}님을 평가하시겠습니까?"
+        binding.textView3.text = "${displayNickname}님에게 하고 싶은 말을 전해보세요!"
+
         binding.buttonX.setOnClickListener {
             dismiss()
         }
