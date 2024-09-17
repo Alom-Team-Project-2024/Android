@@ -222,6 +222,8 @@ class ProfileEditActivity : AppCompatActivity() {
         val authHeader = "Bearer $token"
         RetrofitClient.userApi.checkDuplicateUser(nickname, authHeader)
             .enqueue(object : Callback<Boolean> {
+                val newNickname = etNickname.text.toString().trim()
+
                 override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                     if (response.isSuccessful) {
                         val isAvailable = response.body() ?: false
@@ -231,10 +233,18 @@ class ProfileEditActivity : AppCompatActivity() {
                             isNicknameAvailable = true
                             isNicknameChecked = true // Mark as checked
                         } else {
-                            tvCheckDouble.text = "사용 불가능한 닉네임입니다."
-                            tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
-                            isNicknameAvailable = false
-                            isNicknameChecked = true // Mark as checked
+                            if(newNickname == originalNickname){
+                                tvCheckDouble.text = "변경사항이 없습니다."
+                                tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#000000")) // 검은색으로 설정
+                                isNicknameAvailable = false
+                                isNicknameChecked = true
+                            }
+                            else {
+                                tvCheckDouble.text = "사용 불가능한 닉네임입니다."
+                                tvCheckDouble.setTextColor(android.graphics.Color.parseColor("#FF0000"))
+                                isNicknameAvailable = false
+                                isNicknameChecked = true // Mark as checked
+                            }
                         }
                     } else {
                         tvCheckDouble.text = "닉네임 중복 체크에 실패했습니다."

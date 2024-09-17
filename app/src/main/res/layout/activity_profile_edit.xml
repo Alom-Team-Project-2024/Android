@@ -18,7 +18,7 @@
         android:id="@+id/imageView7"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="137dp"
+        android:layout_marginTop="150dp"
         android:background="@drawable/up_round_rectangle"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,7 +51,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="85dp"
-        android:textSize="20sp"
+        android:textSize="23sp"
         />
 
     <ImageView

@@ -9,6 +9,7 @@
     >
 
     <ImageView
+        android:layout_marginTop="13dp"
         android:id="@+id/search_box"
         android:layout_width="0dp"
         android:layout_height="30dp"
