@@ -11,6 +11,8 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager
 import com.example.alom_team_project.databinding.ConfirmSuccessDialogBinding
+import android.os.Handler
+import android.os.Looper
 
 class MatchingCompleteDialog(context: Context): Dialog(context) {
     private lateinit var itemClickListener: ItemClickListener
@@ -33,6 +35,11 @@ class MatchingCompleteDialog(context: Context): Dialog(context) {
         binding.xBtn.setOnClickListener {
             dismiss() // 다이얼로그 닫기
         }
+
+        // 2초 후 다이얼로그 자동 닫기
+        Handler(Looper.getMainLooper()).postDelayed({
+            dismiss()
+        }, 2000)
     }
 
     // 다이얼로그 위치 조정 메서드
