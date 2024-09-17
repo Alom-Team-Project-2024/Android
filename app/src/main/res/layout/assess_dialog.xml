@@ -53,6 +53,7 @@
             android:progressBackgroundTint="#ACACAC"
             android:progressTint="#4825D8"
             android:rating="0"
+            android:stepSize="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
