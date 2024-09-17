@@ -257,12 +257,6 @@ class AnswerFragment : Fragment() {
         val token = getJwtToken()
         val text = binding.etMessage.text.toString() // 서버 키가 text임
 
-        // 내용을 확인하고 비어 있지 않도록 체크
-        if (text.isBlank()) {
-            Toast.makeText(context, "답변글을 쓰세요.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         val jsonObject = JsonObject().apply {
             addProperty("text", text)
         }
