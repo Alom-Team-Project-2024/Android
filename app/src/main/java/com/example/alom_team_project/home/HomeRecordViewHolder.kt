@@ -2,6 +2,7 @@ package com.example.alom_team_project.home
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Html
 import android.util.Log
 
@@ -40,24 +41,29 @@ class HomeRecordViewHolder(
         // username이 비어있지 않다면 사용자 정보를 가져옵니다
         val usernameToFetch = record.username ?: ""
         Log.d("DEBUG", "Fetching user info for username: $usernameToFetch")
-        if (usernameToFetch.isNotEmpty()) {
-            fetchUpdateUserInfo(usernameToFetch) { user ->
-                if (user != null) {
-                    Log.d("DEBUG", "Fetched user nickname: ${user.nickname}")
-                    // 멘토 이름을 볼드 처리하고 '멘토'를 붙입니다
-                    val formattedName = "<b>${user.nickname}</b> 멘토"
-                    binding.mentorName.text = Html.fromHtml(formattedName)
+
+        fetchUpdateUserInfo(usernameToFetch) { user ->
+            if (user != null) {
+                Log.d("DEBUG", "Fetched user nickname: ${user.nickname}")
+                // 멘토 이름을 볼드 처리하고 '멘토'를 붙입니다
+                val formattedName = "<b>${user.nickname}</b> 멘토"
+
+                // API 레벨에 따라 Html.fromHtml 처리
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    binding.mentorName.text = Html.fromHtml(formattedName, Html.FROM_HTML_MODE_LEGACY)
                 } else {
-                    Log.d("DEBUG", "User not found or error occurred")
-                    binding.mentorName.text = "null"
+                    binding.mentorName.text = Html.fromHtml(formattedName)
+                }
+
+                // 멘토 이름을 확실하게 보이도록 설정
+                binding.mentorName.visibility = View.VISIBLE
+            } else {
+                Log.d("DEBUG", "Username is empty")
+                binding.mentorName.text = "null"
+                binding.mentorName.visibility = View.GONE
                 }
             }
-        } else {
-            // username이 비어있을 때 기본 처리
-            Log.d("DEBUG", "Username is empty")
-            binding.mentorName.text = "null"
-            binding.mentorName.visibility = View.GONE
-        }
+
 
         // answer가 null이거나 빈 문자열이면 뷰와 이미지뷰를 숨김
         binding.answer.text = record.answer ?: ""
