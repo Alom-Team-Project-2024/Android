@@ -185,13 +185,6 @@ class QuestionBoardActivity : AppCompatActivity() {
         // Activity가 다시 포그라운드에 올 때마다 데이터를 새로고침
         fetchData()
     }
-
-    // 새로고침을 수행하는 메서드
-    fun refreshActivity() {
-        // 이 액티비티를 새로고침하려면 현재 액티비티를 재시작합니다.
-        finish()
-        startActivity(intent)
-    }
 }
 
 

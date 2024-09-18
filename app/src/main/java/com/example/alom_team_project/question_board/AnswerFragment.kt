@@ -390,12 +390,11 @@ class AnswerFragment : Fragment() {
         // 프로필 정보 가져오기 요청
         answerService.getProfile("Bearer $token", username).enqueue(object : Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
+                if (response.isSuccessful && isAdded && _binding != null) { // 추가된 부분: isAdded && _binding != null
                     // 성공적으로 사용자 프로필 정보를 받았을 때 처리
                     response.body()?.let { user ->
                         // 사용자 닉네임을 UI에 설정
                         binding.questionerName.text = user.nickname
-
 
                         // profileImage가 null인지 먼저 체크
                         val profileImage = user.profileImage
@@ -412,16 +411,21 @@ class AnswerFragment : Fragment() {
                     }
                 } else {
                     // 요청이 실패했을 때 처리 (예: 에러 메시지 출력)
-                    Log.e("UserProfile", "Error: ${response.code()} - ${response.message()}")
+                    if (isAdded) {
+                        Toast.makeText(requireContext(), "불러오기 실패", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
                 // 네트워크 오류나 다른 문제가 발생했을 때 처리
-                Log.e("UserProfile", "Request failed", t)
+                if (isAdded) { // 추가
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
+
 
 
 
