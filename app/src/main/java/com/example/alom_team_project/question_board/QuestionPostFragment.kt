@@ -222,7 +222,7 @@ class QuestionPostFragment : Fragment() {
 
                     Toast.makeText(context, "글이 정상적으로 등록되었습니다.", Toast.LENGTH_SHORT).show()
                     // 글 등록 후 액티비티 새로고침
-                    (activity as? QuestionBoardActivity)?.refreshActivity()
+                    (activity as? QuestionBoardActivity)?.fetchData()
                     parentFragmentManager.popBackStack()
                 } else {
                     Log.e("POST_REQUEST", "Error: ${response.code()}")
