@@ -130,6 +130,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 Toast.makeText(this, "닉네임, 학번 또는 토큰을 확인해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
+        finishWithResult()
     }
 
     private fun getUserProfile() {

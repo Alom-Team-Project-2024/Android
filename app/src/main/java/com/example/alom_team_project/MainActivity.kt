@@ -9,8 +9,10 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alom_team_project.databinding.ActivityMainBinding
@@ -48,6 +50,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
+    private val editboardLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        if (result.resultCode == RESULT_OK) {
+            // 정보 수정 후 돌아올 때 사용자 정보 새로고침
+            fetchQuestions() // 홈화면 질문 불러오기
+            fetchData() // 홈화면 이름 불러오기
+            fetchMentors() // 홈화면 구인 불러오기
+
+            updateRecordCount() // 초기화 시점에서 기록 개수를 업데이트합니다.
+        }
+    }
 
     private val refreshInterval: Long = 12000 // 1분
 
@@ -95,6 +108,17 @@ class MainActivity : AppCompatActivity() {
         setupAutoRefresh()
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        fetchQuestions() // 홈화면 질문 불러오기
+        fetchData() // 홈화면 이름 불러오기
+        fetchMentors() // 홈화면 구인 불러오기
+
+        updateRecordCount() // 초기화 시점에서 기록 개수를 업데이트합니다.
+
+    }
+
     private fun setupRecyclerView() {
         recordAdapter = HomeRecordAdapter(
             recordList = recordList,
@@ -272,52 +296,61 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateMentorViews(mentors: List<MentorPostResponse>) {
-        if (mentors.isEmpty()) return
+        // 모두 숨기기 (초기화)
+        binding.btnContainer1.visibility = View.GONE
+        binding.btnContainer2.visibility = View.GONE
 
         // 최신 글이 위로 오도록 정렬
         val sortedMentors = mentors.sortedByDescending { it.createdAt }
 
-        // 첫 번째 아이템 업데이트
-        if (sortedMentors.size > 0) {
+        // 멘토 글이 있을 때만 보여주기
+        if (sortedMentors.isNotEmpty()) {
+            // 첫 번째 아이템 업데이트
             val mentor1 = sortedMentors[0]
+            binding.btnContainer1.visibility = View.VISIBLE
+            binding.tvName1.visibility = View.VISIBLE
+            binding.tvContent1.visibility = View.VISIBLE
+            binding.tvTime1.visibility = View.VISIBLE
+
             fetchnickname(mentor1.username) { nickname ->
                 binding.tvName1.text = nickname
                 binding.tvContent1.text = mentor1.text
                 binding.tvTime1.text = formatTime(mentor1.createdAt)
             }
 
-            // 첫 번째 멘토 ID 저장
+            // 첫 번째 멘토 클릭 리스너 설정
             firstMentorId = mentor1.id
-        }
-
-        // 두 번째 아이템 업데이트
-        if (sortedMentors.size > 1) {
-            val mentor2 = sortedMentors[1]
-            fetchnickname(mentor2.username) { nickname ->
-                binding.tvName2.text = nickname
-                binding.tvContent2.text = mentor2.text
-                binding.tvTime2.text = formatTime(mentor2.createdAt)
+            binding.btnContainer1.setOnClickListener {
+                firstMentorId?.let { mentorId ->
+                    openMentorDetailFragment(mentorId)
+                }
             }
 
-            // 두 번째 멘토 ID 저장
-            secondMentorId = mentor2.id
+            // 두 번째 아이템 업데이트 (2개 이상일 때만)
+            if (sortedMentors.size > 1) {
+                val mentor2 = sortedMentors[1]
+                binding.btnContainer2.visibility = View.VISIBLE
+                binding.tvName2.visibility = View.VISIBLE
+                binding.tvContent2.visibility = View.VISIBLE
+                binding.tvTime2.visibility = View.VISIBLE
 
-        }
+                fetchnickname(mentor2.username) { nickname ->
+                    binding.tvName2.text = nickname
+                    binding.tvContent2.text = mentor2.text
+                    binding.tvTime2.text = formatTime(mentor2.createdAt)
+                }
 
-        // 첫 번째 멘토 클릭 리스너 설정
-        binding.tvName1.setOnClickListener {
-            firstMentorId?.let { mentorId ->
-                openMentorDetailFragment(mentorId)
-            }
-        }
-
-        // 두 번째 멘토 클릭 리스너 설정
-        binding.tvName2.setOnClickListener {
-            secondMentorId?.let { mentorId ->
-                openMentorDetailFragment(mentorId)
+                // 두 번째 멘토 클릭 리스너 설정
+                secondMentorId = mentor2.id
+                binding.btnContainer2.setOnClickListener {
+                    secondMentorId?.let { mentorId ->
+                        openMentorDetailFragment(mentorId)
+                    }
+                }
             }
         }
     }
+
 
     private fun openMentorDetailFragment(mentorId: Long) {
         val fragment = MentorDetailFragment().apply {
