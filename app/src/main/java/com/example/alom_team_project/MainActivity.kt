@@ -175,8 +175,6 @@ class MainActivity : AppCompatActivity() {
             val imageUrl = if (images.isNotEmpty()) images[0].imageUrl else ""
             val username = if (replies.isNotEmpty()) replies[0].username?.toString() else ""
 
-            answer = answer?.let { insertSpacesEveryTwentyChars(it) }
-            val text = insertSpacesEveryTwentyChars(question.text)
 
             if (username.isNotBlank() && replies.isEmpty()) {
                 // fetchnickname 호출 후 데이터 추가
@@ -189,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                             mentorName = nickname,
                             answer = answer,
                             id = question.id.toLong(),
-                            text = text,
+                            text = question.text,
                             username = username
                         )
                     )
@@ -214,7 +212,7 @@ class MainActivity : AppCompatActivity() {
                         mentorName = formattedMentorName,
                         answer = answer,
                         id = question.id.toLong(),
-                        text = text,
+                        text = question.text,
                         username = username
                     )
                 )
@@ -243,17 +241,6 @@ class MainActivity : AppCompatActivity() {
         updateRecordCount()
     }
 
-
-
-    private fun insertSpacesEveryTwentyChars(text: String, interval: Int = 20): String {
-        val stringBuilder = StringBuilder(text)
-        var index = interval
-        while (index < stringBuilder.length) {
-            stringBuilder.insert(index, "\n") // 20글자마다 줄바꿈 삽입
-            index += interval + 1 // 줄바꿈 삽입 후 index 보정
-        }
-        return stringBuilder.toString()
-    }
 
 
     private fun updateRecordCount() {
