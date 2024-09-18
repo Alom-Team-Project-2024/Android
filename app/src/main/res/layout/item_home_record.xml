@@ -40,8 +40,8 @@
                 android:ellipsize="end"
                 android:text="인공지능과 빅데이터"
                 android:textColor="#000000"
-                android:textSize="15sp"
-                android:textStyle="bold"
+                android:textSize="17sp"
+                android:fontFamily="@font/b"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -38,10 +38,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="78dp"
-        android:fontFamily="@font/bold"
         android:text="질문 게시판"
+        android:fontFamily="@font/b"
         android:textColor="@color/black"
-        android:textSize="20dp"
+        android:textSize="25sp"
         app:layout_constraintEnd_toStartOf="@+id/writingButton"
         app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="parent" />

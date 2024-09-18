@@ -26,7 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/questionerName"
-        android:textStyle="bold"
+        android:textSize="16sp"
+        android:fontFamily="@font/b"
         android:textColor="@color/black"
 
         app:layout_constraintTop_toTopOf="@id/answerer_profile"
@@ -57,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/questionText"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:textColor="@color/black"
 
         app:layout_constraintTop_toBottomOf="@id/answerer_profile"

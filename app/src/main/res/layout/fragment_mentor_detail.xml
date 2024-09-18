@@ -48,10 +48,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:fontFamily="@font/bold"
+        android:fontFamily="@font/b"
         android:text="구인 게시판"
         android:textColor="@color/black"
-        android:textSize="23dp"
+        android:textSize="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,11 +59,10 @@
 
     <ImageView
         android:id="@+id/post_profile"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/background_board"
         app:srcCompat="@drawable/profile" />
@@ -72,13 +71,12 @@
         android:id="@+id/post_user_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="25dp"
+        android:fontFamily="@font/b"
         android:text="이수민"
-        android:textSize="13.5dp"
-        android:textStyle="bold"
         android:textColor="@color/black"
+        android:textSize="15.5dp"
         app:layout_constraintStart_toEndOf="@+id/post_profile"
         app:layout_constraintTop_toTopOf="@+id/background_board" />
 
@@ -87,14 +85,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="21dp"
-        android:layout_marginLeft="21dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="21dp"
-        android:layout_marginRight="21dp"
+        android:fontFamily="@font/b"
         android:text="인공지능과 빅데이터 과외해 주실 분 구합니다."
-        android:textSize="13.5dp"
-        android:textStyle="bold"
         android:textColor="@color/black"
+        android:textSize="15.5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_profile" />
@@ -148,21 +144,6 @@
         android:textSize="7dp"
         app:layout_constraintStart_toEndOf="@+id/scrap_count"
         app:layout_constraintTop_toBottomOf="@+id/post_content" />
-
-    <TextView
-        android:id="@+id/post_at"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="43dp"
-        android:layout_marginEnd="34dp"
-        android:layout_marginRight="34dp"
-        android:text="2주 전"
-        android:textSize="7dp"
-        android:textColor="#9D9D9D"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/background_board" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

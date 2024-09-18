@@ -32,8 +32,8 @@
         android:layout_marginTop="30dp"
         android:text="@string/myHistoryTitleText"
         android:textColor="@color/black"
-        android:textSize="23sp"
-        android:textStyle="bold"
+        android:textSize="25sp"
+        android:fontFamily="@font/b"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
