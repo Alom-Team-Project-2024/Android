@@ -116,7 +116,6 @@ class MainActivity : AppCompatActivity() {
         fetchMentors() // 홈화면 구인 불러오기
 
         updateRecordCount() // 초기화 시점에서 기록 개수를 업데이트합니다.
-
     }
 
     private fun setupRecyclerView() {

@@ -73,19 +73,39 @@ class HomeRecordViewHolder(
             val imageUrl = record.images[0].imageUrl
             val fullImageUrl = "http://15.165.213.186/uploads/" + imageUrl
 
+            // 로그를 추가하여 이미지 URL, 텍스트, 제목 확인
+            Log.d("HomeRecordViewHolder", "Loading image: $fullImageUrl, Title: ${record.title}, Text: ${record.text}")
+
             Glide.with(itemView.context)
                 .load(fullImageUrl)
                 .transform(CenterCrop(), RoundedCorners(50))
                 .into(binding.imageUrl)
+
+            // 이미지가 있을 때만 이미지를 표시하고 텍스트를 숨깁니다.
             binding.imageUrl.visibility = View.VISIBLE
             binding.text.visibility = View.GONE
+
+            // 로그를 추가하여 현재 이미지 뷰와 텍스트 뷰의 상태 확인
+            Log.d("HomeRecordViewHolder", "Image is visible. Text is hidden. Title: ${record.title}, Text: ${record.text}")
         } else {
+            Glide.with(itemView.context)
+                .load(binding.imageUrl)
+                .into(binding.imageUrl)
+            binding.imageUrl.visibility=View.VISIBLE
+            // 이미지가 없을 때 텍스트를 표시하고 이미지를 숨깁니다.
             binding.text.visibility = View.VISIBLE
+
+            // 로그를 추가하여 텍스트와 제목 확인
+            Log.d("HomeRecordViewHolder", "No image found. Displaying text: ${record.text}, Title: ${record.title}")
+
+            // 로그를 추가하여 현재 텍스트 뷰와 이미지 뷰의 상태 확인
+            Log.d("HomeRecordViewHolder", "Text is visible. Image is hidden. Title: ${record.title}, Text: ${record.text}")
         }
 
         itemView.setOnClickListener {
             onItemClickListener(record.id)  // 클릭된 아이템의 ID 전달
         }
+
     }
 
 
