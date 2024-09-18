@@ -252,6 +252,7 @@ class MentorDetailFragment : Fragment() {
         // _binding이 null이 아닌 경우에만 실행
         _binding?.let { binding ->
             // 질문 내용 설정
+            binding.postTitle.text = mentor.title
             binding.postContent.text = mentor.text
 
             // 좋아요 수, 댓글 수, 스크랩 수 설정
